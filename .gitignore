@@ -12,12 +12,9 @@ venv/
 env/
 .venv/
 
-# Journal data (populated at runtime)
-journal/trades.jsonl
-journal/bot.log
-journal/weekly_summary.md
-journal/weekly_research_memo.md
-journal/weekly_research_memo.json
+# Journal data — tracked here (synced by GitHub Actions from trading-bot artifacts)
+# journal/trades.jsonl  ← committed by sync-journal workflow
+# journal/bot.log       ← committed by sync-journal workflow
 
 # OS
 .DS_Store

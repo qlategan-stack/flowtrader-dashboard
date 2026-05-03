@@ -1,0 +1,73 @@
+name: FlowTrader — Sync Journal to Dashboard
+
+on:
+  # ── Mirror the trading-bot schedule so dashboard updates after each run ──
+  schedule:
+    - cron: '45 13 * * 1-5'   # ~15 min after 09:30 EST bot run
+    - cron: '15 14 * * 1-5'   # ~15 min after 10:00 EST
+    - cron: '45 14 * * 1-5'
+    - cron: '15 15 * * 1-5'
+    - cron: '45 15 * * 1-5'
+    - cron: '15 16 * * 1-5'
+    - cron: '45 16 * * 1-5'
+    - cron: '15 17 * * 1-5'
+    - cron: '45 17 * * 1-5'
+    - cron: '15 18 * * 1-5'
+    - cron: '45 18 * * 1-5'   # after 14:30 EST last scan
+
+    # ── After Sunday research analyst (18:00 EDT = 22:00 UTC) ──────────────
+    - cron: '30 22 * * 0'
+
+  workflow_dispatch:           # Manual trigger from GitHub UI
+
+jobs:
+  sync:
+    name: Pull latest journal from trading-bot
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # ── 1. Checkout this dashboard repo ────────────────────────────────────
+      - name: Checkout dashboard repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.DASHBOARD_PAT }}
+
+      # ── 2. Download the latest journal artifact from FlomaticAuto/flowtrader
+      - name: Download latest journal artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.FLOWTRADER_BOT_TOKEN }}
+          repo: FlomaticAuto/flowtrader
+          workflow: trading-bot.yml
+          workflow_conclusion: success
+          name_is_regexp: true
+          name: trading-journal-.*
+          path: journal/
+          if_no_artifact_found: warn
+
+      # ── 3. Flatten artifact subdirectory if present ──────────────────────
+      # dawidd6 places files in journal/<artifact-name>/ — move them up one level
+      - name: Flatten artifact directory
+        run: |
+          shopt -s nullglob
+          for subdir in journal/trading-journal-*/; do
+            mv "$subdir"* journal/ 2>/dev/null || true
+            rmdir "$subdir" 2>/dev/null || true
+          done
+
+      # ── 4. Commit updated journal files if anything changed ───────────────
+      - name: Commit and push journal updates
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add journal/trades.jsonl journal/bot.log \
+                  journal/weekly_summary.md \
+                  journal/weekly_research_memo.md \
+                  journal/weekly_research_memo.json \
+                  2>/dev/null || true
+          git diff --staged --quiet && echo "No journal changes to commit" || (
+            git commit -m "chore: sync journal $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          )
