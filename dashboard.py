@@ -9,6 +9,7 @@ journal cached for 30 s. No manual intervention needed.
 
 import json
 import os
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
