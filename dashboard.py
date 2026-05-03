@@ -114,16 +114,16 @@ with st.sidebar:
 
     # ── Data refresh ──────────────────────────────────────────────────────────
     st.markdown("**Data**")
-    if st.button("⟳ Refresh All Data", use_container_width=True, help="Clear cache and reload market data, account, and journal"):
+    if st.button("⟳ Refresh All Data", width="stretch", help="Clear cache and reload market data, account, and journal"):
         st.cache_data.clear()
         st.session_state.next_refresh = time.time() + REFRESH_SEC
         st.rerun()
 
-    if st.button("⟳ Refresh Market Only", use_container_width=True, help="Re-fetch watchlist prices and indicators"):
+    if st.button("⟳ Refresh Market Only", width="stretch", help="Re-fetch watchlist prices and indicators"):
         fetch_snapshot.clear()
         st.rerun()
 
-    if st.button("⟳ Refresh Account Only", use_container_width=True, help="Re-fetch account balance and positions"):
+    if st.button("⟳ Refresh Account Only", width="stretch", help="Re-fetch account balance and positions"):
         fetch_account.clear()
         st.rerun()
 
@@ -197,7 +197,7 @@ mode_badge = '<span class="badge-paper">PAPER</span>' if PAPER_MODE else '<span 
 h1, h2, h3 = st.columns([5, 2, 1])
 h1.markdown(f"## 📈 FlowTrader  {mode_badge}", unsafe_allow_html=True)
 h2.caption(f"Updated: {now_str}")
-if h3.button("⟳ Refresh", use_container_width=True):
+if h3.button("⟳ Refresh", width="stretch"):
     st.cache_data.clear()
     st.rerun()
 
