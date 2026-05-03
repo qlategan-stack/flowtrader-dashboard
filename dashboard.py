@@ -9,8 +9,6 @@ journal cached for 30 s. No manual intervention needed.
 
 import json
 import os
-import subprocess
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -74,6 +72,12 @@ MEMO_JSON = Path("journal/weekly_research_memo.json")
 # ── Cached data ───────────────────────────────────────────────────────────────
 @st.cache_resource
 def _fetcher():
+    # Re-apply secrets/env at creation time so cache misses don't lose keys
+    try:
+        for _k, _v in st.secrets.items():
+            os.environ[_k] = str(_v)
+    except Exception:
+        pass
     return MarketDataFetcher()
 
 @st.cache_resource
@@ -101,95 +105,6 @@ def load_research_memo() -> dict:
     except Exception:
         return {}
 
-# ── Agent runner ─────────────────────────────────────────────────────────────
-def _stream_agent(mode: str, timeout: int = 300, label: str = "") -> tuple[int, str, str]:
-    """
-    Run `python main.py <mode>` via Popen and stream stdout line-by-line into
-    three Streamlit placeholder widgets:
-      • a status line   (st.empty → caption)
-      • a progress bar  (st.progress)
-      • a scrolling log (st.empty → code block, last 30 lines)
-
-    Returns (returncode, full_stdout, full_stderr) so callers can inspect output.
-    The placeholders are created here inside a sidebar container so they sit
-    directly below whichever button was pressed.
-    """
-    cwd = str(Path(__file__).parent)
-
-    # ── UI placeholders ───────────────────────────────────────────────────────
-    status_ph = st.empty()
-    bar_ph    = st.progress(0, text=f"Starting {label or mode}…")
-    log_ph    = st.empty()
-
-    stdout_lines: list[str] = []
-    stderr_buf:   list[str] = []
-    start = time.time()
-
-    status_ph.caption(f"⏳ Running `{mode}` — started at {datetime.now().strftime('%H:%M:%S')}")
-
-    try:
-        proc = subprocess.Popen(
-            [sys.executable, "-u", "main.py", mode],  # -u = unbuffered stdout
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            cwd=cwd,
-            env={**os.environ},
-        )
-    except Exception as exc:
-        bar_ph.empty()
-        status_ph.error(f"Failed to start process: {exc}")
-        return -1, "", str(exc)
-
-    def _refresh_log():
-        tail = stdout_lines[-30:] if stdout_lines else ["(waiting for output…)"]
-        log_ph.code("\n".join(tail), language="text")
-
-    def _update_bar(fraction: float, text: str):
-        bar_ph.progress(min(fraction, 1.0), text=text)
-
-    # ── Stream stdout ─────────────────────────────────────────────────────────
-    elapsed = 0.0
-    try:
-        while True:
-            line = proc.stdout.readline()
-            if line:
-                stdout_lines.append(line.rstrip())
-                elapsed = time.time() - start
-                frac = min(elapsed / timeout, 0.95)  # cap at 95% until done
-                _update_bar(frac, f"Running… {int(elapsed)}s elapsed")
-                _refresh_log()
-            elif proc.poll() is not None:
-                break  # process exited and no more output
-
-            if time.time() - start > timeout:
-                proc.kill()
-                stderr_buf.append(f"Timed out after {timeout}s")
-                break
-    finally:
-        # Drain any remaining stderr
-        try:
-            remaining_err = proc.stderr.read()
-            if remaining_err:
-                stderr_buf.append(remaining_err)
-        except Exception:
-            pass
-
-    rc = proc.returncode if proc.returncode is not None else -1
-    elapsed = time.time() - start
-
-    # ── Final UI state ────────────────────────────────────────────────────────
-    _refresh_log()
-    if rc == 0:
-        bar_ph.progress(1.0, text=f"Done in {int(elapsed)}s")
-        status_ph.success(f"✅ `{mode}` completed in {int(elapsed)}s")
-    else:
-        bar_ph.empty()
-        status_ph.error(f"❌ `{mode}` exited with code {rc} after {int(elapsed)}s")
-
-    return rc, "\n".join(stdout_lines), "\n".join(stderr_buf)
-
-
 # ── Sidebar — Control Panel ───────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## ⚙️ Control Panel")
@@ -213,56 +128,14 @@ with st.sidebar:
 
     st.divider()
 
-    # ── Run agents ────────────────────────────────────────────────────────────
-    st.markdown("**Run Agents**")
-    st.caption("Each button calls `main.py` directly. Output is shown below after completion.")
-
-    run_scan   = st.button("🔍 Run Market Scan",       use_container_width=True,
-                           help="Fetch latest data, get Claude's decision, execute if signal qualifies (test mode — no order placed)")
-    run_test   = st.button("🧪 Run Test (no trade)",   use_container_width=True,
-                           help="Fetch account snapshot only — no market scan, no trade")
-    run_review = st.button("📋 Run Weekly Review",     use_container_width=True,
-                           help="Ask Claude to review the last 7 days of journal entries and write a summary")
-    run_research = st.button("🧠 Run Research Analyst", use_container_width=True,
-                             help="Run the full Sunday research analyst: VIX, sectors, broader scan, earnings calendar, weekly memo")
+    # ── Bot info ──────────────────────────────────────────────────────────────
+    st.markdown("**Trading Bot**")
+    st.caption("The bot runs automatically via GitHub Actions every 30 min on weekdays. Journal data syncs here automatically.")
 
     st.divider()
     st.markdown("**Auto-refresh**")
     auto_refresh = st.toggle("Auto-refresh every 60 s", value=True,
-                             help="Disable while running agents to prevent page interruptions")
-
-    # ── Agent output panel ────────────────────────────────────────────────────
-    if run_test:
-        st.markdown("**Test Run**")
-        code, out, err = _stream_agent("test", timeout=60, label="Test scan")
-        if code != 0 and (err or out):
-            st.code((err or out)[-2000:], language="text")
-
-    if run_scan:
-        st.markdown("**Market Scan**")
-        code, out, err = _stream_agent("full", timeout=180, label="Market scan")
-        if code == 0:
-            fetch_entries.clear()
-            fetch_account.clear()
-        elif err or out:
-            st.code((err or out)[-2000:], language="text")
-
-    if run_review:
-        st.markdown("**Weekly Review**")
-        code, out, err = _stream_agent("weekly-review", timeout=180, label="Weekly review")
-        if code == 0 and out:
-            with st.expander("Review text", expanded=True):
-                st.text(out[-3000:] if len(out) > 3000 else out)
-        elif err or out:
-            st.code((err or out)[-2000:], language="text")
-
-    if run_research:
-        st.markdown("**Research Analyst**")
-        code, out, err = _stream_agent("research-analyst", timeout=360, label="Research analyst")
-        if code == 0:
-            load_research_memo.clear()
-        elif err or out:
-            st.code((err or out)[-2000:], language="text")
+                             help="Toggle to pause the automatic page refresh")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -493,124 +366,129 @@ with tab_account:
 
     if "error" in acct:
         st.error(f"Could not load account: {acct['error']}")
-        st.stop()
-
-    portfolio  = float(acct.get("portfolio_value", 0))
-    buying_pwr = float(acct.get("buying_power", 0))
-    cash       = float(acct.get("cash", 0))
-    day_pl     = float(acct.get("day_pl", 0))
-    open_pos   = int(acct.get("open_positions", 0))
-
-    # ── Top metrics ───────────────────────────────────────────────────────────
-    c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Portfolio Value",  f"${portfolio:,.2f}")
-    c2.metric("Buying Power",     f"${buying_pwr:,.2f}")
-    c3.metric("Cash",             f"${cash:,.2f}")
-    c4.metric("Day P&L",
-              f"${day_pl:+,.2f}",
-              f"{day_pl/portfolio*100:+.2f}%" if portfolio else "0%",
-              delta_color="normal")
-    c5.metric("Invested",
-              f"${portfolio - cash:,.2f}",
-              f"{(portfolio - cash)/portfolio*100:.1f}% of portfolio" if portfolio else "—")
-
-    st.divider()
-
-    # ── Risk gauges ───────────────────────────────────────────────────────────
-    risk_col1, risk_col2 = st.columns(2)
-
-    with risk_col1:
-        st.subheader("Position Capacity")
-        cap_frac = open_pos / 3
-        cap_icon = "🔴" if cap_frac >= 1.0 else "🟡" if cap_frac >= 0.67 else "🟢"
-        st.progress(cap_frac, text=f"{cap_icon} {open_pos} / 3 positions used")
-
-    with risk_col2:
-        st.subheader("Daily Loss Limit")
-        max_loss  = portfolio * 0.02
-        loss_used = abs(day_pl) if day_pl < 0 else 0
-        loss_frac = min(loss_used / max_loss, 1.0) if max_loss else 0
-        loss_icon = "🔴" if loss_frac >= 0.8 else "🟡" if loss_frac >= 0.5 else "🟢"
-        st.progress(loss_frac,
-                    text=f"{loss_icon} ${loss_used:,.2f} of ${max_loss:,.2f} max ({loss_frac:.0%} used)")
-
-    st.divider()
-
-    # ── Open positions table ──────────────────────────────────────────────────
-    positions = acct.get("positions", [])
-    st.subheader(f"Open Positions ({len(positions)} / 3)")
-
-    if not positions:
-        st.info("No open positions.")
+        if acct["error"] == "Alpaca client not initialized":
+            st.info(
+                "**To fix this**, create `.streamlit/secrets.toml` by copying "
+                "`.streamlit/secrets.toml.example` and filling in your Alpaca API keys.  \n"
+                "On Streamlit Cloud, paste the same keys into **App settings → Secrets**."
+            )
     else:
-        prows = []
-        for p in positions:
-            pl    = float(p.get("unrealized_pl", 0))
-            plpct = float(p.get("unrealized_plpc", 0)) * 100
-            prows.append({
-                "Symbol":        p.get("symbol"),
-                "Qty":           float(p.get("qty", 0)),
-                "Avg Entry":     float(p.get("avg_entry", 0)),
-                "Current Price": float(p.get("current_price", 0)),
-                "Unrealized P&L": pl,
-                "P&L %":         plpct,
-            })
-        pdf = pd.DataFrame(prows)
+        portfolio  = float(acct.get("portfolio_value", 0))
+        buying_pwr = float(acct.get("buying_power", 0))
+        cash       = float(acct.get("cash", 0))
+        day_pl     = float(acct.get("day_pl", 0))
+        open_pos   = int(acct.get("open_positions", 0))
 
-        def _pl_colour(v):
-            return "color:#00c853;font-weight:bold" if v >= 0 else "color:#ff5252;font-weight:bold"
+        # ── Top metrics ───────────────────────────────────────────────────────────
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.metric("Portfolio Value",  f"${portfolio:,.2f}")
+        c2.metric("Buying Power",     f"${buying_pwr:,.2f}")
+        c3.metric("Cash",             f"${cash:,.2f}")
+        c4.metric("Day P&L",
+                  f"${day_pl:+,.2f}",
+                  f"{day_pl/portfolio*100:+.2f}%" if portfolio else "0%",
+                  delta_color="normal")
+        c5.metric("Invested",
+                  f"${portfolio - cash:,.2f}",
+                  f"{(portfolio - cash)/portfolio*100:.1f}% of portfolio" if portfolio else "—")
 
-        st.dataframe(
-            pdf.style
-               .map(_pl_colour, subset=["Unrealized P&L", "P&L %"])
-               .format({
-                   "Avg Entry":      "${:,.2f}",
-                   "Current Price":  "${:,.2f}",
-                   "Unrealized P&L": "${:+,.2f}",
-                   "P&L %":          "{:+.2f}%",
-                   "Qty":            "{:,.4f}",
-               }),
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.divider()
 
-    # ── Day P&L history chart ─────────────────────────────────────────────────
-    st.divider()
-    st.subheader("Day P&L History (last 14 days)")
+        # ── Risk gauges ───────────────────────────────────────────────────────────
+        risk_col1, risk_col2 = st.columns(2)
 
-    hist = fetch_entries(14)
-    pl_by_date: dict = {}
-    for e in hist:
-        d  = e.get("date", "")
-        pl = e.get("day_pl_at_decision")
-        if d and pl is not None:
-            pl_by_date[d] = pl  # last value for the day wins
+        with risk_col1:
+            st.subheader("Position Capacity")
+            cap_frac = open_pos / 3
+            cap_icon = "🔴" if cap_frac >= 1.0 else "🟡" if cap_frac >= 0.67 else "🟢"
+            st.progress(cap_frac, text=f"{cap_icon} {open_pos} / 3 positions used")
 
-    if pl_by_date:
-        dates = sorted(pl_by_date)
-        vals  = [pl_by_date[d] for d in dates]
-        st.plotly_chart(_dark_bar(vals, dates, yprefix="$"), use_container_width=True)
-    else:
-        st.info("No journal data yet — P&L history will populate after the first bot run.")
+        with risk_col2:
+            st.subheader("Daily Loss Limit")
+            max_loss  = portfolio * 0.02
+            loss_used = abs(day_pl) if day_pl < 0 else 0
+            loss_frac = min(loss_used / max_loss, 1.0) if max_loss else 0
+            loss_icon = "🔴" if loss_frac >= 0.8 else "🟡" if loss_frac >= 0.5 else "🟢"
+            st.progress(loss_frac,
+                        text=f"{loss_icon} ${loss_used:,.2f} of ${max_loss:,.2f} max ({loss_frac:.0%} used)")
 
-    # ── Journal performance summary ───────────────────────────────────────────
-    st.divider()
-    st.subheader("Performance Summary (last 7 days)")
+        st.divider()
 
-    week_entries = fetch_entries(7)
-    if week_entries:
-        filled_trades = [e for e in week_entries if e.get("action") in ["BUY","SELL"]
-                         and e.get("execution_status") in ["FILLED","SIMULATED","SUBMITTED"]]
-        skips         = [e for e in week_entries if e.get("action") == "SKIP"]
-        scores        = [e.get("signal_score", 0) for e in week_entries]
+        # ── Open positions table ──────────────────────────────────────────────────
+        positions = acct.get("positions", [])
+        st.subheader(f"Open Positions ({len(positions)} / 3)")
 
-        p1, p2, p3, p4 = st.columns(4)
-        p1.metric("Total Cycles",   len(week_entries))
-        p2.metric("Trades Placed",  len(filled_trades))
-        p3.metric("Skips",          len(skips))
-        p4.metric("Avg Score",      f"{sum(scores)/len(scores):.1f}/6" if scores else "—")
-    else:
-        st.info("No journal data for the last 7 days.")
+        if not positions:
+            st.info("No open positions.")
+        else:
+            prows = []
+            for p in positions:
+                pl    = float(p.get("unrealized_pl", 0))
+                plpct = float(p.get("unrealized_plpc", 0)) * 100
+                prows.append({
+                    "Symbol":        p.get("symbol"),
+                    "Qty":           float(p.get("qty", 0)),
+                    "Avg Entry":     float(p.get("avg_entry", 0)),
+                    "Current Price": float(p.get("current_price", 0)),
+                    "Unrealized P&L": pl,
+                    "P&L %":         plpct,
+                })
+            pdf = pd.DataFrame(prows)
+
+            def _pl_colour(v):
+                return "color:#00c853;font-weight:bold" if v >= 0 else "color:#ff5252;font-weight:bold"
+
+            st.dataframe(
+                pdf.style
+                   .map(_pl_colour, subset=["Unrealized P&L", "P&L %"])
+                   .format({
+                       "Avg Entry":      "${:,.2f}",
+                       "Current Price":  "${:,.2f}",
+                       "Unrealized P&L": "${:+,.2f}",
+                       "P&L %":          "{:+.2f}%",
+                       "Qty":            "{:,.4f}",
+                   }),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        # ── Day P&L history chart ─────────────────────────────────────────────────
+        st.divider()
+        st.subheader("Day P&L History (last 14 days)")
+
+        hist = fetch_entries(14)
+        pl_by_date: dict = {}
+        for e in hist:
+            d  = e.get("date", "")
+            pl = e.get("day_pl_at_decision")
+            if d and pl is not None:
+                pl_by_date[d] = pl  # last value for the day wins
+
+        if pl_by_date:
+            dates = sorted(pl_by_date)
+            vals  = [pl_by_date[d] for d in dates]
+            st.plotly_chart(_dark_bar(vals, dates, yprefix="$"), use_container_width=True)
+        else:
+            st.info("No journal data yet — P&L history will populate after the first bot run.")
+
+        # ── Journal performance summary ───────────────────────────────────────────
+        st.divider()
+        st.subheader("Performance Summary (last 7 days)")
+
+        week_entries = fetch_entries(7)
+        if week_entries:
+            filled_trades = [e for e in week_entries if e.get("action") in ["BUY","SELL"]
+                             and e.get("execution_status") in ["FILLED","SIMULATED","SUBMITTED"]]
+            skips         = [e for e in week_entries if e.get("action") == "SKIP"]
+            scores        = [e.get("signal_score", 0) for e in week_entries]
+
+            p1, p2, p3, p4 = st.columns(4)
+            p1.metric("Total Cycles",   len(week_entries))
+            p2.metric("Trades Placed",  len(filled_trades))
+            p3.metric("Skips",          len(skips))
+            p4.metric("Avg Score",      f"{sum(scores)/len(scores):.1f}/6" if scores else "—")
+        else:
+            st.info("No journal data for the last 7 days.")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
