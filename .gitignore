@@ -1,0 +1,27 @@
+# Secrets — NEVER commit
+.env
+*.env
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+env/
+.venv/
+
+# Journal data (populated at runtime)
+journal/trades.jsonl
+journal/bot.log
+journal/weekly_summary.md
+journal/weekly_research_memo.md
+journal/weekly_research_memo.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+*.tmp
