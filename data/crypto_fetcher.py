@@ -385,8 +385,11 @@ class BybitFetcher:
                 "demo":           self.testnet,
             }
         except Exception as e:
+            msg = str(e)
+            if "403" in msg or "Forbidden" in msg or "block access" in msg.lower():
+                msg = "Bybit demo endpoint is geo-blocked from this server. Set BYBIT_TESTNET=false in Streamlit Secrets to use the live endpoint."
             logger.error(f"Bybit balance error: {e}")
-            return {"error": str(e)}
+            return {"error": msg}
 
     # ── ORDER PLACEMENT ───────────────────────────────────────────────────────
 
