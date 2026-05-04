@@ -1,14 +1,21 @@
 {
-  "total_usdt": 0.0,
+  "account_value": 90247.48,
+  "total_usdt": 13958.68,
   "free_usdt": 0.0,
+  "funding_usdt": 13958.68,
+  "position_value": 76288.8,
   "open_positions": 1,
   "positions": [
     {
       "currency": "BTC",
-      "amount": 0.05
+      "amount": 0.95,
+      "unified": 0.05,
+      "funding": 0.9,
+      "price_usd": 80304.0,
+      "value_usd": 76288.8
     }
   ],
   "exchange": "bybit",
   "testnet": true,
-  "fetched_at": "2026-05-04T22:02:26.401566+00:00"
+  "fetched_at": "2026-05-04T22:17:34.010284+00:00"
 }
