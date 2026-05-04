@@ -34,12 +34,12 @@ jobs:
         with:
           token: ${{ secrets.DASHBOARD_PAT }}
 
-      # ── 2. Download the latest journal artifact from FlomaticAuto/flowtrader
+      # ── 2. Download the latest journal artifact from qlategan-stack/flowtrader
       - name: Download latest journal artifact
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.FLOWTRADER_BOT_TOKEN }}
-          repo: FlomaticAuto/flowtrader
+          repo: qlategan-stack/flowtrader
           workflow: trading-bot.yml
           workflow_conclusion: success
           name_is_regexp: true
