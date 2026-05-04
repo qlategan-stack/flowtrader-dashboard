@@ -141,8 +141,6 @@ BYBIT_BALANCE_JSON = Path("journal/bybit_balance.json")
 
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_bybit_balance():
-    # On Streamlit Cloud, Bybit's demo endpoint is geo-blocked.
-    # The trading bot (GitHub Actions) writes this file each run instead.
     if BYBIT_BALANCE_JSON.exists():
         try:
             data = json.loads(BYBIT_BALANCE_JSON.read_text(encoding="utf-8"))
@@ -150,7 +148,6 @@ def fetch_bybit_balance():
                 return data
         except Exception:
             pass
-    # Fallback: direct API call (works locally, may fail on cloud)
     return _bybit().get_balance()
 
 @st.cache_data(ttl=30)
@@ -442,7 +439,7 @@ with tab_market:
     if CRYPTO_LIST:
         st.divider()
         _b           = _bybit()
-        order_mode   = "🟡 DEMO" if _b.testnet else "🔴 LIVE"
+        order_mode   = "🟡 TESTNET" if _b.testnet else "🔴 LIVE"
         has_key      = _b._has_private
         st.subheader(f"Crypto Watchlist — Orders: Bybit {order_mode}")
 
@@ -459,7 +456,7 @@ with tab_market:
         }.get(active_source, "no source reachable")
         st.caption(
             f"📡 Market data source: **{source_label}**  ·  "
-            f"Order routing: Bybit {'Demo' if _b.testnet else 'Live'} "
+            f"Order routing: Bybit {'Testnet' if _b.testnet else 'Live'} "
             f"({'API key loaded' if has_key else 'no key — read-only'})"
         )
 
@@ -658,7 +655,7 @@ with tab_account:
 
         # ── Bybit crypto account ──────────────────────────────────────────────────
         st.divider()
-        bybit_mode = "Demo" if _bybit().testnet else "Live"
+        bybit_mode = "Testnet" if _bybit().testnet else "Live"
         st.subheader(f"Bybit Crypto Account ({bybit_mode})")
 
         bybit_bal = fetch_bybit_balance()

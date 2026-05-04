@@ -84,7 +84,7 @@ class BybitFetcher:
             self._connect_error = str(e)
             logger.error(f"Bybit public connection failed (market data will use REST): {e}")
 
-        # Private exchange — demo/live, for orders & balance only
+        # Private exchange — testnet/live, for orders & balance only
         try:
             self.exchange_priv = ccxt.bybit({
                 "apiKey":  self.api_key  or None,
@@ -95,17 +95,12 @@ class BybitFetcher:
                 },
                 "enableRateLimit": True,
             })
-            # Bybit Demo Trading uses api-demo.bybit.com — NOT api-testnet.bybit.com.
-            # CCXT URLs use {hostname} templates; replace them with the demo endpoint.
             if self.testnet:
-                api_urls = self.exchange_priv.urls.get("api", {})
-                if isinstance(api_urls, dict):
-                    for k in list(api_urls.keys()):
-                        api_urls[k] = "https://api-demo.bybit.com"
-            if self._has_private and not self.testnet:
+                self.exchange_priv.set_sandbox_mode(True)  # → api-testnet.bybit.com
+            if self._has_private:
                 self.exchange_priv.load_markets()
 
-            mode = "DEMO orders" if self.testnet else "LIVE orders"
+            mode = "TESTNET orders" if self.testnet else "LIVE orders"
             key_status = "API key loaded" if self._has_private else "no key — balance/orders unavailable"
             logger.info(f"Bybit private exchange ready ({mode}) — {key_status}")
         except Exception as e:
@@ -509,8 +504,6 @@ class BybitFetcher:
         if not self._has_private:
             return {"error": "No API key — add BYBIT_API_KEY to .env to see balance"}
         try:
-            # CCXT's fetch_balance calls /v5/asset/coin/query-info first, which is
-            # blocked on Bybit's demo endpoint. Call /v5/account/wallet-balance directly.
             raw = self.exchange_priv.privateGetV5AccountWalletBalance({"accountType": "UNIFIED"})
             if int(raw.get("retCode", -1)) != 0:
                 return {"error": raw.get("retMsg", "Unknown Bybit error")}
@@ -533,12 +526,12 @@ class BybitFetcher:
                 "open_positions": len(positions),
                 "positions":      positions,
                 "exchange":       "bybit",
-                "demo":           self.testnet,
+                "testnet":        self.testnet,
             }
         except Exception as e:
             msg = str(e)
             if "403" in msg or "Forbidden" in msg or "block access" in msg.lower():
-                msg = "Bybit demo endpoint is geo-blocked from this server. Set BYBIT_TESTNET=false in Streamlit Secrets to use the live endpoint."
+                msg = "Bybit testnet endpoint is geo-blocked from this server."
             logger.error(f"Bybit balance error: {e}")
             return {"error": msg}
 
