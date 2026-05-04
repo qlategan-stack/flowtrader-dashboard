@@ -644,8 +644,10 @@ generated_at, valid_until
                 opp_lines += f"\n  • {str(opp)[:80]}"
 
         changes = memo.get("watchlist_changes", {})
-        adds    = changes.get("add", [])
-        removes = changes.get("remove", [])
+        raw_adds    = changes.get("add", [])
+        raw_removes = changes.get("remove", [])
+        adds    = [a.get("symbol", str(a)) if isinstance(a, dict) else str(a) for a in raw_adds]
+        removes = [r.get("symbol", str(r)) if isinstance(r, dict) else str(r) for r in raw_removes]
 
         warnings = memo.get("risk_warnings", [])
         if isinstance(warnings, dict):
