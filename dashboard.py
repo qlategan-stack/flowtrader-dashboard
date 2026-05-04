@@ -385,71 +385,70 @@ with tab_market:
         )
         st.plotly_chart(score_fig, use_container_width=True)
 
-    # ── Symbol Detail (pill selector) ─────────────────────────────────────────
+    # ── Symbol Detail (collapsed; pill selector toggles the card) ────────────
     st.divider()
-    st.subheader("Symbol Detail")
+    with st.expander("📊 Symbol Detail — click to inspect a ticker", expanded=False):
+        if wl:
+            eq_lookup = {item["symbol"]: item for item in wl}
+            eq_symbols = list(eq_lookup.keys())
 
-    if wl:
-        eq_lookup = {item["symbol"]: item for item in wl}
-        eq_symbols = list(eq_lookup.keys())
+            def _eq_pill_label(sym: str) -> str:
+                it = eq_lookup[sym]
+                grade = it.get("setup_quality", "SKIP")
+                score = it.get("indicators", {}).get("signal_score", 0)
+                dot = "🟢" if grade in ("A_GRADE", "B_GRADE") else "🟡" if grade == "C_GRADE" else "🔴"
+                return f"{dot} {sym} · {score}"
 
-        def _eq_pill_label(sym: str) -> str:
-            it = eq_lookup[sym]
-            grade = it.get("setup_quality", "SKIP")
-            score = it.get("indicators", {}).get("signal_score", 0)
-            dot = "🟢" if grade in ("A_GRADE", "B_GRADE") else "🟡" if grade == "C_GRADE" else "🔴"
-            return f"{dot} {sym} · {score}"
+            selected_sym = st.pills(
+                "Select a symbol",
+                options=eq_symbols,
+                default=None,
+                format_func=_eq_pill_label,
+                label_visibility="collapsed",
+                key="equity_detail_pill",
+            )
 
-        selected_sym = st.pills(
-            "Select a symbol",
-            options=eq_symbols,
-            default=eq_symbols[0],
-            format_func=_eq_pill_label,
-            label_visibility="collapsed",
-            key="equity_detail_pill",
-        )
+            if selected_sym:
+                item  = eq_lookup[selected_sym]
+                ind   = item.get("indicators", {})
+                sent  = item.get("news_sentiment", {})
+                grade = item.get("setup_quality", "SKIP")
+                score = ind.get("signal_score", 0)
+                full  = SYMBOL_NAMES.get(selected_sym, "")
 
-        if selected_sym:
-            item  = eq_lookup[selected_sym]
-            ind   = item.get("indicators", {})
-            sent  = item.get("news_sentiment", {})
-            grade = item.get("setup_quality", "SKIP")
-            score = ind.get("signal_score", 0)
-            full  = SYMBOL_NAMES.get(selected_sym, "")
+                header = f"**{selected_sym}**" + (f" — {full}" if full else "")
+                header += f"   ·   Score {score}/6   ·   {grade}   ·   {ind.get('regime','?')}"
+                st.markdown(header)
 
-            header = f"**{selected_sym}**" + (f" — {full}" if full else "")
-            header += f"   ·   Score {score}/6   ·   {grade}   ·   {ind.get('regime','?')}"
-            st.markdown(header)
+                d1, d2, d3, d4 = st.columns(4)
+                d1.metric("Price", f"${ind.get('current_price',0):,.2f}")
+                d1.metric("MA20",  f"${ind.get('ma20',0):,.2f}")
+                d1.metric("MA50",  f"${ind.get('ma50',0):,.2f}")
+                d2.metric("RSI",   f"{ind.get('rsi',0):.1f}")
+                d2.metric("ADX",   f"{ind.get('adx',0):.1f}")
+                d2.metric("ATR",   f"{ind.get('atr',0):.2f}")
+                bb = ind.get("bollinger", {})
+                d3.metric("BB Upper", f"${bb.get('upper',0):,.2f}")
+                d3.metric("BB Mid",   f"${bb.get('middle',0):,.2f}")
+                d3.metric("BB Lower", f"${bb.get('lower',0):,.2f}")
+                d4.metric("VWAP",   f"${ind.get('vwap',0):,.2f}")
+                d4.metric("Stop",   f"${ind.get('stop_loss_price',0):,.2f}")
+                d4.metric("Target", f"${ind.get('take_profit_price',0):,.2f}")
 
-            d1, d2, d3, d4 = st.columns(4)
-            d1.metric("Price", f"${ind.get('current_price',0):,.2f}")
-            d1.metric("MA20",  f"${ind.get('ma20',0):,.2f}")
-            d1.metric("MA50",  f"${ind.get('ma50',0):,.2f}")
-            d2.metric("RSI",   f"{ind.get('rsi',0):.1f}")
-            d2.metric("ADX",   f"{ind.get('adx',0):.1f}")
-            d2.metric("ATR",   f"{ind.get('atr',0):.2f}")
-            bb = ind.get("bollinger", {})
-            d3.metric("BB Upper", f"${bb.get('upper',0):,.2f}")
-            d3.metric("BB Mid",   f"${bb.get('middle',0):,.2f}")
-            d3.metric("BB Lower", f"${bb.get('lower',0):,.2f}")
-            d4.metric("VWAP",   f"${ind.get('vwap',0):,.2f}")
-            d4.metric("Stop",   f"${ind.get('stop_loss_price',0):,.2f}")
-            d4.metric("Target", f"${ind.get('take_profit_price',0):,.2f}")
+                fired = ind.get("signals_fired", [])
+                if fired:
+                    st.success("Signals fired:  " + "  ·  ".join(fired))
+                else:
+                    st.info("No signals fired")
 
-            fired = ind.get("signals_fired", [])
-            if fired:
-                st.success("Signals fired:  " + "  ·  ".join(fired))
-            else:
-                st.info("No signals fired")
+                sent_score = sent.get("score", 0)
+                sent_label = sent.get("sentiment", "neutral")
+                sent_icon  = "📈" if sent_label == "positive" else "📉" if sent_label == "negative" else "➡️"
+                st.caption(f"{sent_icon} Sentiment: **{sent_label}** (score {sent_score:+.3f}, {sent.get('article_count', 0)} articles)")
 
-            sent_score = sent.get("score", 0)
-            sent_label = sent.get("sentiment", "neutral")
-            sent_icon  = "📈" if sent_label == "positive" else "📉" if sent_label == "negative" else "➡️"
-            st.caption(f"{sent_icon} Sentiment: **{sent_label}** (score {sent_score:+.3f}, {sent.get('article_count', 0)} articles)")
-
-            for h in item.get("recent_headlines", [])[:3]:
-                pub = h.get("published", "")[:10]
-                st.caption(f"[{pub}] **{h.get('source','')}** — {h.get('headline','')}")
+                for h in item.get("recent_headlines", [])[:3]:
+                    pub = h.get("published", "")[:10]
+                    st.caption(f"[{pub}] **{h.get('source','')}** — {h.get('headline','')}")
 
     # ── Crypto watchlist — live market data ──────────────────────────────────
     if CRYPTO_LIST:
@@ -536,69 +535,68 @@ with tab_market:
                 },
             )
 
-            # ── Crypto Symbol Detail (pill selector) ──────────────────────────
+            # ── Crypto Symbol Detail (collapsed; pill toggles the card) ───────
             st.divider()
-            st.subheader("Crypto Symbol Detail")
+            with st.expander("📊 Crypto Symbol Detail — click to inspect a pair", expanded=False):
+                cr_lookup = {item["symbol"]: item for item in crypto_wl}
+                cr_symbols = list(cr_lookup.keys())
 
-            cr_lookup = {item["symbol"]: item for item in crypto_wl}
-            cr_symbols = list(cr_lookup.keys())
+                def _cr_pill_label(sym: str) -> str:
+                    it = cr_lookup[sym]
+                    grade = it.get("setup_quality", "SKIP")
+                    score = it.get("indicators", {}).get("signal_score", 0)
+                    dot = "🟢" if grade in ("A_GRADE", "B_GRADE") else "🟡" if grade == "C_GRADE" else "🔴"
+                    return f"{dot} {sym} · {score}"
 
-            def _cr_pill_label(sym: str) -> str:
-                it = cr_lookup[sym]
-                grade = it.get("setup_quality", "SKIP")
-                score = it.get("indicators", {}).get("signal_score", 0)
-                dot = "🟢" if grade in ("A_GRADE", "B_GRADE") else "🟡" if grade == "C_GRADE" else "🔴"
-                return f"{dot} {sym} · {score}"
-
-            selected_cr = st.pills(
-                "Select a crypto pair",
-                options=cr_symbols,
-                default=cr_symbols[0] if cr_symbols else None,
-                format_func=_cr_pill_label,
-                label_visibility="collapsed",
-                key="crypto_detail_pill",
-            )
-
-            if selected_cr:
-                item   = cr_lookup[selected_cr]
-                ind    = item.get("indicators", {})
-                ticker = item.get("ticker", {})
-                grade  = item.get("setup_quality", "SKIP")
-                score  = ind.get("signal_score", 0)
-                full   = SYMBOL_NAMES.get(selected_cr, selected_cr)
-
-                st.markdown(
-                    f"**{selected_cr}** — {full}   ·   Score {score}/6   ·   {grade}   ·   {ind.get('regime','?')}"
+                selected_cr = st.pills(
+                    "Select a crypto pair",
+                    options=cr_symbols,
+                    default=None,
+                    format_func=_cr_pill_label,
+                    label_visibility="collapsed",
+                    key="crypto_detail_pill",
                 )
 
-                d1, d2, d3, d4 = st.columns(4)
-                d1.metric("Price", f"${ind.get('current_price', ticker.get('price',0)):,.4f}")
-                d1.metric("MA20",  f"${ind.get('ma20',0):,.4f}")
-                d1.metric("24h %", f"{ticker.get('change_pct_24h',0):+.2f}%")
-                d2.metric("RSI",   f"{ind.get('rsi',0):.1f}")
-                d2.metric("ADX",   f"{ind.get('adx',0):.1f}")
-                d2.metric("ATR",   f"${ind.get('atr',0):,.4f}")
-                bb = ind.get("bollinger", {})
-                d3.metric("BB Upper", f"${bb.get('upper',0):,.4f}")
-                d3.metric("BB Mid",   f"${bb.get('middle',0):,.4f}")
-                d3.metric("BB Lower", f"${bb.get('lower',0):,.4f}")
-                d4.metric("VWAP",   f"${ind.get('vwap',0):,.4f}")
-                d4.metric("Stop",   f"${ind.get('stop_loss_price',0):,.4f}")
-                d4.metric("Target", f"${ind.get('take_profit_price',0):,.4f}")
+                if selected_cr:
+                    item   = cr_lookup[selected_cr]
+                    ind    = item.get("indicators", {})
+                    ticker = item.get("ticker", {})
+                    grade  = item.get("setup_quality", "SKIP")
+                    score  = ind.get("signal_score", 0)
+                    full   = SYMBOL_NAMES.get(selected_cr, selected_cr)
 
-                fired = ind.get("signals_fired", [])
-                if fired:
-                    st.success("Signals fired:  " + "  ·  ".join(fired))
-                else:
-                    st.info("No signals fired")
-
-                vol = ticker.get("volume_24h_usdt", 0)
-                if vol:
-                    st.caption(
-                        f"24h volume: ${vol:,.0f} USDT  ·  "
-                        f"High: ${ticker.get('high_24h',0):,.4f}  ·  "
-                        f"Low: ${ticker.get('low_24h',0):,.4f}"
+                    st.markdown(
+                        f"**{selected_cr}** — {full}   ·   Score {score}/6   ·   {grade}   ·   {ind.get('regime','?')}"
                     )
+
+                    d1, d2, d3, d4 = st.columns(4)
+                    d1.metric("Price", f"${ind.get('current_price', ticker.get('price',0)):,.4f}")
+                    d1.metric("MA20",  f"${ind.get('ma20',0):,.4f}")
+                    d1.metric("24h %", f"{ticker.get('change_pct_24h',0):+.2f}%")
+                    d2.metric("RSI",   f"{ind.get('rsi',0):.1f}")
+                    d2.metric("ADX",   f"{ind.get('adx',0):.1f}")
+                    d2.metric("ATR",   f"${ind.get('atr',0):,.4f}")
+                    bb = ind.get("bollinger", {})
+                    d3.metric("BB Upper", f"${bb.get('upper',0):,.4f}")
+                    d3.metric("BB Mid",   f"${bb.get('middle',0):,.4f}")
+                    d3.metric("BB Lower", f"${bb.get('lower',0):,.4f}")
+                    d4.metric("VWAP",   f"${ind.get('vwap',0):,.4f}")
+                    d4.metric("Stop",   f"${ind.get('stop_loss_price',0):,.4f}")
+                    d4.metric("Target", f"${ind.get('take_profit_price',0):,.4f}")
+
+                    fired = ind.get("signals_fired", [])
+                    if fired:
+                        st.success("Signals fired:  " + "  ·  ".join(fired))
+                    else:
+                        st.info("No signals fired")
+
+                    vol = ticker.get("volume_24h_usdt", 0)
+                    if vol:
+                        st.caption(
+                            f"24h volume: ${vol:,.0f} USDT  ·  "
+                            f"High: ${ticker.get('high_24h',0):,.4f}  ·  "
+                            f"Low: ${ticker.get('low_24h',0):,.4f}"
+                        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
