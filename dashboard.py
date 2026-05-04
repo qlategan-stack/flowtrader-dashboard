@@ -431,9 +431,19 @@ with tab_market:
         st.divider()
         bybit_mode = "🟡 TESTNET" if _bybit().testnet else "🔴 LIVE"
         has_key    = _bybit()._has_private
+        ccxt_ok    = _bybit()._connected
+        ccxt_err   = _bybit()._connect_error
         st.subheader(f"Crypto Watchlist — Bybit {bybit_mode}")
+
+        if ccxt_err:
+            st.caption(f"ℹ️ ccxt connection failed ({ccxt_err[:120]}) — using Bybit REST API directly for market data.")
+        elif ccxt_ok:
+            st.caption("✅ ccxt connected to Bybit live exchange.")
+        else:
+            st.caption("ℹ️ Using Bybit REST API for market data (ccxt not available).")
+
         if not has_key:
-            st.caption("Add BYBIT_API_KEY + BYBIT_SECRET_KEY to .env to enable order placement. Market data is live.")
+            st.caption("Add BYBIT_API_KEY + BYBIT_SECRET_KEY to Streamlit secrets to enable order placement.")
 
         with st.spinner("Fetching Bybit crypto data…"):
             crypto_wl = fetch_crypto_snapshot(tuple(CRYPTO_LIST))

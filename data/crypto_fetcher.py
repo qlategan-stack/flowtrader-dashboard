@@ -3,10 +3,15 @@ data/crypto_fetcher.py
 CCXT + Bybit integration for crypto market data and order execution.
 Produces the same indicator/snapshot structure as MarketDataFetcher
 so Claude's decision agent works identically for equities and crypto.
+
+Public market data (OHLCV, tickers) uses Bybit's public REST API directly
+as the primary path — no API key, no ccxt market loading required.
+ccxt is used only for private operations (balance, orders).
 """
 
 import os
 import logging
+import requests
 from typing import Optional
 import pandas as pd
 import pytz
@@ -30,14 +35,17 @@ except ImportError:
     TA_AVAILABLE = False
     logger.warning("ta not installed — run: pip install ta")
 
+BYBIT_REST_BASE = "https://api.bybit.com"
+
 
 class BybitFetcher:
     """
-    Fetches crypto OHLCV data from Bybit via CCXT and calculates the same
-    technical indicators as MarketDataFetcher so the decision agent needs
-    no changes to handle crypto vs equities.
+    Fetches crypto market data from Bybit and calculates the same technical
+    indicators as MarketDataFetcher so Claude's decision agent works
+    identically for equities and crypto.
 
-    Public data (OHLCV, tickers): no API key required.
+    Public data (OHLCV, tickers): uses Bybit REST API directly — no API key,
+    no ccxt market-loading required. Works on any hosting environment.
     Private data (balance, orders): BYBIT_API_KEY + BYBIT_SECRET_KEY required.
     """
 
@@ -45,9 +53,10 @@ class BybitFetcher:
         self.api_key    = os.getenv("BYBIT_API_KEY", "")
         self.api_secret = os.getenv("BYBIT_SECRET_KEY", "")
         self.testnet    = os.getenv("BYBIT_TESTNET", "true").lower() == "true"
-        self.exchange        = None   # live — public market data
-        self.exchange_priv   = None   # testnet (if enabled) — orders & balance
-        self._connected      = False
+        self.exchange        = None   # ccxt — public market data (optional)
+        self.exchange_priv   = None   # ccxt testnet/live — orders & balance
+        self._connected      = False  # ccxt public connection succeeded
+        self._connect_error  = None   # last ccxt connection error (for UI display)
         self._has_private    = bool(self.api_key and self.api_secret)
 
         if CCXT_AVAILABLE:
@@ -68,8 +77,9 @@ class BybitFetcher:
             logger.info("Bybit public exchange connected (live market data)")
         except Exception as e:
             self._connected = False
+            self._connect_error = str(e)
             logger.error(f"Bybit public connection failed: {e}")
-            return  # no point setting up private exchange if public failed
+            return  # skip private exchange setup if public failed
 
         # Private exchange — demo/live, for orders & balance only
         try:
@@ -102,36 +112,118 @@ class BybitFetcher:
 
     # ── DATA FETCHING ─────────────────────────────────────────────────────────
 
+    @staticmethod
+    def _bybit_symbol(symbol: str) -> str:
+        """Convert 'BTC/USDT' → 'BTCUSDT' for Bybit REST API."""
+        return symbol.replace("/", "")
+
     def get_ohlcv(self, symbol: str, days: int = 60) -> Optional[pd.DataFrame]:
-        """Fetch daily OHLCV candles for a crypto pair. No API key needed."""
-        if not self._connected:
-            return None
+        """
+        Fetch daily OHLCV candles. Uses Bybit public REST API directly —
+        no API key, no ccxt market loading required.
+        Falls back to ccxt if REST fails.
+        """
+        df = self._get_ohlcv_rest(symbol, days)
+        if df is not None:
+            return df
+
+        # ccxt fallback (only if REST unreachable)
+        if self._connected:
+            try:
+                ohlcv = self.exchange.fetch_ohlcv(symbol, "1d", limit=min(days + 5, 200))
+                df = pd.DataFrame(ohlcv, columns=["timestamp", "open", "high", "low", "close", "volume"])
+                df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+                return df.tail(days).reset_index(drop=True)
+            except Exception as e:
+                logger.error(f"ccxt OHLCV fallback failed for {symbol}: {e}")
+        return None
+
+    def _get_ohlcv_rest(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
+        """Bybit v5 REST — GET /v5/market/kline. No auth required."""
         try:
-            ohlcv = self.exchange.fetch_ohlcv(symbol, "1d", limit=min(days + 5, 200))
-            df = pd.DataFrame(ohlcv, columns=["timestamp", "open", "high", "low", "close", "volume"])
-            df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+            r = requests.get(
+                f"{BYBIT_REST_BASE}/v5/market/kline",
+                params={
+                    "category": "spot",
+                    "symbol":   self._bybit_symbol(symbol),
+                    "interval": "D",
+                    "limit":    min(days + 5, 200),
+                },
+                timeout=10,
+            )
+            data = r.json()
+            if data.get("retCode") != 0:
+                logger.warning(f"Bybit REST OHLCV error for {symbol}: {data.get('retMsg')}")
+                return None
+            items = data["result"]["list"]
+            if not items:
+                return None
+            items = list(reversed(items))  # Bybit returns newest-first
+            df = pd.DataFrame(
+                items,
+                columns=["timestamp", "open", "high", "low", "close", "volume", "turnover"],
+            )
+            df["timestamp"] = pd.to_datetime(df["timestamp"].astype(int), unit="ms")
+            for col in ["open", "high", "low", "close", "volume"]:
+                df[col] = df[col].astype(float)
             return df.tail(days).reset_index(drop=True)
         except Exception as e:
-            logger.error(f"OHLCV fetch error {symbol}: {e}")
+            logger.error(f"Bybit REST OHLCV failed for {symbol}: {e}")
             return None
 
     def get_ticker(self, symbol: str) -> dict:
-        """Fetch live ticker — price, 24h change, volume. No API key needed."""
-        if not self._connected:
-            return {}
+        """
+        Fetch live ticker — price, 24h change, volume.
+        Uses Bybit public REST API directly. No API key needed.
+        """
+        ticker = self._get_ticker_rest(symbol)
+        if ticker:
+            return ticker
+
+        # ccxt fallback
+        if self._connected:
+            try:
+                t = self.exchange.fetch_ticker(symbol)
+                return {
+                    "price":             t.get("last", 0),
+                    "change_pct_24h":    round(t.get("percentage", 0) or 0, 2),
+                    "volume_24h_usdt":   round(t.get("quoteVolume", 0) or 0, 2),
+                    "high_24h":          t.get("high", 0),
+                    "low_24h":           t.get("low", 0),
+                    "bid":               t.get("bid", 0),
+                    "ask":               t.get("ask", 0),
+                }
+            except Exception as e:
+                logger.error(f"ccxt ticker fallback failed for {symbol}: {e}")
+        return {}
+
+    def _get_ticker_rest(self, symbol: str) -> dict:
+        """Bybit v5 REST — GET /v5/market/tickers. No auth required."""
         try:
-            t = self.exchange.fetch_ticker(symbol)
+            r = requests.get(
+                f"{BYBIT_REST_BASE}/v5/market/tickers",
+                params={"category": "spot", "symbol": self._bybit_symbol(symbol)},
+                timeout=10,
+            )
+            data = r.json()
+            if data.get("retCode") != 0:
+                logger.warning(f"Bybit REST ticker error for {symbol}: {data.get('retMsg')}")
+                return {}
+            items = data["result"].get("list", [])
+            if not items:
+                return {}
+            item = items[0]
             return {
-                "price":         t.get("last", 0),
-                "change_pct_24h": round(t.get("percentage", 0) or 0, 2),
-                "volume_24h_usdt": round(t.get("quoteVolume", 0) or 0, 2),
-                "high_24h":       t.get("high", 0),
-                "low_24h":        t.get("low", 0),
-                "bid":            t.get("bid", 0),
-                "ask":            t.get("ask", 0),
+                "price":             float(item.get("lastPrice", 0) or 0),
+                "change_pct_24h":    round(float(item.get("price24hPcnt", 0) or 0) * 100, 2),
+                "volume_24h_usdt":   round(float(item.get("turnover24h", 0) or 0), 2),
+                "high_24h":          float(item.get("highPrice24h", 0) or 0),
+                "low_24h":           float(item.get("lowPrice24h", 0) or 0),
+                "bid":               float(item.get("bid1Price", 0) or 0),
+                "ask":               float(item.get("ask1Price", 0) or 0),
             }
         except Exception as e:
-            logger.error(f"Ticker error {symbol}: {e}")
+            logger.error(f"Bybit REST ticker failed for {symbol}: {e}")
             return {}
 
     # ── INDICATORS ────────────────────────────────────────────────────────────
