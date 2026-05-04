@@ -385,72 +385,10 @@ with tab_market:
         )
         st.plotly_chart(score_fig, use_container_width=True)
 
-    # ── Symbol Detail (collapsed; pill selector toggles the card) ────────────
-    st.divider()
-    with st.expander("📊 Symbol Detail — click to inspect a ticker", expanded=False):
-        if wl:
-            eq_lookup = {item["symbol"]: item for item in wl}
-            eq_symbols = list(eq_lookup.keys())
-
-            def _eq_pill_label(sym: str) -> str:
-                it = eq_lookup[sym]
-                grade = it.get("setup_quality", "SKIP")
-                score = it.get("indicators", {}).get("signal_score", 0)
-                dot = "🟢" if grade in ("A_GRADE", "B_GRADE") else "🟡" if grade == "C_GRADE" else "🔴"
-                return f"{dot} {sym} · {score}"
-
-            selected_sym = st.pills(
-                "Select a symbol",
-                options=eq_symbols,
-                default=None,
-                format_func=_eq_pill_label,
-                label_visibility="collapsed",
-                key="equity_detail_pill",
-            )
-
-            if selected_sym:
-                item  = eq_lookup[selected_sym]
-                ind   = item.get("indicators", {})
-                sent  = item.get("news_sentiment", {})
-                grade = item.get("setup_quality", "SKIP")
-                score = ind.get("signal_score", 0)
-                full  = SYMBOL_NAMES.get(selected_sym, "")
-
-                header = f"**{selected_sym}**" + (f" — {full}" if full else "")
-                header += f"   ·   Score {score}/6   ·   {grade}   ·   {ind.get('regime','?')}"
-                st.markdown(header)
-
-                d1, d2, d3, d4 = st.columns(4)
-                d1.metric("Price", f"${ind.get('current_price',0):,.2f}")
-                d1.metric("MA20",  f"${ind.get('ma20',0):,.2f}")
-                d1.metric("MA50",  f"${ind.get('ma50',0):,.2f}")
-                d2.metric("RSI",   f"{ind.get('rsi',0):.1f}")
-                d2.metric("ADX",   f"{ind.get('adx',0):.1f}")
-                d2.metric("ATR",   f"{ind.get('atr',0):.2f}")
-                bb = ind.get("bollinger", {})
-                d3.metric("BB Upper", f"${bb.get('upper',0):,.2f}")
-                d3.metric("BB Mid",   f"${bb.get('middle',0):,.2f}")
-                d3.metric("BB Lower", f"${bb.get('lower',0):,.2f}")
-                d4.metric("VWAP",   f"${ind.get('vwap',0):,.2f}")
-                d4.metric("Stop",   f"${ind.get('stop_loss_price',0):,.2f}")
-                d4.metric("Target", f"${ind.get('take_profit_price',0):,.2f}")
-
-                fired = ind.get("signals_fired", [])
-                if fired:
-                    st.success("Signals fired:  " + "  ·  ".join(fired))
-                else:
-                    st.info("No signals fired")
-
-                sent_score = sent.get("score", 0)
-                sent_label = sent.get("sentiment", "neutral")
-                sent_icon  = "📈" if sent_label == "positive" else "📉" if sent_label == "negative" else "➡️"
-                st.caption(f"{sent_icon} Sentiment: **{sent_label}** (score {sent_score:+.3f}, {sent.get('article_count', 0)} articles)")
-
-                for h in item.get("recent_headlines", [])[:3]:
-                    pub = h.get("published", "")[:10]
-                    st.caption(f"[{pub}] **{h.get('source','')}** — {h.get('headline','')}")
+    # (Symbol Detail moved to a single combined expander below the crypto section)
 
     # ── Crypto watchlist — live market data ──────────────────────────────────
+    crypto_wl = []  # ensure defined for the unified Symbol Detail block below
     if CRYPTO_LIST:
         st.divider()
         _b           = _bybit()
@@ -535,10 +473,78 @@ with tab_market:
                 },
             )
 
-            # ── Crypto Symbol Detail (collapsed; pill toggles the card) ───────
-            st.divider()
-            with st.expander("📊 Crypto Symbol Detail — click to inspect a pair", expanded=False):
-                cr_lookup = {item["symbol"]: item for item in crypto_wl}
+    # ── Unified Symbol Detail (equities + crypto in one collapsed expander) ──
+    st.divider()
+    with st.expander("📊 Symbol Detail — click to inspect a ticker or pair", expanded=False):
+        eq_tab, cr_tab = st.tabs(["📈 Equities", "₿ Crypto"])
+
+        with eq_tab:
+            if wl:
+                eq_lookup  = {item["symbol"]: item for item in wl}
+                eq_symbols = list(eq_lookup.keys())
+
+                def _eq_pill_label(sym: str) -> str:
+                    it = eq_lookup[sym]
+                    grade = it.get("setup_quality", "SKIP")
+                    score = it.get("indicators", {}).get("signal_score", 0)
+                    dot = "🟢" if grade in ("A_GRADE", "B_GRADE") else "🟡" if grade == "C_GRADE" else "🔴"
+                    return f"{dot} {sym} · {score}"
+
+                selected_sym = st.pills(
+                    "Select a symbol",
+                    options=eq_symbols,
+                    default=None,
+                    format_func=_eq_pill_label,
+                    label_visibility="collapsed",
+                    key="equity_detail_pill",
+                )
+
+                if selected_sym:
+                    item  = eq_lookup[selected_sym]
+                    ind   = item.get("indicators", {})
+                    sent  = item.get("news_sentiment", {})
+                    grade = item.get("setup_quality", "SKIP")
+                    score = ind.get("signal_score", 0)
+                    full  = SYMBOL_NAMES.get(selected_sym, "")
+
+                    st.markdown(
+                        f"**{selected_sym}**" + (f" — {full}" if full else "") +
+                        f"   ·   Score {score}/6   ·   {grade}   ·   {ind.get('regime','?')}"
+                    )
+
+                    d1, d2, d3, d4 = st.columns(4)
+                    d1.metric("Price", f"${ind.get('current_price',0):,.2f}")
+                    d1.metric("MA20",  f"${ind.get('ma20',0):,.2f}")
+                    d1.metric("MA50",  f"${ind.get('ma50',0):,.2f}")
+                    d2.metric("RSI",   f"{ind.get('rsi',0):.1f}")
+                    d2.metric("ADX",   f"{ind.get('adx',0):.1f}")
+                    d2.metric("ATR",   f"{ind.get('atr',0):.2f}")
+                    bb = ind.get("bollinger", {})
+                    d3.metric("BB Upper", f"${bb.get('upper',0):,.2f}")
+                    d3.metric("BB Mid",   f"${bb.get('middle',0):,.2f}")
+                    d3.metric("BB Lower", f"${bb.get('lower',0):,.2f}")
+                    d4.metric("VWAP",   f"${ind.get('vwap',0):,.2f}")
+                    d4.metric("Stop",   f"${ind.get('stop_loss_price',0):,.2f}")
+                    d4.metric("Target", f"${ind.get('take_profit_price',0):,.2f}")
+
+                    fired = ind.get("signals_fired", [])
+                    if fired:
+                        st.success("Signals fired:  " + "  ·  ".join(fired))
+                    else:
+                        st.info("No signals fired")
+
+                    sent_score = sent.get("score", 0)
+                    sent_label = sent.get("sentiment", "neutral")
+                    sent_icon  = "📈" if sent_label == "positive" else "📉" if sent_label == "negative" else "➡️"
+                    st.caption(f"{sent_icon} Sentiment: **{sent_label}** (score {sent_score:+.3f}, {sent.get('article_count', 0)} articles)")
+
+                    for h in item.get("recent_headlines", [])[:3]:
+                        pub = h.get("published", "")[:10]
+                        st.caption(f"[{pub}] **{h.get('source','')}** — {h.get('headline','')}")
+
+        with cr_tab:
+            if CRYPTO_LIST and crypto_wl:
+                cr_lookup  = {item["symbol"]: item for item in crypto_wl}
                 cr_symbols = list(cr_lookup.keys())
 
                 def _cr_pill_label(sym: str) -> str:
