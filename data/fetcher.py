@@ -23,6 +23,7 @@ try:
     from alpaca.data.historical import StockHistoricalDataClient, CryptoHistoricalDataClient
     from alpaca.data.requests import StockBarsRequest, StockLatestQuoteRequest, StockLatestBarRequest
     from alpaca.data.timeframe import TimeFrame
+    from alpaca.data.enums import DataFeed
     from alpaca.trading.client import TradingClient
     from alpaca.trading.requests import GetAssetsRequest
     ALPACA_AVAILABLE = True
@@ -101,7 +102,8 @@ class MarketDataFetcher:
                 symbol_or_symbols=symbol,
                 timeframe=TimeFrame.Day,
                 start=start,
-                end=end
+                end=end,
+                feed=DataFeed.IEX,
             )
             bars = self.stock_client.get_stock_bars(request)
             df = bars.df
