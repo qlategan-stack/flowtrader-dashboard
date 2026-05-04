@@ -155,7 +155,7 @@ class MarketDataFetcher:
 
             # VWAP (approximated from daily data)
             typical_price = (high + low + close) / 3
-            vwap = float((typical_price * volume).rolling(20).sum() / volume.rolling(20).sum()).iloc[-1]
+            vwap = float(((typical_price * volume).rolling(20).sum() / volume.rolling(20).sum()).iloc[-1])
 
             current_price = float(close.iloc[-1])
 
