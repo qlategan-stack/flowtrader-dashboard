@@ -1,0 +1,14 @@
+{
+  "total_usdt": 0.0,
+  "free_usdt": 0.0,
+  "open_positions": 1,
+  "positions": [
+    {
+      "currency": "BTC",
+      "amount": 0.05
+    }
+  ],
+  "exchange": "bybit",
+  "testnet": true,
+  "fetched_at": "2026-05-04T22:02:26.401566+00:00"
+}
