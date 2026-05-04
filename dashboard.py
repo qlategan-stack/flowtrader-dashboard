@@ -692,7 +692,11 @@ with tab_research:
 
         # ── Confidence + Regime ───────────────────────────────────────────────
         confidence = memo.get("confidence_score", 0)
-        regime     = memo.get("market_regime", "UNKNOWN")
+        raw_regime = memo.get("market_regime", "UNKNOWN")
+        if isinstance(raw_regime, dict):
+            regime = raw_regime.get("trend_or_range", str(raw_regime))[:120]
+        else:
+            regime = str(raw_regime)
         reason     = memo.get("confidence_reason", "")
 
         conf_col, reg_col, reason_col = st.columns([1, 1, 3])
