@@ -503,32 +503,56 @@ class BybitFetcher:
     # ── ACCOUNT ───────────────────────────────────────────────────────────────
 
     def get_balance(self) -> dict:
-        """Fetch spot wallet balances. Requires BYBIT_API_KEY."""
+        """
+        Fetch wallet balances across Unified (trading) and Funding accounts.
+        Bybit testnet faucet drops USDT into Funding by default — UTA only
+        sees coins moved into Unified, so we aggregate both.
+        Non-USDT coins are returned as positions, enriched with the current
+        spot price so the dashboard can show USD-equivalent value.
+        """
         if self.exchange_priv is None:
             why = self._connect_error or "private exchange not initialized"
             return {"error": f"Bybit not connected: {why}"}
         if not self._has_private:
             return {"error": f"No API key (testnet={self.testnet}) — add BYBIT_API_KEY/BYBIT_SECRET_KEY to Streamlit secrets"}
         try:
-            raw = self.exchange_priv.privateGetV5AccountWalletBalance({"accountType": "UNIFIED"})
-            if int(raw.get("retCode", -1)) != 0:
-                return {"error": raw.get("retMsg", "Unknown Bybit error")}
+            unified = self._fetch_unified_balance()
+            funding = self._fetch_funding_balance()
 
-            coins = (raw.get("result", {}).get("list") or [{}])[0].get("coin", [])
-            usdt_total = usdt_free = 0.0
+            by_coin: dict[str, dict[str, float]] = {}
+            for src, label in ((unified, "unified"), (funding, "funding")):
+                for coin, qty in src.items():
+                    if qty <= 1e-9:
+                        continue
+                    rec = by_coin.setdefault(coin, {"unified": 0.0, "funding": 0.0})
+                    rec[label] += qty
+
+            usdt_unified = by_coin.pop("USDT", {"unified": 0.0, "funding": 0.0}) if "USDT" in by_coin else {"unified": 0.0, "funding": 0.0}
+            usdt_total   = round(usdt_unified["unified"] + usdt_unified["funding"], 2)
+            usdt_free    = round(unified.get("USDT", 0.0), 2)  # Unified wallet free balance is what's available to trade
+
             positions = []
-            for coin in coins:
-                symbol = coin.get("coin", "")
-                total  = float(coin.get("walletBalance", 0) or 0)
-                free   = float(coin.get("availableToWithdraw", 0) or 0)
-                if symbol == "USDT":
-                    usdt_total, usdt_free = total, free
-                elif total > 1e-6:
-                    positions.append({"currency": symbol, "amount": round(total, 8)})
+            for coin, rec in sorted(by_coin.items()):
+                amount = rec["unified"] + rec["funding"]
+                price  = self._coin_usd_price(coin)
+                positions.append({
+                    "currency":  coin,
+                    "amount":    round(amount, 8),
+                    "unified":   round(rec["unified"], 8),
+                    "funding":   round(rec["funding"], 8),
+                    "price_usd": round(price, 2) if price else None,
+                    "value_usd": round(amount * price, 2) if price else None,
+                })
+
+            position_value = sum((p["value_usd"] or 0) for p in positions)
+            account_value  = round(usdt_total + position_value, 2)
 
             return {
-                "total_usdt":     round(usdt_total, 2),
-                "free_usdt":      round(usdt_free,  2),
+                "account_value":  account_value,           # USDT + USD-valued positions
+                "total_usdt":     usdt_total,              # USDT across both wallets
+                "free_usdt":      usdt_free,               # USDT in Unified, available to trade
+                "funding_usdt":   round(usdt_unified["funding"], 2),
+                "position_value": round(position_value, 2),
                 "open_positions": len(positions),
                 "positions":      positions,
                 "exchange":       "bybit",
@@ -540,6 +564,58 @@ class BybitFetcher:
                 msg = "Bybit testnet endpoint is geo-blocked from this server."
             logger.error(f"Bybit balance error: {e}")
             return {"error": msg}
+
+    def _fetch_unified_balance(self) -> dict:
+        """Return {coin: walletBalance} for the Unified Trading Account."""
+        try:
+            raw = self.exchange_priv.privateGetV5AccountWalletBalance({"accountType": "UNIFIED"})
+            if int(raw.get("retCode", -1)) != 0:
+                logger.warning(f"Unified balance error: {raw.get('retMsg')}")
+                return {}
+            coins = (raw.get("result", {}).get("list") or [{}])[0].get("coin", [])
+            out = {}
+            for coin in coins:
+                sym = coin.get("coin", "")
+                # availableToWithdraw is what's actually free; walletBalance can include locked margin.
+                # For UTA we want the wallet balance for display, but free for USDT trading capacity.
+                qty = float(coin.get("walletBalance", 0) or 0)
+                if sym == "USDT":
+                    qty = float(coin.get("availableToWithdraw") or coin.get("walletBalance") or 0)
+                if qty > 0:
+                    out[sym] = qty
+            return out
+        except Exception as e:
+            logger.warning(f"Unified balance fetch failed: {e}")
+            return {}
+
+    def _fetch_funding_balance(self) -> dict:
+        """Return {coin: walletBalance} for the Funding (FUND) account."""
+        try:
+            raw = self.exchange_priv.privateGetV5AssetTransferQueryAccountCoinsBalance({"accountType": "FUND"})
+            if int(raw.get("retCode", -1)) != 0:
+                logger.warning(f"Funding balance error: {raw.get('retMsg')}")
+                return {}
+            balances = raw.get("result", {}).get("balance", []) or []
+            out = {}
+            for b in balances:
+                sym = b.get("coin", "")
+                qty = float(b.get("walletBalance", 0) or 0)
+                if qty > 0:
+                    out[sym] = qty
+            return out
+        except Exception as e:
+            logger.warning(f"Funding balance fetch failed: {e}")
+            return {}
+
+    def _coin_usd_price(self, coin: str) -> float:
+        """Spot USD price for a coin via existing ticker fallback chain. 0 if unavailable."""
+        if coin in ("USDT", "USDC", "USD", "DAI"):
+            return 1.0
+        try:
+            t = self.get_ticker(f"{coin}/USDT")
+            return float(t.get("price", 0) or 0)
+        except Exception:
+            return 0.0
 
     # ── ORDER PLACEMENT ───────────────────────────────────────────────────────
 

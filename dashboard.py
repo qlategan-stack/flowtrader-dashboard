@@ -704,18 +704,70 @@ with tab_account:
         if "error" in bybit_bal:
             st.info(f"Bybit: {bybit_bal['error']}")
         else:
-            bb1, bb2, bb3 = st.columns(3)
-            bb1.metric("Total Balance (USDT)", f"${bybit_bal.get('total_usdt', 0):,.2f}")
-            bb2.metric("Free to Trade (USDT)", f"${bybit_bal.get('free_usdt', 0):,.2f}")
-            bb3.metric("Open Crypto Positions", bybit_bal.get("open_positions", 0))
-            holdings = bybit_bal.get("positions", [])
-            fetched = bybit_bal.get("fetched_at", "")
+            account_value  = float(bybit_bal.get("account_value", 0))
+            total_usdt     = float(bybit_bal.get("total_usdt", 0))
+            free_usdt      = float(bybit_bal.get("free_usdt", 0))
+            funding_usdt   = float(bybit_bal.get("funding_usdt", 0))
+            position_value = float(bybit_bal.get("position_value", 0))
+            holdings       = bybit_bal.get("positions", [])
+            n_pos          = len(holdings)
+            fetched        = bybit_bal.get("fetched_at", "")
+
+            # ── Top metrics (5 cols, mirrors Alpaca structure) ─────────────────────
+            cb1, cb2, cb3, cb4, cb5 = st.columns(5)
+            cb1.metric("Account Value",   f"${account_value:,.2f}",
+                       help="USDT across both wallets + positions valued at current spot price")
+            cb2.metric("Free to Trade",   f"${free_usdt:,.2f}",
+                       help="Available USDT in the Unified Trading wallet")
+            cb3.metric("Funding USDT",    f"${funding_usdt:,.2f}",
+                       help="USDT parked in the Funding account — transfer to Unified before trading")
+            cb4.metric("Position Value",  f"${position_value:,.2f}",
+                       f"{(position_value/account_value*100):.1f}% of account" if account_value else "—")
+            cb5.metric("Open Positions",  f"{n_pos}",
+                       f"{n_pos} held" if n_pos else "none")
+
+            # ── Holdings table ──────────────────────────────────────────────────────
             if holdings:
-                st.caption("Holdings: " + ", ".join(
-                    f"{p['currency']} ({p['amount']:.6f})" for p in holdings
-                ))
+                rows = []
+                for p in holdings:
+                    val = p.get("value_usd")
+                    pct = (val / account_value * 100) if (val and account_value) else None
+                    rows.append({
+                        "Asset":     p.get("currency"),
+                        "Amount":    float(p.get("amount", 0)),
+                        "Price":     float(p["price_usd"]) if p.get("price_usd") else None,
+                        "Value":     float(val) if val else None,
+                        "% Account": pct,
+                        "Unified":   float(p.get("unified", 0)),
+                        "Funding":   float(p.get("funding", 0)),
+                    })
+                hdf = pd.DataFrame(rows)
+
+                # Crypto palette: cyan accent for value, violet for percent — distinct from Alpaca's green/red P&L
+                def _cyan(_):  return "color:#26c6da;font-weight:bold"
+                def _violet(_): return "color:#b388ff;font-weight:bold"
+
+                st.dataframe(
+                    hdf.style
+                       .map(_cyan,   subset=["Value"])
+                       .map(_violet, subset=["% Account"])
+                       .format({
+                           "Amount":    "{:,.6f}",
+                           "Price":     "${:,.2f}",
+                           "Value":     "${:,.2f}",
+                           "% Account": "{:.1f}%",
+                           "Unified":   "{:,.6f}",
+                           "Funding":   "{:,.6f}",
+                       }, na_rep="—"),
+                    use_container_width=True,
+                    hide_index=True,
+                )
+            else:
+                st.caption("No non-USDT holdings.")
+
             if fetched:
-                st.caption(f"Last updated by bot: {fetched[:16].replace('T', ' ')} UTC")
+                st.caption(f"Last updated: {fetched[:16].replace('T', ' ')} UTC "
+                           f"(refreshed every ~15 min by local task)")
 
         # ── Day P&L history chart ─────────────────────────────────────────────────
         st.divider()
