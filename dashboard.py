@@ -429,10 +429,11 @@ with tab_market:
     # ── Crypto watchlist — live Bybit data ───────────────────────────────────
     if CRYPTO_LIST:
         st.divider()
-        bybit_mode = "🟡 TESTNET" if _bybit().testnet else "🔴 LIVE"
-        has_key    = _bybit()._has_private
-        ccxt_ok    = _bybit()._connected
-        ccxt_err   = _bybit()._connect_error
+        _b         = _bybit()
+        bybit_mode = "🟡 TESTNET" if _b.testnet else "🔴 LIVE"
+        has_key    = _b._has_private
+        ccxt_ok    = getattr(_b, "_connected", False)
+        ccxt_err   = getattr(_b, "_connect_error", None)
         st.subheader(f"Crypto Watchlist — Bybit {bybit_mode}")
 
         if ccxt_err:
