@@ -612,14 +612,21 @@ generated_at, valid_until
             return
 
         confidence = memo.get("confidence_score", "N/A")
-        regime = memo.get("market_regime", "Unknown")
+        raw_regime = memo.get("market_regime", "Unknown")
+        if isinstance(raw_regime, dict):
+            regime = raw_regime.get("trend_or_range", str(raw_regime))[:80]
+        else:
+            regime = str(raw_regime)[:80]
         reason = memo.get("confidence_reason", "")
 
         opportunities = memo.get("top_opportunities", [])
+        if isinstance(opportunities, dict):
+            opportunities = list(opportunities.values())
         opp_lines = ""
         for opp in opportunities[:3]:
             if isinstance(opp, dict):
-                opp_lines += f"\n  • {opp.get('symbol', '?')} — {opp.get('reason', '')[:80]}"
+                label = opp.get("reason", opp.get("thesis", opp.get("setup_type", "")))[:80]
+                opp_lines += f"\n  • {opp.get('symbol', '?')} — {label}"
             else:
                 opp_lines += f"\n  • {str(opp)[:80]}"
 
@@ -628,9 +635,15 @@ generated_at, valid_until
         removes = changes.get("remove", [])
 
         warnings = memo.get("risk_warnings", [])
-        warn_line = warnings[0] if warnings else "None"
+        if isinstance(warnings, dict):
+            first_val = next(iter(warnings.values()), "None")
+            warn_line = first_val[0] if isinstance(first_val, list) and first_val else first_val
+        elif isinstance(warnings, list) and warnings:
+            warn_line = warnings[0]
+        else:
+            warn_line = "None"
         if isinstance(warn_line, dict):
-            warn_line = warn_line.get("warning", str(warn_line))
+            warn_line = warn_line.get("warning", warn_line.get("detail", str(warn_line)))
 
         message = (
             f"*FlowTrader — Weekly Research Brief*\n"
