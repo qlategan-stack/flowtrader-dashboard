@@ -31,6 +31,7 @@ except Exception:
 
 sys.path.insert(0, str(Path(__file__).parent))
 from data.fetcher import MarketDataFetcher
+from data.crypto_fetcher import BybitFetcher
 from journal.logger import TradeJournal
 
 # ── Page config ───────────────────────────────────────────────────────────────
@@ -112,6 +113,10 @@ def _fetcher():
     return MarketDataFetcher()
 
 @st.cache_resource
+def _bybit():
+    return BybitFetcher()
+
+@st.cache_resource
 def _journal():
     return TradeJournal()
 
@@ -122,6 +127,14 @@ def fetch_account():
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_snapshot(watchlist: tuple):
     return _fetcher().build_market_snapshot(list(watchlist))
+
+@st.cache_data(ttl=REFRESH_SEC)
+def fetch_crypto_snapshot(symbols: tuple):
+    return _bybit().build_crypto_snapshot(list(symbols))
+
+@st.cache_data(ttl=REFRESH_SEC)
+def fetch_bybit_balance():
+    return _bybit().get_balance()
 
 @st.cache_data(ttl=30)
 def fetch_entries(days: int):
@@ -408,14 +421,110 @@ with tab_market:
                     pub = h.get("published", "")[:10]
                     st.caption(f"[{pub}] **{h.get('source','')}** — {h.get('headline','')}")
 
-    # ── Crypto watchlist (read-only info) ────────────────────────────────────
+    # ── Crypto watchlist — live Bybit data ───────────────────────────────────
     if CRYPTO_LIST:
         st.divider()
-        st.subheader("Crypto Watchlist (configured)")
-        st.caption("Crypto pairs run 24/7. Live Alpaca crypto data requires a funded account.")
-        cc = st.columns(len(CRYPTO_LIST))
-        for i, sym in enumerate(CRYPTO_LIST):
-            cc[i].info(f"**{sym}**\nMonitored via Alpaca Crypto API")
+        bybit_mode = "🟡 TESTNET" if _bybit().testnet else "🔴 LIVE"
+        has_key    = _bybit()._has_private
+        st.subheader(f"Crypto Watchlist — Bybit {bybit_mode}")
+        if not has_key:
+            st.caption("Add BYBIT_API_KEY + BYBIT_SECRET_KEY to .env to enable order placement. Market data is live.")
+
+        with st.spinner("Fetching Bybit crypto data…"):
+            crypto_wl = fetch_crypto_snapshot(tuple(CRYPTO_LIST))
+
+        if crypto_wl:
+            crows = []
+            for item in crypto_wl:
+                ind    = item.get("indicators", {})
+                ticker = item.get("ticker", {})
+                crows.append({
+                    "Symbol":    item["symbol"],
+                    "Grade":     item.get("setup_quality", "—"),
+                    "Score":     ind.get("signal_score", 0),
+                    "Price":     ind.get("current_price", ticker.get("price", 0)),
+                    "RSI":       ind.get("rsi", 0),
+                    "ADX":       ind.get("adx", 0),
+                    "Regime":    ind.get("regime", "—"),
+                    "BB %B":     ind.get("bollinger", {}).get("pct_b", 0),
+                    "MA20":      ind.get("ma20", 0),
+                    "ATR":       ind.get("atr", 0),
+                    "Stop":      ind.get("stop_loss_price", 0),
+                    "Target":    ind.get("take_profit_price", 0),
+                    "24h %":     ticker.get("change_pct_24h", 0),
+                    "Signals":   ", ".join(ind.get("signals_fired", [])) or "none",
+                })
+
+            cdf = pd.DataFrame(crows)
+
+            def _change_colour(v):
+                return "color:#00c853;font-weight:bold" if v >= 0 else "color:#ff5252;font-weight:bold"
+
+            st.dataframe(
+                cdf.style
+                   .map(_grade_colour,   subset=["Grade"])
+                   .map(_score_colour,   subset=["Score"])
+                   .map(_regime_colour,  subset=["Regime"])
+                   .map(_change_colour,  subset=["24h %"])
+                   .format({
+                       "Price":  "${:,.4f}", "MA20": "${:,.4f}",
+                       "Stop":   "${:,.4f}", "Target": "${:,.4f}",
+                       "ATR":    "{:.4f}",   "BB %B": "{:.3f}",
+                       "RSI":    "{:.1f}",   "ADX":   "{:.1f}",
+                       "24h %":  "{:+.2f}%",
+                   }),
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Symbol":  st.column_config.TextColumn("Symbol",  help="Crypto trading pair on Bybit spot market."),
+                    "Grade":   st.column_config.TextColumn("Grade",   help="Setup quality based on signal score."),
+                    "Score":   st.column_config.NumberColumn("Score", help="Signal score 0–6. Need ≥ 3 to trade."),
+                    "24h %":   st.column_config.NumberColumn("24h %", help="Price change over the last 24 hours on Bybit."),
+                    "RSI":     st.column_config.NumberColumn("RSI",   help="Relative Strength Index. < 32 = oversold."),
+                    "ADX":     st.column_config.NumberColumn("ADX",   help="Trend strength. > 25 = trending (skip)."),
+                    "Regime":  st.column_config.TextColumn("Regime",  help="RANGING = ADX < 25 (mean reversion active)."),
+                    "BB %B":   st.column_config.NumberColumn("BB %B", help="Position within Bollinger Bands. 0 = lower band."),
+                    "ATR":     st.column_config.NumberColumn("ATR",   help="Average True Range — daily volatility in USD."),
+                    "Stop":    st.column_config.NumberColumn("Stop",  help="Stop-loss = price − 0.5×ATR."),
+                    "Target":  st.column_config.NumberColumn("Target",help="Take-profit target = MA20."),
+                },
+            )
+
+            # Per-symbol crypto expanders
+            st.divider()
+            st.subheader("Crypto Symbol Detail")
+            for item in crypto_wl:
+                ind    = item.get("indicators", {})
+                ticker = item.get("ticker", {})
+                grade  = item.get("setup_quality", "SKIP")
+                score  = ind.get("signal_score", 0)
+                icon   = "🟢" if grade in ["A_GRADE","B_GRADE"] else "🟡" if grade == "C_GRADE" else "🔴"
+                full   = SYMBOL_NAMES.get(item["symbol"], item["symbol"])
+                label  = f"{icon}  {item['symbol']} ({full})  —  Score {score}/6  |  {grade}  |  {ind.get('regime','?')}"
+
+                with st.expander(label):
+                    d1, d2, d3, d4 = st.columns(4)
+                    d1.metric("Price",    f"${ind.get('current_price', ticker.get('price',0)):,.4f}")
+                    d1.metric("MA20",     f"${ind.get('ma20',0):,.4f}")
+                    d1.metric("24h %",    f"{ticker.get('change_pct_24h',0):+.2f}%")
+                    d2.metric("RSI",      f"{ind.get('rsi',0):.1f}")
+                    d2.metric("ADX",      f"{ind.get('adx',0):.1f}")
+                    d2.metric("ATR",      f"${ind.get('atr',0):,.4f}")
+                    bb = ind.get("bollinger", {})
+                    d3.metric("BB Upper", f"${bb.get('upper',0):,.4f}")
+                    d3.metric("BB Mid",   f"${bb.get('middle',0):,.4f}")
+                    d3.metric("BB Lower", f"${bb.get('lower',0):,.4f}")
+                    d4.metric("VWAP",     f"${ind.get('vwap',0):,.4f}")
+                    d4.metric("Stop",     f"${ind.get('stop_loss_price',0):,.4f}")
+                    d4.metric("Target",   f"${ind.get('take_profit_price',0):,.4f}")
+                    fired = ind.get("signals_fired", [])
+                    if fired:
+                        st.success("Signals fired:  " + "  ·  ".join(fired))
+                    else:
+                        st.info("No signals fired")
+                    vol = ticker.get("volume_24h_usdt", 0)
+                    if vol:
+                        st.caption(f"24h volume: ${vol:,.0f} USDT  |  High: ${ticker.get('high_24h',0):,.4f}  |  Low: ${ticker.get('low_24h',0):,.4f}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -513,6 +622,24 @@ with tab_account:
                 use_container_width=True,
                 hide_index=True,
             )
+
+        # ── Bybit crypto account ──────────────────────────────────────────────────
+        st.divider()
+        bybit_mode = "Testnet" if _bybit().testnet else "Live"
+        st.subheader(f"Bybit Crypto Account ({bybit_mode})")
+
+        bybit_bal = fetch_bybit_balance()
+        if "error" in bybit_bal:
+            st.info(f"Bybit: {bybit_bal['error']}")
+        else:
+            bb1, bb2, bb3 = st.columns(3)
+            bb1.metric("Total Balance (USDT)", f"${bybit_bal.get('total_usdt', 0):,.2f}")
+            bb2.metric("Free to Trade (USDT)", f"${bybit_bal.get('free_usdt', 0):,.2f}")
+            bb3.metric("Open Crypto Positions", bybit_bal.get("open_positions", 0))
+            if bybit_bal.get("positions"):
+                st.caption("Holdings: " + ", ".join(
+                    f"{p['currency']} ({p['amount']:.6f})" for p in bybit_bal["positions"]
+                ))
 
         # ── Day P&L history chart ─────────────────────────────────────────────────
         st.divider()
