@@ -438,28 +438,33 @@ with tab_market:
                     pub = h.get("published", "")[:10]
                     st.caption(f"[{pub}] **{h.get('source','')}** — {h.get('headline','')}")
 
-    # ── Crypto watchlist — live Bybit data ───────────────────────────────────
+    # ── Crypto watchlist — live market data ──────────────────────────────────
     if CRYPTO_LIST:
         st.divider()
-        _b         = _bybit()
-        bybit_mode = "🟡 TESTNET" if _b.testnet else "🔴 LIVE"
-        has_key    = _b._has_private
-        ccxt_ok    = getattr(_b, "_connected", False)
-        ccxt_err   = getattr(_b, "_connect_error", None)
-        st.subheader(f"Crypto Watchlist — Bybit {bybit_mode}")
+        _b           = _bybit()
+        order_mode   = "🟡 DEMO" if _b.testnet else "🔴 LIVE"
+        has_key      = _b._has_private
+        st.subheader(f"Crypto Watchlist — Orders: Bybit {order_mode}")
 
-        if ccxt_err:
-            st.caption(f"ℹ️ Bybit blocked from cloud host — market data sourced from Binance public API.")
-        elif ccxt_ok:
-            st.caption("✅ ccxt connected to Bybit live exchange.")
-        else:
-            st.caption("ℹ️ Using Binance public API for market data.")
+        with st.spinner("Fetching crypto market data…"):
+            crypto_wl = fetch_crypto_snapshot(tuple(CRYPTO_LIST))
+
+        active_source = getattr(_b, "_active_source", None)
+        source_label = {
+            "coinbase": "Coinbase Exchange",
+            "kraken":   "Kraken",
+            "binance":  "Binance",
+            "bybit":    "Bybit",
+            "ccxt":     "ccxt (Bybit)",
+        }.get(active_source, "no source reachable")
+        st.caption(
+            f"📡 Market data source: **{source_label}**  ·  "
+            f"Order routing: Bybit {'Demo' if _b.testnet else 'Live'} "
+            f"({'API key loaded' if has_key else 'no key — read-only'})"
+        )
 
         if not has_key:
             st.caption("Add BYBIT_API_KEY + BYBIT_SECRET_KEY to Streamlit secrets to enable order placement.")
-
-        with st.spinner("Fetching Bybit crypto data…"):
-            crypto_wl = fetch_crypto_snapshot(tuple(CRYPTO_LIST))
 
         if crypto_wl:
             crows = []

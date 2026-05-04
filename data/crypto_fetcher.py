@@ -35,8 +35,10 @@ except ImportError:
     TA_AVAILABLE = False
     logger.warning("ta not installed — run: pip install ta")
 
-BYBIT_REST_BASE   = "https://api.bybit.com"
-BINANCE_REST_BASE = "https://api.binance.com"
+BYBIT_REST_BASE    = "https://api.bybit.com"
+BINANCE_REST_BASE  = "https://api.binance.com"
+COINBASE_REST_BASE = "https://api.exchange.coinbase.com"
+KRAKEN_REST_BASE   = "https://api.kraken.com"
 
 
 class BybitFetcher:
@@ -59,6 +61,7 @@ class BybitFetcher:
         self._connected      = False  # ccxt public connection succeeded
         self._connect_error  = None   # last ccxt connection error (for UI display)
         self._has_private    = bool(self.api_key and self.api_secret)
+        self._active_source  = None   # name of last data source that returned data
 
         if CCXT_AVAILABLE:
             self._connect()
@@ -114,30 +117,114 @@ class BybitFetcher:
 
     @staticmethod
     def _bybit_symbol(symbol: str) -> str:
-        """Convert 'BTC/USDT' → 'BTCUSDT' for Bybit REST API."""
+        """Convert 'BTC/USDT' → 'BTCUSDT' for Bybit/Binance REST."""
         return symbol.replace("/", "")
+
+    @staticmethod
+    def _coinbase_symbol(symbol: str) -> str:
+        """Convert 'BTC/USDT' → 'BTC-USD' for Coinbase Exchange API."""
+        return f"{symbol.split('/')[0]}-USD"
+
+    @staticmethod
+    def _kraken_symbol(symbol: str) -> str:
+        """Convert 'BTC/USDT' → 'XBTUSDT' for Kraken (BTC is XBT on Kraken)."""
+        base = symbol.split("/")[0]
+        if base == "BTC":
+            base = "XBT"
+        quote = symbol.split("/")[1] if "/" in symbol else "USD"
+        return f"{base}{quote}"
 
     def get_ohlcv(self, symbol: str, days: int = 60) -> Optional[pd.DataFrame]:
         """
         Fetch daily OHLCV candles.
-        Priority: Binance REST → Bybit REST → ccxt.
-        Binance is first because it has no cloud-provider IP restrictions.
+        Priority: Coinbase → Kraken → Binance → Bybit → ccxt.
+        Coinbase is first because it works reliably from US-hosted cloud
+        infrastructure (Streamlit Community Cloud runs in US-East AWS).
         """
-        df = self._get_ohlcv_binance(symbol, days)
-        if df is not None:
-            return df
-        df = self._get_ohlcv_bybit(symbol, days)
-        if df is not None:
-            return df
+        for source, fn in (
+            ("coinbase", self._get_ohlcv_coinbase),
+            ("kraken",   self._get_ohlcv_kraken),
+            ("binance",  self._get_ohlcv_binance),
+            ("bybit",    self._get_ohlcv_bybit),
+        ):
+            df = fn(symbol, days)
+            if df is not None and len(df) >= 20:
+                self._active_source = source
+                return df
+
         if self._connected:
             try:
                 ohlcv = self.exchange.fetch_ohlcv(symbol, "1d", limit=min(days + 5, 200))
                 df = pd.DataFrame(ohlcv, columns=["timestamp", "open", "high", "low", "close", "volume"])
                 df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+                self._active_source = "ccxt"
                 return df.tail(days).reset_index(drop=True)
             except Exception as e:
                 logger.error(f"ccxt OHLCV fallback failed for {symbol}: {e}")
         return None
+
+    def _get_ohlcv_coinbase(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
+        """
+        Coinbase Exchange — GET /products/{id}/candles?granularity=86400.
+        No auth, works from US cloud. Returns up to 300 candles.
+        Format: [[time, low, high, open, close, volume], ...] (newest first).
+        """
+        try:
+            r = requests.get(
+                f"{COINBASE_REST_BASE}/products/{self._coinbase_symbol(symbol)}/candles",
+                params={"granularity": 86400},  # 1-day candles
+                timeout=10,
+                headers={"User-Agent": "FlowTrader/1.0"},
+            )
+            if r.status_code != 200:
+                logger.warning(f"Coinbase OHLCV {symbol} status {r.status_code}: {r.text[:120]}")
+                return None
+            rows = r.json()
+            if not isinstance(rows, list) or not rows:
+                return None
+            rows = sorted(rows, key=lambda x: x[0])  # ascending by time
+            df = pd.DataFrame(rows, columns=["timestamp", "low", "high", "open", "close", "volume"])
+            df["timestamp"] = pd.to_datetime(df["timestamp"].astype(int), unit="s")
+            for col in ["open", "high", "low", "close", "volume"]:
+                df[col] = df[col].astype(float)
+            return df[["timestamp", "open", "high", "low", "close", "volume"]].tail(days).reset_index(drop=True)
+        except Exception as e:
+            logger.error(f"Coinbase OHLCV failed for {symbol}: {e}")
+            return None
+
+    def _get_ohlcv_kraken(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
+        """
+        Kraken — GET /0/public/OHLC?pair=...&interval=1440 (daily).
+        No auth, works globally. Returns up to 720 candles.
+        """
+        try:
+            r = requests.get(
+                f"{KRAKEN_REST_BASE}/0/public/OHLC",
+                params={"pair": self._kraken_symbol(symbol), "interval": 1440},
+                timeout=10,
+            )
+            data = r.json()
+            if data.get("error"):
+                return None
+            result = data.get("result", {})
+            # Kraken keys responses by its own pair name (e.g., XXBTZUSD), not what we sent
+            pair_key = next((k for k in result.keys() if k != "last"), None)
+            if not pair_key:
+                return None
+            rows = result[pair_key]
+            if not rows:
+                return None
+            # Format: [time, open, high, low, close, vwap, volume, count]
+            df = pd.DataFrame(rows, columns=[
+                "timestamp", "open", "high", "low", "close", "vwap", "volume", "count",
+            ])
+            df["timestamp"] = pd.to_datetime(df["timestamp"].astype(int), unit="s")
+            for col in ["open", "high", "low", "close", "volume"]:
+                df[col] = df[col].astype(float)
+            return df[["timestamp", "open", "high", "low", "close", "volume"]].tail(days).reset_index(drop=True)
+        except Exception as e:
+            logger.error(f"Kraken OHLCV failed for {symbol}: {e}")
+            return None
 
     def _get_ohlcv_binance(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
         """Binance REST — GET /api/v3/klines. No auth required. Works from all cloud IPs."""
@@ -204,14 +291,17 @@ class BybitFetcher:
     def get_ticker(self, symbol: str) -> dict:
         """
         Fetch live ticker — price, 24h change, volume.
-        Priority: Binance REST → Bybit REST → ccxt.
+        Priority: Coinbase → Kraken → Binance → Bybit → ccxt.
         """
-        ticker = self._get_ticker_binance(symbol)
-        if ticker:
-            return ticker
-        ticker = self._get_ticker_bybit(symbol)
-        if ticker:
-            return ticker
+        for fn in (
+            self._get_ticker_coinbase,
+            self._get_ticker_kraken,
+            self._get_ticker_binance,
+            self._get_ticker_bybit,
+        ):
+            ticker = fn(symbol)
+            if ticker:
+                return ticker
         if self._connected:
             try:
                 t = self.exchange.fetch_ticker(symbol)
@@ -227,6 +317,67 @@ class BybitFetcher:
             except Exception as e:
                 logger.error(f"ccxt ticker fallback failed for {symbol}: {e}")
         return {}
+
+    def _get_ticker_coinbase(self, symbol: str) -> dict:
+        """Coinbase Exchange — combine /ticker (live price) + /stats (24h)."""
+        try:
+            product = self._coinbase_symbol(symbol)
+            headers = {"User-Agent": "FlowTrader/1.0"}
+            t = requests.get(f"{COINBASE_REST_BASE}/products/{product}/ticker",
+                             timeout=10, headers=headers).json()
+            s = requests.get(f"{COINBASE_REST_BASE}/products/{product}/stats",
+                             timeout=10, headers=headers).json()
+            price    = float(t.get("price", 0) or 0)
+            open_24h = float(s.get("open", 0) or 0)
+            change_pct = ((price - open_24h) / open_24h * 100) if open_24h > 0 else 0.0
+            volume   = float(s.get("volume", 0) or 0)  # base-asset volume
+            return {
+                "price":             price,
+                "change_pct_24h":    round(change_pct, 2),
+                "volume_24h_usdt":   round(volume * price, 2),  # approximate quote volume
+                "high_24h":          float(s.get("high", 0) or 0),
+                "low_24h":           float(s.get("low", 0) or 0),
+                "bid":               float(t.get("bid", 0) or 0),
+                "ask":               float(t.get("ask", 0) or 0),
+            }
+        except Exception as e:
+            logger.error(f"Coinbase ticker failed for {symbol}: {e}")
+            return {}
+
+    def _get_ticker_kraken(self, symbol: str) -> dict:
+        """Kraken — GET /0/public/Ticker?pair=..."""
+        try:
+            r = requests.get(
+                f"{KRAKEN_REST_BASE}/0/public/Ticker",
+                params={"pair": self._kraken_symbol(symbol)},
+                timeout=10,
+            )
+            data = r.json()
+            if data.get("error"):
+                return {}
+            result = data.get("result", {})
+            pair_key = next(iter(result.keys()), None)
+            if not pair_key:
+                return {}
+            t = result[pair_key]
+            # Kraken format: c=last trade [price, lot vol], v=volume [today, 24h],
+            # h=high [today, 24h], l=low [today, 24h], o=opening price, b=bid, a=ask
+            price    = float(t["c"][0])
+            open_24h = float(t.get("o", 0) or 0)
+            change_pct = ((price - open_24h) / open_24h * 100) if open_24h > 0 else 0.0
+            volume_24h = float(t["v"][1])  # 24h base volume
+            return {
+                "price":             price,
+                "change_pct_24h":    round(change_pct, 2),
+                "volume_24h_usdt":   round(volume_24h * price, 2),
+                "high_24h":          float(t["h"][1]),
+                "low_24h":           float(t["l"][1]),
+                "bid":               float(t["b"][0]),
+                "ask":               float(t["a"][0]),
+            }
+        except Exception as e:
+            logger.error(f"Kraken ticker failed for {symbol}: {e}")
+            return {}
 
     def _get_ticker_binance(self, symbol: str) -> dict:
         """Binance REST — GET /api/v3/ticker/24hr. No auth required."""
