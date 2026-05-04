@@ -35,7 +35,8 @@ except ImportError:
     TA_AVAILABLE = False
     logger.warning("ta not installed — run: pip install ta")
 
-BYBIT_REST_BASE = "https://api.bybit.com"
+BYBIT_REST_BASE   = "https://api.bybit.com"
+BINANCE_REST_BASE = "https://api.binance.com"
 
 
 class BybitFetcher:
@@ -119,15 +120,16 @@ class BybitFetcher:
 
     def get_ohlcv(self, symbol: str, days: int = 60) -> Optional[pd.DataFrame]:
         """
-        Fetch daily OHLCV candles. Uses Bybit public REST API directly —
-        no API key, no ccxt market loading required.
-        Falls back to ccxt if REST fails.
+        Fetch daily OHLCV candles.
+        Priority: Binance REST → Bybit REST → ccxt.
+        Binance is first because it has no cloud-provider IP restrictions.
         """
-        df = self._get_ohlcv_rest(symbol, days)
+        df = self._get_ohlcv_binance(symbol, days)
         if df is not None:
             return df
-
-        # ccxt fallback (only if REST unreachable)
+        df = self._get_ohlcv_bybit(symbol, days)
+        if df is not None:
+            return df
         if self._connected:
             try:
                 ohlcv = self.exchange.fetch_ohlcv(symbol, "1d", limit=min(days + 5, 200))
@@ -138,7 +140,37 @@ class BybitFetcher:
                 logger.error(f"ccxt OHLCV fallback failed for {symbol}: {e}")
         return None
 
-    def _get_ohlcv_rest(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
+    def _get_ohlcv_binance(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
+        """Binance REST — GET /api/v3/klines. No auth required. Works from all cloud IPs."""
+        try:
+            r = requests.get(
+                f"{BINANCE_REST_BASE}/api/v3/klines",
+                params={
+                    "symbol":   self._bybit_symbol(symbol),  # BTCUSDT format matches Binance
+                    "interval": "1d",
+                    "limit":    min(days + 5, 200),
+                },
+                timeout=10,
+            )
+            data = r.json()
+            if isinstance(data, dict) and data.get("code"):
+                logger.warning(f"Binance OHLCV error for {symbol}: {data.get('msg')}")
+                return None
+            # Binance kline: [openTime, open, high, low, close, volume, closeTime, ...]
+            df = pd.DataFrame(data, columns=[
+                "timestamp", "open", "high", "low", "close", "volume",
+                "close_time", "quote_volume", "trades",
+                "taker_buy_base", "taker_buy_quote", "ignore",
+            ])
+            df["timestamp"] = pd.to_datetime(df["timestamp"].astype(int), unit="ms")
+            for col in ["open", "high", "low", "close", "volume"]:
+                df[col] = df[col].astype(float)
+            return df[["timestamp", "open", "high", "low", "close", "volume"]].tail(days).reset_index(drop=True)
+        except Exception as e:
+            logger.error(f"Binance OHLCV failed for {symbol}: {e}")
+            return None
+
+    def _get_ohlcv_bybit(self, symbol: str, days: int) -> Optional[pd.DataFrame]:
         """Bybit v5 REST — GET /v5/market/kline. No auth required."""
         try:
             r = requests.get(
@@ -155,10 +187,9 @@ class BybitFetcher:
             if data.get("retCode") != 0:
                 logger.warning(f"Bybit REST OHLCV error for {symbol}: {data.get('retMsg')}")
                 return None
-            items = data["result"]["list"]
+            items = list(reversed(data["result"]["list"]))  # Bybit returns newest-first
             if not items:
                 return None
-            items = list(reversed(items))  # Bybit returns newest-first
             df = pd.DataFrame(
                 items,
                 columns=["timestamp", "open", "high", "low", "close", "volume", "turnover"],
@@ -174,13 +205,14 @@ class BybitFetcher:
     def get_ticker(self, symbol: str) -> dict:
         """
         Fetch live ticker — price, 24h change, volume.
-        Uses Bybit public REST API directly. No API key needed.
+        Priority: Binance REST → Bybit REST → ccxt.
         """
-        ticker = self._get_ticker_rest(symbol)
+        ticker = self._get_ticker_binance(symbol)
         if ticker:
             return ticker
-
-        # ccxt fallback
+        ticker = self._get_ticker_bybit(symbol)
+        if ticker:
+            return ticker
         if self._connected:
             try:
                 t = self.exchange.fetch_ticker(symbol)
@@ -197,7 +229,31 @@ class BybitFetcher:
                 logger.error(f"ccxt ticker fallback failed for {symbol}: {e}")
         return {}
 
-    def _get_ticker_rest(self, symbol: str) -> dict:
+    def _get_ticker_binance(self, symbol: str) -> dict:
+        """Binance REST — GET /api/v3/ticker/24hr. No auth required."""
+        try:
+            r = requests.get(
+                f"{BINANCE_REST_BASE}/api/v3/ticker/24hr",
+                params={"symbol": self._bybit_symbol(symbol)},
+                timeout=10,
+            )
+            data = r.json()
+            if isinstance(data, dict) and data.get("code"):
+                return {}
+            return {
+                "price":             float(data.get("lastPrice", 0) or 0),
+                "change_pct_24h":    round(float(data.get("priceChangePercent", 0) or 0), 2),
+                "volume_24h_usdt":   round(float(data.get("quoteVolume", 0) or 0), 2),
+                "high_24h":          float(data.get("highPrice", 0) or 0),
+                "low_24h":           float(data.get("lowPrice", 0) or 0),
+                "bid":               float(data.get("bidPrice", 0) or 0),
+                "ask":               float(data.get("askPrice", 0) or 0),
+            }
+        except Exception as e:
+            logger.error(f"Binance ticker failed for {symbol}: {e}")
+            return {}
+
+    def _get_ticker_bybit(self, symbol: str) -> dict:
         """Bybit v5 REST — GET /v5/market/tickers. No auth required."""
         try:
             r = requests.get(
@@ -207,7 +263,6 @@ class BybitFetcher:
             )
             data = r.json()
             if data.get("retCode") != 0:
-                logger.warning(f"Bybit REST ticker error for {symbol}: {data.get('retMsg')}")
                 return {}
             items = data["result"].get("list", [])
             if not items:

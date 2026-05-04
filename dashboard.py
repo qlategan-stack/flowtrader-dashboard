@@ -437,11 +437,11 @@ with tab_market:
         st.subheader(f"Crypto Watchlist — Bybit {bybit_mode}")
 
         if ccxt_err:
-            st.caption(f"ℹ️ ccxt connection failed ({ccxt_err[:120]}) — using Bybit REST API directly for market data.")
+            st.caption(f"ℹ️ Bybit blocked from cloud host — market data sourced from Binance public API.")
         elif ccxt_ok:
             st.caption("✅ ccxt connected to Bybit live exchange.")
         else:
-            st.caption("ℹ️ Using Bybit REST API for market data (ccxt not available).")
+            st.caption("ℹ️ Using Binance public API for market data.")
 
         if not has_key:
             st.caption("Add BYBIT_API_KEY + BYBIT_SECRET_KEY to Streamlit secrets to enable order placement.")
