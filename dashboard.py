@@ -114,6 +114,11 @@ def _fetcher():
 
 @st.cache_resource
 def _bybit():
+    try:
+        for _k, _v in st.secrets.items():
+            os.environ[_k] = str(_v)
+    except Exception:
+        pass
     return BybitFetcher()
 
 @st.cache_resource
