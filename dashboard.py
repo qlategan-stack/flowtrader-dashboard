@@ -630,7 +630,7 @@ with tab_account:
 
         # ── Bybit crypto account ──────────────────────────────────────────────────
         st.divider()
-        bybit_mode = "Testnet" if _bybit().testnet else "Live"
+        bybit_mode = "Demo" if _bybit().testnet else "Live"
         st.subheader(f"Bybit Crypto Account ({bybit_mode})")
 
         bybit_bal = fetch_bybit_balance()
