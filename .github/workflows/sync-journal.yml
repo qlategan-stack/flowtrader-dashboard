@@ -66,6 +66,7 @@ jobs:
                   journal/weekly_summary.md \
                   journal/weekly_research_memo.md \
                   journal/weekly_research_memo.json \
+                  journal/bybit_balance.json \
                   2>/dev/null || true
           git diff --staged --quiet && echo "No journal changes to commit" || (
             git commit -m "chore: sync journal $(date -u '+%Y-%m-%d %H:%M UTC')"

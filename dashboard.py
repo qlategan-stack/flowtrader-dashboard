@@ -137,8 +137,20 @@ def fetch_snapshot(watchlist: tuple):
 def fetch_crypto_snapshot(symbols: tuple):
     return _bybit().build_crypto_snapshot(list(symbols))
 
+BYBIT_BALANCE_JSON = Path("journal/bybit_balance.json")
+
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_bybit_balance():
+    # On Streamlit Cloud, Bybit's demo endpoint is geo-blocked.
+    # The trading bot (GitHub Actions) writes this file each run instead.
+    if BYBIT_BALANCE_JSON.exists():
+        try:
+            data = json.loads(BYBIT_BALANCE_JSON.read_text(encoding="utf-8"))
+            if "error" not in data:
+                return data
+        except Exception:
+            pass
+    # Fallback: direct API call (works locally, may fail on cloud)
     return _bybit().get_balance()
 
 @st.cache_data(ttl=30)
@@ -652,10 +664,14 @@ with tab_account:
             bb1.metric("Total Balance (USDT)", f"${bybit_bal.get('total_usdt', 0):,.2f}")
             bb2.metric("Free to Trade (USDT)", f"${bybit_bal.get('free_usdt', 0):,.2f}")
             bb3.metric("Open Crypto Positions", bybit_bal.get("open_positions", 0))
-            if bybit_bal.get("positions"):
+            holdings = bybit_bal.get("positions", [])
+            fetched = bybit_bal.get("fetched_at", "")
+            if holdings:
                 st.caption("Holdings: " + ", ".join(
-                    f"{p['currency']} ({p['amount']:.6f})" for p in bybit_bal["positions"]
+                    f"{p['currency']} ({p['amount']:.6f})" for p in holdings
                 ))
+            if fetched:
+                st.caption(f"Last updated by bot: {fetched[:16].replace('T', ' ')} UTC")
 
         # ── Day P&L history chart ─────────────────────────────────────────────────
         st.divider()
