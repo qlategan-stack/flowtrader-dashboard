@@ -79,8 +79,7 @@ class BybitFetcher:
         except Exception as e:
             self._connected = False
             self._connect_error = str(e)
-            logger.error(f"Bybit public connection failed: {e}")
-            return  # skip private exchange setup if public failed
+            logger.error(f"Bybit public connection failed (market data will use REST): {e}")
 
         # Private exchange — demo/live, for orders & balance only
         try:
@@ -354,7 +353,7 @@ class BybitFetcher:
 
     def get_balance(self) -> dict:
         """Fetch spot wallet balances. Requires BYBIT_API_KEY."""
-        if not self._connected:
+        if self.exchange_priv is None:
             return {"error": "Bybit not connected"}
         if not self._has_private:
             return {"error": "No API key — add BYBIT_API_KEY to .env to see balance"}
@@ -404,7 +403,7 @@ class BybitFetcher:
         Place a spot market order + stop-loss trigger on Bybit.
         Requires BYBIT_API_KEY and BYBIT_SECRET_KEY.
         """
-        if not self._connected:
+        if self.exchange_priv is None:
             return {"status": "ERROR", "reason": "Bybit not connected"}
         if not self._has_private:
             return {"status": "ERROR", "reason": "No API key — add BYBIT_API_KEY to .env"}
