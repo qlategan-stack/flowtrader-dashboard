@@ -246,45 +246,81 @@ class MarketDataFetcher:
             logger.error(f"News fetch error for {symbol}: {e}")
             return []
 
-    def get_sentiment_score(self, symbol: str) -> dict:
-        """Get news sentiment from Alpha Vantage (free tier)."""
-        if not self.alpha_vantage_key:
-            return {"sentiment": "neutral", "score": 0.0}
+    # Keyword lists for headline sentiment scoring
+    _POSITIVE_WORDS = {
+        "surge", "surges", "surged", "rally", "rallies", "rallied", "soar", "soars", "soared",
+        "jump", "jumps", "jumped", "gain", "gains", "gained", "rise", "rises", "rose",
+        "beat", "beats", "beat", "outperform", "upgrade", "upgraded", "buy", "bullish",
+        "record", "high", "boom", "strong", "strength", "growth", "profit", "revenue",
+        "positive", "optimism", "optimistic", "recovery", "recover", "rebound", "breakout",
+        "opportunity", "upbeat", "accelerate", "expand", "expansion", "robust", "exceed",
+    }
+    _NEGATIVE_WORDS = {
+        "crash", "crashes", "crashed", "plunge", "plunges", "plunged", "drop", "drops", "dropped",
+        "fall", "falls", "fell", "decline", "declines", "declined", "sink", "sinks", "sank",
+        "miss", "misses", "missed", "downgrade", "downgraded", "sell", "bearish", "weak",
+        "loss", "losses", "recession", "inflation", "fear", "fears", "risk", "warning",
+        "concern", "concerns", "tariff", "tariffs", "sanction", "sanctions", "layoff", "layoffs",
+        "bankrupt", "default", "debt", "cut", "cuts", "cut", "slowdown", "contraction",
+        "disappoint", "disappoints", "disappointing", "disappointed", "below", "shortfall",
+    }
 
-        try:
-            url = "https://www.alphavantage.co/query"
-            params = {
-                "function": "NEWS_SENTIMENT",
-                "tickers": symbol,
-                "apikey": self.alpha_vantage_key,
-                "limit": 10
-            }
-            resp = requests.get(url, params=params, timeout=10)
-            data = resp.json()
+    def get_sentiment_score(self, symbol: str, headlines: list = None) -> dict:
+        """
+        Score news sentiment from Alpaca headlines using keyword analysis.
+        Falls back to Alpha Vantage if the daily quota hasn't been exhausted.
+        """
+        # Try Alpha Vantage first (richer scored data when quota remains)
+        if self.alpha_vantage_key:
+            try:
+                url = "https://www.alphavantage.co/query"
+                params = {
+                    "function": "NEWS_SENTIMENT",
+                    "tickers": symbol,
+                    "apikey": self.alpha_vantage_key,
+                    "limit": 10,
+                }
+                resp = requests.get(url, params=params, timeout=10)
+                data = resp.json()
 
-            if "feed" not in data:
-                return {"sentiment": "neutral", "score": 0.0}
+                if "feed" in data:
+                    scores = []
+                    for article in data["feed"][:10]:
+                        for td in article.get("ticker_sentiment", []):
+                            if td.get("ticker") == symbol:
+                                scores.append(float(td.get("ticker_sentiment_score", 0)))
+                    if scores:
+                        avg = sum(scores) / len(scores)
+                        label = "positive" if avg > 0.15 else "negative" if avg < -0.15 else "neutral"
+                        return {"sentiment": label, "score": round(avg, 3),
+                                "article_count": len(scores), "source": "alphavantage"}
+            except Exception as e:
+                logger.warning(f"Alpha Vantage sentiment unavailable for {symbol}: {e}")
 
-            scores = []
-            for article in data["feed"][:10]:
-                for ticker_data in article.get("ticker_sentiment", []):
-                    if ticker_data.get("ticker") == symbol:
-                        scores.append(float(ticker_data.get("ticker_sentiment_score", 0)))
+        # Fallback: keyword scoring on Alpaca headlines (free, unlimited)
+        if headlines is None:
+            headlines = self.get_news(symbol, limit=10)
 
-            if not scores:
-                return {"sentiment": "neutral", "score": 0.0}
+        if not headlines:
+            return {"sentiment": "neutral", "score": 0.0, "article_count": 0, "source": "none"}
 
-            avg_score = sum(scores) / len(scores)
-            label = "positive" if avg_score > 0.15 else "negative" if avg_score < -0.15 else "neutral"
+        total = 0.0
+        for item in headlines:
+            text = (item.get("headline", "") + " " + item.get("summary", "")).lower()
+            words = set(text.split())
+            pos = len(words & self._POSITIVE_WORDS)
+            neg = len(words & self._NEGATIVE_WORDS)
+            if pos + neg > 0:
+                total += (pos - neg) / (pos + neg)
 
-            return {
-                "sentiment": label,
-                "score": round(avg_score, 3),
-                "article_count": len(scores)
-            }
-        except Exception as e:
-            logger.error(f"Sentiment error for {symbol}: {e}")
-            return {"sentiment": "neutral", "score": 0.0}
+        avg = total / len(headlines)
+        label = "positive" if avg > 0.05 else "negative" if avg < -0.05 else "neutral"
+        return {
+            "sentiment": label,
+            "score": round(avg, 3),
+            "article_count": len(headlines),
+            "source": "alpaca-keywords",
+        }
 
     def build_market_snapshot(self, watchlist: list) -> dict:
         """
@@ -307,8 +343,8 @@ class MarketDataFetcher:
 
             bars = self.get_bars(symbol, days=60)
             indicators = self.calculate_indicators(bars)
-            news = self.get_news(symbol, limit=5)
-            sentiment = self.get_sentiment_score(symbol)
+            news = self.get_news(symbol, limit=10)
+            sentiment = self.get_sentiment_score(symbol, headlines=news)
 
             # Add sentiment signal if positive
             if sentiment.get("score", 0) > 0.15:
