@@ -230,8 +230,8 @@ with st.sidebar:
     # ── Risk Profile ──────────────────────────────────────────────────────────
     st.markdown("**Risk Profile**")
     current_profile = _read_active_profile()
-    profile_options = ["high_safety", "medium_safety"]
-    profile_labels  = {"high_safety": "🟢 High Safety", "medium_safety": "🟡 Medium Safety"}
+    profile_options = ["high_safety", "medium_safety", "low_safety"]
+    profile_labels  = {"high_safety": "🟢 High Safety", "medium_safety": "🟡 Medium Safety", "low_safety": "🔴 Low Safety"}
 
     selected_profile = st.radio(
         "Active profile",
