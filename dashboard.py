@@ -64,12 +64,53 @@ st.markdown("""
 # ── Config ────────────────────────────────────────────────────────────────────
 with open("config.yaml") as f:
     CFG = yaml.safe_load(f)
-WATCHLIST    = CFG.get("watchlist", {}).get("equities", ["SPY", "QQQ"])
-CRYPTO_LIST  = CFG.get("watchlist", {}).get("crypto", [])
-REFRESH_SEC  = 60
-PAPER_MODE   = os.getenv("PAPER_TRADING", "true").lower() == "true"
+WATCHLIST     = CFG.get("watchlist", {}).get("equities", ["SPY", "QQQ"])
+CRYPTO_LIST   = CFG.get("watchlist", {}).get("crypto", [])
+RISK_PROFILES = CFG.get("risk_profiles", {})
+REFRESH_SEC   = 60
+PAPER_MODE    = os.getenv("PAPER_TRADING", "true").lower() == "true"
 
-MEMO_JSON = Path("journal/weekly_research_memo.json")
+MEMO_JSON         = Path("journal/weekly_research_memo.json")
+RISK_PROFILE_JSON = Path("journal/risk_profile.json")
+_GH_REPO          = "qlategan-stack/flowtrader-dashboard"
+_GH_PROFILE_PATH  = "journal/risk_profile.json"
+
+
+def _read_active_profile() -> str:
+    try:
+        return json.loads(RISK_PROFILE_JSON.read_text(encoding="utf-8")).get("active_profile", "high_safety")
+    except Exception:
+        return "high_safety"
+
+
+def _write_profile_to_github(profile_name: str) -> bool:
+    """Commit risk_profile.json to GitHub via API so the bot picks it up on next pull."""
+    import base64
+    import requests as _req
+    token = os.getenv("GITHUB_TOKEN", "")
+    if not token:
+        return False
+    content = json.dumps({"active_profile": profile_name, "updated_at": datetime.utcnow().isoformat() + "Z"}, indent=2) + "\n"
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    url = f"https://api.github.com/repos/{_GH_REPO}/contents/{_GH_PROFILE_PATH}"
+    sha = ""
+    try:
+        r = _req.get(url, headers=headers, timeout=8)
+        if r.status_code == 200:
+            sha = r.json().get("sha", "")
+    except Exception:
+        pass
+    payload = {
+        "message": f"chore: set risk profile to {profile_name}",
+        "content": base64.b64encode(content.encode()).decode(),
+    }
+    if sha:
+        payload["sha"] = sha
+    try:
+        r = _req.put(url, headers=headers, json=payload, timeout=10)
+        return r.status_code in (200, 201)
+    except Exception:
+        return False
 
 SYMBOL_NAMES = {
     "NVDA": "NVIDIA Corporation",
@@ -186,9 +227,47 @@ with st.sidebar:
 
     st.divider()
 
+    # ── Risk Profile ──────────────────────────────────────────────────────────
+    st.markdown("**Risk Profile**")
+    current_profile = _read_active_profile()
+    profile_options = ["high_safety", "medium_safety"]
+    profile_labels  = {"high_safety": "🟢 High Safety", "medium_safety": "🟡 Medium Safety"}
+
+    selected_profile = st.radio(
+        "Active profile",
+        profile_options,
+        format_func=lambda x: profile_labels[x],
+        index=profile_options.index(current_profile) if current_profile in profile_options else 0,
+        label_visibility="collapsed",
+    )
+
+    if selected_profile != current_profile:
+        if _write_profile_to_github(selected_profile):
+            st.success(f"Switched to **{profile_labels[selected_profile]}**. Takes effect on next bot run (~30 min).")
+        else:
+            st.error("Could not save — add GITHUB_TOKEN to Streamlit secrets.")
+
+    with st.expander("Profile limits"):
+        p = RISK_PROFILES.get(selected_profile, {})
+        rows = {
+            "Max positions":    str(p.get("max_open_positions", "—")),
+            "Daily loss cap":   f"{p.get('max_daily_loss_pct', 0)*100:.0f}%",
+            "Max position size":f"{p.get('max_position_pct', 0)*100:.0f}% of account",
+            "Risk per trade":   f"{p.get('risk_pct_per_trade', 0)*100:.1f}%",
+            "Min signal score": f"{p.get('min_signal_score', '—')}/6",
+            "Max stop distance":f"{p.get('max_stop_distance_pct', 0)*100:.0f}%",
+            "Min order value":  f"${p.get('min_order_value', '—')}",
+        }
+        for label, val in rows.items():
+            c1, c2 = st.columns([3, 2])
+            c1.caption(label)
+            c2.caption(f"**{val}**")
+
+    st.divider()
+
     # ── Bot info ──────────────────────────────────────────────────────────────
     st.markdown("**Trading Bot**")
-    st.caption("The bot runs automatically via GitHub Actions every 30 min on weekdays. Journal data syncs here automatically.")
+    st.caption("The bot runs locally via Windows Task Scheduler every 30 min. Journal data syncs here automatically.")
 
     st.divider()
     st.markdown("**Auto-refresh**")
