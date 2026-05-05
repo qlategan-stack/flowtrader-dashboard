@@ -230,8 +230,8 @@ with st.sidebar:
     # ── Risk Profile ──────────────────────────────────────────────────────────
     st.markdown("**Risk Profile**")
     current_profile = _read_active_profile()
-    profile_options = ["high_safety", "medium_safety"]
-    profile_labels  = {"high_safety": "🟢 High Safety", "medium_safety": "🟡 Medium Safety"}
+    profile_options = ["high_safety", "medium_safety", "low_safety"]
+    profile_labels  = {"high_safety": "🟢 High Safety", "medium_safety": "🟡 Medium Safety", "low_safety": "🔴 Low Safety"}
 
     selected_profile = st.radio(
         "Active profile",
@@ -321,7 +321,7 @@ def _dark_bar(vals, dates, yprefix="$", height=220):
         plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
         font_color="#fafafa", height=height,
         margin=dict(l=0, r=0, t=4, b=0),
-        xaxis=dict(showgrid=False),
+        xaxis=dict(showgrid=False, tickformat="%b %d"),
         yaxis=dict(gridcolor="#1c1f26", tickprefix=yprefix),
     )
     return fig
