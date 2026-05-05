@@ -927,6 +927,84 @@ with tab_journal:
 
         st.divider()
 
+        # ── P&L by Day ────────────────────────────────────────────────────────
+        st.subheader("P&L by Day")
+
+        # Build day-level summary from all entries (not just filtered action types)
+        pl_by_day: dict[str, dict] = {}
+        for e in all_entries:
+            d  = e.get("date", "")
+            pl = e.get("day_pl_at_decision")
+            if not d:
+                continue
+            if d not in pl_by_day:
+                pl_by_day[d] = {"pl": 0.0, "trades": 0, "skips": 0}
+            if pl is not None:
+                pl_by_day[d]["pl"] = float(pl)   # last value per day wins
+            if e.get("action") in ["BUY", "SELL"]:
+                pl_by_day[d]["trades"] += 1
+            elif e.get("action") == "SKIP":
+                pl_by_day[d]["skips"] += 1
+
+        if pl_by_day:
+            sorted_days = sorted(pl_by_day, reverse=True)
+
+            # Bar chart
+            bar_vals  = [pl_by_day[d]["pl"] for d in sorted(pl_by_day)]
+            bar_dates = sorted(pl_by_day)
+            st.plotly_chart(_dark_bar(bar_vals, bar_dates, yprefix="$", height=180),
+                            use_container_width=True)
+
+            # Weekly rollup above the table
+            from datetime import date as _date
+            week_totals: dict[str, float] = {}
+            for d, v in pl_by_day.items():
+                try:
+                    iso = _date.fromisoformat(d)
+                    week_key = iso.strftime("W%V %Y")   # e.g. "W19 2026"
+                    week_totals[week_key] = week_totals.get(week_key, 0.0) + v["pl"]
+                except ValueError:
+                    pass
+
+            if week_totals:
+                sorted_weeks = sorted(week_totals)[-4:]   # last 4 weeks
+                wc = st.columns(len(sorted_weeks))
+                for i, wk in enumerate(sorted_weeks):
+                    val = week_totals[wk]
+                    wc[i].metric(wk, f"${val:+,.2f}")
+
+            # Daily table
+            day_rows = []
+            for d in sorted_days:
+                v  = pl_by_day[d]
+                pl = v["pl"]
+                day_rows.append({
+                    "Date":    d,
+                    "Day P&L": f"${pl:+,.2f}",
+                    "Trades":  v["trades"],
+                    "Skips":   v["skips"],
+                    "Result":  "✅ Profit" if pl > 0 else ("🔴 Loss" if pl < 0 else "➖ Flat"),
+                })
+
+            day_df = pd.DataFrame(day_rows)
+
+            def _pl_colour(v: str):
+                if v.startswith("$+") or (v.startswith("$") and not v.startswith("$-") and v != "$+0.00"):
+                    return "color:#00c853;font-weight:bold"
+                if v.startswith("$-"):
+                    return "color:#ff5252;font-weight:bold"
+                return "color:#888"
+
+            st.dataframe(
+                day_df.style.map(_pl_colour, subset=["Day P&L"]),
+                use_container_width=True,
+                hide_index=True,
+            )
+        else:
+            st.info("No P&L data yet — populates after the first bot run during market hours.")
+
+        st.divider()
+
         # ── Charts row ────────────────────────────────────────────────────────
         chart_col1, chart_col2 = st.columns(2)
 
@@ -977,14 +1055,14 @@ with tab_journal:
 
         st.divider()
 
-        # ── Journal table ─────────────────────────────────────────────────────
-        st.subheader("All Entries")
+        # ── Trade log (trades only) ───────────────────────────────────────────
         _BLANK_SYMS = {None, "", "N/A", "NONE", "None", "null", "none"}
 
-        def _clean_symbol(v):
+        def _clean_sym(v):
             return v if v not in _BLANK_SYMS else "—"
 
-        def _format_price(v):
+        def _fp(v):
+            """Pre-format price — never passes None/0 to pandas."""
             if v is None or v == 0:
                 return "—"
             try:
@@ -992,38 +1070,77 @@ with tab_journal:
             except (TypeError, ValueError):
                 return "—"
 
-        rows = []
-        for e in reversed(filtered):
-            rows.append({
-                "Date":       e.get("date", ""),
-                "Time":       e.get("time_est", "").split(".")[0],
-                "Action":     e.get("action", ""),
-                "Symbol":     _clean_symbol(e.get("symbol")),
-                "Score":      e.get("signal_score", 0),
-                "Confidence": e.get("confidence", "—"),
-                "Entry $":    e.get("entry_price"),
-                "Stop $":     e.get("stop_loss"),
-                "Target $":   e.get("take_profit"),
-                "R:R":        e.get("risk_reward") or "—",
-                "Exec":       e.get("execution_status", "—"),
-                "Mode":       "Paper" if e.get("paper_trade", True) else "Live",
-            })
+        def _fpl(v):
+            """Format P&L with sign and colour hint in string."""
+            if v is None:
+                return "—"
+            try:
+                f = float(v)
+                return f"${f:+,.2f}"
+            except (TypeError, ValueError):
+                return "—"
 
-        jdf = pd.DataFrame(rows)
+        trade_entries = [e for e in reversed(filtered) if e.get("action") in ["BUY","SELL"]]
+        skip_entries  = [e for e in reversed(filtered) if e.get("action") == "SKIP"]
 
-        st.dataframe(
-            jdf.style
-               .map(_action_colour, subset=["Action"])
-               .map(_exec_colour,   subset=["Exec"])
-               .map(_score_colour,  subset=["Score"])
-               .format({
-                   "Entry $":  _format_price,
-                   "Stop $":   _format_price,
-                   "Target $": _format_price,
-               }),
-            use_container_width=True,
-            hide_index=True,
-        )
+        st.subheader("Trade Log")
+        if trade_entries:
+            trade_rows = []
+            for e in trade_entries:
+                trade_rows.append({
+                    "Date":       e.get("date", ""),
+                    "Time":       e.get("time_est", "").split(".")[0],
+                    "Action":     e.get("action", ""),
+                    "Symbol":     _clean_sym(e.get("symbol")),
+                    "Score":      e.get("signal_score", 0),
+                    "Entry $":    _fp(e.get("entry_price")),
+                    "Stop $":     _fp(e.get("stop_loss")),
+                    "Target $":   _fp(e.get("take_profit")),
+                    "R:R":        e.get("risk_reward") or "—",
+                    "Exec":       e.get("execution_status", "—"),
+                    "Day P&L":    _fpl(e.get("day_pl_at_decision")),
+                    "Confidence": e.get("confidence", "—"),
+                })
+            tdf = pd.DataFrame(trade_rows)
+            st.dataframe(
+                tdf.style
+                   .map(_action_colour, subset=["Action"])
+                   .map(_exec_colour,   subset=["Exec"])
+                   .map(_score_colour,  subset=["Score"])
+                   .map(_pl_colour,     subset=["Day P&L"]),
+                use_container_width=True,
+                hide_index=True,
+            )
+            st.caption("ℹ️ Per-trade exit P&L requires position monitoring — Day P&L shows the account's daily result at decision time.")
+        else:
+            st.info("No trades placed in this period. The bot is scanning and skipping until a setup meets the signal threshold.")
+
+        # ── All activity (collapsible) ────────────────────────────────────────
+        with st.expander(f"All bot activity — {len(filtered)} entries (including skips)"):
+            all_rows = []
+            for e in list(reversed(filtered)):
+                all_rows.append({
+                    "Date":    e.get("date", ""),
+                    "Time":    e.get("time_est", "").split(".")[0],
+                    "Action":  e.get("action", ""),
+                    "Symbol":  _clean_sym(e.get("symbol")),
+                    "Score":   e.get("signal_score", 0),
+                    "Entry $": _fp(e.get("entry_price")),
+                    "Stop $":  _fp(e.get("stop_loss")),
+                    "Target $":_fp(e.get("take_profit")),
+                    "Exec":    e.get("execution_status", "—"),
+                    "Day P&L": _fpl(e.get("day_pl_at_decision")),
+                })
+            adf = pd.DataFrame(all_rows)
+            st.dataframe(
+                adf.style
+                   .map(_action_colour, subset=["Action"])
+                   .map(_exec_colour,   subset=["Exec"])
+                   .map(_score_colour,  subset=["Score"])
+                   .map(_pl_colour,     subset=["Day P&L"]),
+                use_container_width=True,
+                hide_index=True,
+            )
 
         # ── Entry inspector ───────────────────────────────────────────────────
         st.divider()
