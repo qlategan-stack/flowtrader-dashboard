@@ -965,11 +965,13 @@ with tab_journal:
                     values=list(pie_counts.values()),
                     hole=0.55,
                     marker_colors=["#40916c","#f72585","#555","#ffab00"],
+                    textinfo="label+percent",
+                    textposition="outside",
                 ))
                 pie_fig.update_layout(
                     paper_bgcolor="#0e1117", font_color="#fafafa",
-                    height=200, margin=dict(l=0, r=0, t=4, b=0),
-                    showlegend=True, legend=dict(orientation="h"),
+                    height=260, margin=dict(l=20, r=20, t=20, b=20),
+                    showlegend=False,
                 )
                 st.plotly_chart(pie_fig, use_container_width=True)
 
@@ -977,13 +979,26 @@ with tab_journal:
 
         # ── Journal table ─────────────────────────────────────────────────────
         st.subheader("All Entries")
+        _BLANK_SYMS = {None, "", "N/A", "NONE", "None", "null", "none"}
+
+        def _clean_symbol(v):
+            return v if v not in _BLANK_SYMS else "—"
+
+        def _format_price(v):
+            if v is None or v == 0:
+                return "—"
+            try:
+                return f"${float(v):,.2f}"
+            except (TypeError, ValueError):
+                return "—"
+
         rows = []
         for e in reversed(filtered):
             rows.append({
                 "Date":       e.get("date", ""),
-                "Time":       e.get("time_est", ""),
+                "Time":       e.get("time_est", "").split(".")[0],
                 "Action":     e.get("action", ""),
-                "Symbol":     e.get("symbol") or "—",
+                "Symbol":     _clean_symbol(e.get("symbol")),
                 "Score":      e.get("signal_score", 0),
                 "Confidence": e.get("confidence", "—"),
                 "Entry $":    e.get("entry_price"),
@@ -995,9 +1010,6 @@ with tab_journal:
             })
 
         jdf = pd.DataFrame(rows)
-
-        def _format_price(v):
-            return f"${v:,.2f}" if v is not None else "—"
 
         st.dataframe(
             jdf.style
