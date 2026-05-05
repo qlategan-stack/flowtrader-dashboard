@@ -338,6 +338,8 @@ class MarketDataFetcher:
             "watchlist": []
         }
 
+        min_score = self._load_min_signal_score()
+
         for symbol in watchlist:
             logger.info(f"Fetching data for {symbol}...")
 
@@ -356,7 +358,7 @@ class MarketDataFetcher:
                 "indicators": indicators,
                 "news_sentiment": sentiment,
                 "recent_headlines": news,
-                "setup_quality": self._rate_setup(indicators)
+                "setup_quality": self._rate_setup(indicators, min_score)
             }
 
             snapshot["watchlist"].append(symbol_data)
@@ -369,8 +371,27 @@ class MarketDataFetcher:
 
         return snapshot
 
-    def _rate_setup(self, indicators: dict) -> str:
-        """Rate the quality of a mean reversion setup."""
+    def _load_min_signal_score(self) -> int:
+        """Read the active risk profile's min_signal_score from journal/risk_profile.json + config.yaml."""
+        try:
+            from pathlib import Path
+            import yaml
+            profile_path = Path("journal/risk_profile.json")
+            config_path = Path("config.yaml")
+            profile_name = "high_safety"
+            if profile_path.exists():
+                profile_name = json.loads(profile_path.read_text()).get("active_profile", "high_safety")
+            if config_path.exists():
+                with open(config_path) as f:
+                    cfg = yaml.safe_load(f)
+                profiles = cfg.get("risk_profiles", {})
+                return profiles.get(profile_name, {}).get("min_signal_score", 3)
+        except Exception as e:
+            logger.warning(f"Could not load risk profile for grading: {e}")
+        return 3
+
+    def _rate_setup(self, indicators: dict, min_score: int = 3) -> str:
+        """Rate the quality of a mean reversion setup relative to the active profile's min_signal_score."""
         if "error" in indicators:
             return "NO_DATA"
 
@@ -379,11 +400,11 @@ class MarketDataFetcher:
 
         if not eligible:
             return "SKIP"
-        elif score >= 5:
+        elif score >= min_score + 2:
             return "A_GRADE"
-        elif score >= 4:
+        elif score >= min_score + 1:
             return "B_GRADE"
-        elif score >= 3:
+        elif score >= min_score:
             return "C_GRADE"
         else:
             return "SKIP"

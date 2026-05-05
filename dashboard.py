@@ -360,6 +360,10 @@ with tab_market:
         st.stop()
 
     # ── Summary metrics ───────────────────────────────────────────────────────
+    _active_prof_name = _read_active_profile()
+    _active_prof      = RISK_PROFILES.get(_active_prof_name, {})
+    _min_score        = _active_prof.get("min_signal_score", 3)
+
     tradeable = [s for s in wl if s.get("setup_quality") not in ["SKIP", "NO_DATA"]]
     top       = wl[0] if wl else {}
     trending  = sum(1 for s in wl if s.get("indicators", {}).get("regime") == "TRENDING")
@@ -369,7 +373,7 @@ with tab_market:
     c1.metric("Symbols Scanned", len(wl),
               help="Total symbols in your active watchlist being scanned this cycle.")
     c2.metric("Tradeable Setups", len(tradeable),
-              help="Symbols with 3+ signals fired AND in a ranging market (ADX < 25). These are candidates for a trade.")
+              help=f"Symbols with {_min_score}+ signals fired AND in a ranging market (ADX < 25). These are candidates for a trade. Threshold set by active risk profile ({_active_prof_name}).")
     c3.metric("A-Grade Setups", a_grades,
               help="Highest quality setups: 5+ signals fired. Rare — only enter on these if available.")
     c4.metric("Top Signal Score",
@@ -429,8 +433,8 @@ with tab_market:
         hide_index=True,
         column_config={
             "Symbol":    st.column_config.TextColumn("Symbol",    help="Ticker symbol. Hover the 📖 Ticker Reference above for full names."),
-            "Grade":     st.column_config.TextColumn("Grade",     help="Setup quality: A_GRADE (5-6 signals) → best | B_GRADE (4) | C_GRADE (3) | SKIP | NO_DATA"),
-            "Score":     st.column_config.NumberColumn("Score",   help="Signal score 0–6. Need ≥ 3 to trade. Each indicator that fires adds 1 point (RSI<32 adds 2)."),
+            "Grade":     st.column_config.TextColumn("Grade",     help=f"Setup quality (profile: {_active_prof_name}): A_GRADE (≥{_min_score+2} signals) → best | B_GRADE (≥{_min_score+1}) | C_GRADE (≥{_min_score}) | SKIP | NO_DATA"),
+            "Score":     st.column_config.NumberColumn("Score",   help=f"Signal score 0–6. Need ≥ {_min_score} to trade ({_active_prof_name} profile). Each indicator that fires adds 1 point (RSI<32 adds 2)."),
             "Price":     st.column_config.NumberColumn("Price",   help="Current price of the asset in USD."),
             "RSI":       st.column_config.NumberColumn("RSI",     help="Relative Strength Index (0–100). Below 32 = oversold (potential BUY). Above 68 = overbought. Best for mean reversion when very low."),
             "ADX":       st.column_config.NumberColumn("ADX",     help="Average Directional Index. Below 20 = ranging market (good for mean reversion). Above 25 = trending (SKIP — strategy doesn't work in trends)."),
