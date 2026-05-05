@@ -705,6 +705,11 @@ with tab_account:
                 "On Streamlit Cloud, paste the same keys into **App settings → Secrets**."
             )
     else:
+        _acct_prof_name = _read_active_profile()
+        _acct_prof      = RISK_PROFILES.get(_acct_prof_name, {})
+        _max_positions  = _acct_prof.get("max_open_positions", 3)
+        _max_loss_pct   = _acct_prof.get("max_daily_loss_pct", 0.02)
+
         portfolio  = float(acct.get("portfolio_value", 0))
         buying_pwr = float(acct.get("buying_power", 0))
         cash       = float(acct.get("cash", 0))
@@ -731,18 +736,19 @@ with tab_account:
 
         with risk_col1:
             st.subheader("Position Capacity")
-            cap_frac = open_pos / 3
+            cap_frac = open_pos / _max_positions if _max_positions else 0
             cap_icon = "🔴" if cap_frac >= 1.0 else "🟡" if cap_frac >= 0.67 else "🟢"
-            st.progress(cap_frac, text=f"{cap_icon} {open_pos} / 3 positions used")
+            st.progress(min(cap_frac, 1.0),
+                        text=f"{cap_icon} {open_pos} / {_max_positions} positions used")
 
         with risk_col2:
             st.subheader("Daily Loss Limit")
-            max_loss  = portfolio * 0.02
+            max_loss  = portfolio * _max_loss_pct
             loss_used = abs(day_pl) if day_pl < 0 else 0
             loss_frac = min(loss_used / max_loss, 1.0) if max_loss else 0
             loss_icon = "🔴" if loss_frac >= 0.8 else "🟡" if loss_frac >= 0.5 else "🟢"
             st.progress(loss_frac,
-                        text=f"{loss_icon} ${loss_used:,.2f} of ${max_loss:,.2f} max ({loss_frac:.0%} used)")
+                        text=f"{loss_icon} ${loss_used:,.2f} of ${max_loss:,.2f} max ({loss_frac:.0%} used  ·  {_acct_prof_name})")
 
         st.divider()
 
