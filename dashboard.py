@@ -913,45 +913,128 @@ with tab_account:
                        help="Value of non-USDT crypto holdings at current spot price.")
 
             # ── Holdings table ──────────────────────────────────────────────────────
-            st.markdown(f"**Crypto Holdings ({bybit_npos})**")
+            st.markdown(f"**Crypto Positions ({bybit_npos})**")
 
             if bybit_holds:
+                # Re-use the journal lookup we built for Alpaca positions.  Bybit
+                # holding `currency` is "BTC"; journal symbol is "BTC/USDT".
+                # Try a few common quote currencies in priority order.
+                def _find_crypto_entry(currency: str) -> dict:
+                    for quote in ("USDT", "USDC", "USD"):
+                        sym = f"{currency}/{quote}"
+                        if sym in entry_by_sym:
+                            return entry_by_sym[sym]
+                    return {}
+
                 rows = []
                 for p in bybit_holds:
-                    val = p.get("value_usd")
-                    pct = (val / bybit_value * 100) if (val and bybit_value) else None
+                    coin     = p.get("currency", "")
+                    amount   = float(p.get("amount", 0))
+                    cur_px   = float(p["price_usd"]) if p.get("price_usd") else 0
+                    val      = float(p.get("value_usd") or 0)
+                    pct      = (val / bybit_value * 100) if (val and bybit_value) else None
+
+                    je       = _find_crypto_entry(coin)
+                    entry_px = float(je.get("entry_price",   0) or 0)
+                    stop     = float(je.get("stop_loss",     0) or 0)
+                    target   = float(je.get("take_profit",   0) or 0)
+                    score    = je.get("signal_score", "—")
+
+                    # P&L: only meaningful if we have an entry from the journal
+                    if entry_px > 0 and cur_px > 0:
+                        pl    = (cur_px - entry_px) * amount
+                        plpct = (cur_px / entry_px - 1) * 100
+                    else:
+                        pl, plpct = None, None
+
+                    # R:R remaining
+                    rr_left = "—"
+                    if stop > 0 and target > 0 and cur_px > 0:
+                        risk   = max(cur_px - stop, 0.0001)
+                        reward = max(target - cur_px, 0)
+                        rr_left = f"1:{reward/risk:.1f}" if reward > 0 else "0"
+
+                    # Days held
+                    days_held = "—"
+                    ts = je.get("timestamp", "")
+                    if ts:
+                        try:
+                            opened    = _dt_cls.fromisoformat(ts).date()
+                            days_held = (_date_cls.today() - opened).days
+                        except Exception:
+                            pass
+
                     rows.append({
-                        "Asset":     p.get("currency"),
-                        "Amount":    float(p.get("amount", 0)),
-                        "Price":     float(p["price_usd"]) if p.get("price_usd") else None,
-                        "Value":     float(val) if val else None,
+                        "Asset":     coin,
+                        "Amount":    amount,
+                        "Entry":     entry_px if entry_px > 0 else None,
+                        "Current":   cur_px if cur_px > 0 else None,
+                        "Stop":      stop if stop > 0 else None,
+                        "Target":    target if target > 0 else None,
+                        "Value":     val if val else None,
+                        "P&L $":     pl,
+                        "P&L %":     plpct,
+                        "R:R Left":  rr_left,
+                        "Days":      days_held,
+                        "Score":     score,
                         "% Account": pct,
-                        "Unified":   float(p.get("unified", 0)),
-                        "Funding":   float(p.get("funding", 0)),
                     })
                 hdf = pd.DataFrame(rows)
 
+                def _pl_colour(v):
+                    if isinstance(v, (int, float)):
+                        return "color:#00c853;font-weight:bold" if v >= 0 else "color:#ff5252;font-weight:bold"
+                    return ""
                 def _cyan(_):   return "color:#26c6da;font-weight:bold"
                 def _violet(_): return "color:#b388ff;font-weight:bold"
 
                 st.dataframe(
                     hdf.style
-                       .map(_cyan,   subset=["Value"])
-                       .map(_violet, subset=["% Account"])
+                       .map(_pl_colour, subset=["P&L $", "P&L %"])
+                       .map(_cyan,      subset=["Value"])
+                       .map(_violet,    subset=["% Account"])
                        .format({
                            "Amount":    "{:,.6f}",
-                           "Price":     "${:,.2f}",
+                           "Entry":     "${:,.4f}",
+                           "Current":   "${:,.4f}",
+                           "Stop":      "${:,.4f}",
+                           "Target":    "${:,.4f}",
                            "Value":     "${:,.2f}",
+                           "P&L $":     "${:+,.2f}",
+                           "P&L %":     "{:+.2f}%",
                            "% Account": "{:.1f}%",
-                           "Unified":   "{:,.6f}",
-                           "Funding":   "{:,.6f}",
                        }, na_rep="—"),
                     use_container_width=True,
                     hide_index=True,
                 )
                 st.caption(
-                    "📖  **Unified** wallet holds tradeable balances; **Funding** is a holding wallet — it must be transferred to Unified before the bot can use it."
+                    "📖  **Entry / Stop / Target / Score** are pulled from the journal entry that opened each position.  "
+                    "Holdings that pre-date the bot (e.g. testnet faucet drops, manual transfers) will show '—' since there's no journal record."
                 )
+
+                # ── Wallet split (kept as collapsed reference) ──────────────────
+                with st.expander("Wallet split — Unified vs Funding"):
+                    split_rows = [
+                        {
+                            "Asset":   p.get("currency"),
+                            "Total":   float(p.get("amount", 0)),
+                            "Unified": float(p.get("unified", 0)),
+                            "Funding": float(p.get("funding", 0)),
+                        }
+                        for p in bybit_holds
+                    ]
+                    st.dataframe(
+                        pd.DataFrame(split_rows).style.format({
+                            "Total":   "{:,.6f}",
+                            "Unified": "{:,.6f}",
+                            "Funding": "{:,.6f}",
+                        }),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                    st.caption(
+                        "**Unified** wallet holds tradeable balances; **Funding** is a holding wallet — it must be transferred to Unified before the bot can use it."
+                    )
             else:
                 st.caption("No non-USDT holdings.")
 
