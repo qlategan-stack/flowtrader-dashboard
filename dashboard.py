@@ -198,8 +198,10 @@ def fetch_bybit_balance():
 def fetch_entries(days: int):
     return _journal().get_entries(days=days)
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=60)
 def load_research_memo() -> dict:
+    """Load the weekly research memo.  TTL kept short so a fresh memo
+    appears within ~1 minute of the sync workflow committing it."""
     if not MEMO_JSON.exists():
         return {}
     try:
@@ -1449,8 +1451,19 @@ with tab_research:
         valid_to     = valid_to_raw[:10] if valid_to_raw else "—"
 
         # ── Page title strip ──────────────────────────────────────────────────
-        st.markdown("## 🧠 Weekly Research Memo")
-        st.caption(f"Generated **{gen_at}**  ·  Valid until **{valid_to}**  ·  Refreshed every Sunday + Wednesday at 18:00 EDT")
+        title_l, title_r = st.columns([5, 1])
+        with title_l:
+            st.markdown("## 🧠 Weekly Research Memo")
+            crypto_present = bool(memo.get("crypto_outlook"))
+            scope_tag = "Equities + Crypto" if crypto_present else "Equities only"
+            st.caption(
+                f"Generated **{gen_at}**  ·  Valid until **{valid_to}**  ·  "
+                f"Coverage: **{scope_tag}**  ·  Refreshed every Sun + Wed at 18:00 EDT"
+            )
+        with title_r:
+            if st.button("⟳ Reload memo", help="Force-reload the memo from disk; useful right after a sync run"):
+                load_research_memo.clear()
+                st.rerun()
 
         if memo.get("expired"):
             st.warning("⚠️ This memo has passed its valid-until date. The next scheduled run will refresh it.")
