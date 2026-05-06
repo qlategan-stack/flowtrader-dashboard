@@ -134,12 +134,15 @@ SYMBOL_NAMES = {
     "RIOT": "Riot Platforms Inc.",
     "XOM": "ExxonMobil Corporation",
     "CVX": "Chevron Corporation",
-    "BTC/USDT": "Bitcoin / Tether USD",
-    "ETH/USDT": "Ethereum / Tether USD",
-    "SOL/USDT": "Solana / Tether USD",
-    "AVAX/USDT": "Avalanche / Tether USD",
+    "BTC/USDT":  "Bitcoin / Tether USD",
+    "ETH/USDT":  "Ethereum / Tether USD",
+    "XRP/USDT":  "Ripple / Tether USD",
+    "LTC/USDT":  "Litecoin / Tether USD",
+    "SOL/USDT":  "Solana / Tether USD",
+    "ADA/USDT":  "Cardano / Tether USD",
+    "DOT/USDT":  "Polkadot / Tether USD",
     "LINK/USDT": "Chainlink / Tether USD",
-    "DOGE/USDT": "Dogecoin / Tether USD",
+    "NEAR/USDT": "NEAR Protocol / Tether USD",
 }
 
 # ── Cached data ───────────────────────────────────────────────────────────────
@@ -393,6 +396,8 @@ with tab_market:
             name = SYMBOL_NAMES.get(sym, sym)
             key_cols[i % 3].markdown(f"**`{sym}`** — {name}")
 
+    st.caption("💡 **Price** updates live every 60 s. **RSI / BB / ADX** are calculated from daily bars and only change once per day at market close — this is expected.")
+
     # ── Watchlist table ───────────────────────────────────────────────────────
     st.subheader("Equities Watchlist")
     rows = []
@@ -478,6 +483,7 @@ with tab_market:
         order_mode   = "🟡 TESTNET" if _b.testnet else "🔴 LIVE"
         has_key      = _b._has_private
         st.subheader(f"Crypto Watchlist — Orders: Bybit {order_mode}")
+        st.caption("💡 **Price** updates live every 60 s via Binance ticker. **RSI / BB / ADX** are calculated from daily bars and only change once per day at midnight UTC.")
 
         with st.spinner("Fetching crypto market data…"):
             crypto_wl = fetch_crypto_snapshot(tuple(CRYPTO_LIST))
