@@ -1574,20 +1574,24 @@ with tab_research:
                 st.markdown("**🎯 Top Crypto Opportunities**")
                 for i, opp in enumerate(crypto_opps, start=1):
                     if isinstance(opp, dict):
-                        sym       = opp.get("symbol", "?")
-                        rationale = _txt(opp.get("rationale", opp.get("reason", "")))
-                        direction = _txt(opp.get("direction", ""))
-                        strength  = _txt(opp.get("signal_strength", ""))
+                        sym         = opp.get("symbol", opp.get("pair", "?"))
+                        rationale   = _txt(opp.get("rationale", opp.get("reason", "")))
+                        direction   = _txt(opp.get("direction", ""))
+                        strength    = _txt(opp.get("signal_strength", opp.get("confidence", "")))
+                        entry_cond  = _txt(opp.get("entry_condition", ""))
+                        max_pct     = opp.get("max_position_size_pct_of_crypto_book")
                         bits = [f"#{i}", f"**{sym}**"]
                         if strength and strength != "—":
-                            bits.append(f"signal: {strength}")
+                            bits.append(f"signal: {strength[:25]}")
                         if direction and direction != "—":
-                            bits.append(f"direction: {direction[:40]}{'…' if len(direction) > 40 else ''}")
+                            bits.append(f"direction: {direction[:25]}")
                         with st.expander("  ·  ".join(bits)):
                             if rationale and rationale != "—":
-                                st.markdown(rationale)
-                            if direction and direction != "—":
-                                st.markdown(f"**Direction:** {direction}")
+                                st.markdown(f"**Rationale**  \n{rationale}")
+                            if entry_cond and entry_cond != "—":
+                                st.markdown(f"**Entry Condition**  \n{entry_cond}")
+                            if max_pct is not None:
+                                st.markdown(f"**Max position size:** {max_pct}% of the crypto book")
                     else:
                         st.markdown(f"- #{i} — {_txt(opp)}")
 
