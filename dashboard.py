@@ -716,123 +716,210 @@ with tab_account:
         _max_positions  = _acct_prof.get("max_open_positions", 3)
         _max_loss_pct   = _acct_prof.get("max_daily_loss_pct", 0.02)
 
+        # ── Alpaca figures ────────────────────────────────────────────────────────
         portfolio  = float(acct.get("portfolio_value", 0))
         buying_pwr = float(acct.get("buying_power", 0))
         cash       = float(acct.get("cash", 0))
         day_pl     = float(acct.get("day_pl", 0))
-        open_pos   = int(acct.get("open_positions", 0))
+        positions  = acct.get("positions", []) or []
+        open_pos   = len(positions)
+        invested   = portfolio - cash
 
-        # ── Top metrics ───────────────────────────────────────────────────────────
-        c1, c2, c3, c4, c5 = st.columns(5)
-        c1.metric("Portfolio Value",  f"${portfolio:,.2f}")
-        c2.metric("Buying Power",     f"${buying_pwr:,.2f}")
-        c3.metric("Cash",             f"${cash:,.2f}")
-        c4.metric("Day P&L",
-                  f"${day_pl:+,.2f}",
+        # ── Bybit figures (used in combined header) ───────────────────────────────
+        bybit_bal      = fetch_bybit_balance()
+        bybit_ok       = "error" not in bybit_bal
+        bybit_value    = float(bybit_bal.get("account_value", 0))  if bybit_ok else 0.0
+        bybit_free     = float(bybit_bal.get("free_usdt", 0))      if bybit_ok else 0.0
+        bybit_funding  = float(bybit_bal.get("funding_usdt", 0))   if bybit_ok else 0.0
+        bybit_invested = float(bybit_bal.get("position_value", 0)) if bybit_ok else 0.0
+        bybit_holds    = bybit_bal.get("positions", []) or []
+        bybit_npos     = len(bybit_holds)
+
+        # ═════════════════════════════════════════════════════════════════════════
+        # 🌐 TOTAL — combined view across both venues
+        # ═════════════════════════════════════════════════════════════════════════
+        st.markdown("### 🌐 Total Account  —  Alpaca + Bybit Combined")
+
+        total_value     = portfolio + bybit_value
+        total_available = buying_pwr + bybit_free
+        total_invested  = invested + bybit_invested
+        total_positions = open_pos + bybit_npos
+
+        t1, t2, t3, t4, t5 = st.columns(5)
+        t1.metric("Total Value",       f"${total_value:,.2f}",
+                  help="Total wealth across both venues — Alpaca equity portfolio + Bybit USDT and crypto holdings.")
+        t2.metric("Available to Trade", f"${total_available:,.2f}",
+                  help="Cash you can deploy right now: Alpaca buying power + Bybit free USDT (in the Unified wallet).")
+        t3.metric("Currently Invested", f"${total_invested:,.2f}",
+                  f"{(total_invested/total_value*100):.1f}%" if total_value else "—",
+                  help="Capital tied up in open positions across both venues.")
+        t4.metric("Day P&L (Alpaca)",  f"${day_pl:+,.2f}",
                   f"{day_pl/portfolio*100:+.2f}%" if portfolio else "0%",
-                  delta_color="normal")
-        c5.metric("Invested",
-                  f"${portfolio - cash:,.2f}",
-                  f"{(portfolio - cash)/portfolio*100:.1f}% of portfolio" if portfolio else "—")
+                  delta_color="normal",
+                  help="Today's realised + unrealised change on the Alpaca account. Bybit doesn't expose a comparable daily P&L figure.")
+        t5.metric("Open Positions",    f"{total_positions}",
+                  f"{open_pos} equity · {bybit_npos} crypto",
+                  help="Combined count across both venues.")
 
         st.divider()
 
-        # ── Risk gauges ───────────────────────────────────────────────────────────
-        risk_col1, risk_col2 = st.columns(2)
+        # ═════════════════════════════════════════════════════════════════════════
+        # 📈 ALPACA — US Equities
+        # ═════════════════════════════════════════════════════════════════════════
+        st.markdown(f"### 📈 Alpaca  —  US Equities  ·  ${portfolio:,.2f}")
 
-        with risk_col1:
-            st.subheader("Position Capacity")
+        a1, a2, a3, a4 = st.columns(4)
+        a1.metric("Account Value",  f"${portfolio:,.2f}",
+                  help="Total Alpaca account equity = cash + market value of held positions.")
+        a2.metric("Cash",           f"${cash:,.2f}",
+                  help="Settled cash currently sitting in the account (not borrowed).")
+        a3.metric("Buying Power",   f"${buying_pwr:,.2f}",
+                  help="Maximum amount you can use to open new positions. On a paper account this includes margin headroom; on cash it equals settled cash.")
+        a4.metric("Day P&L",        f"${day_pl:+,.2f}",
+                  f"{day_pl/portfolio*100:+.2f}%" if portfolio else "0%",
+                  delta_color="normal",
+                  help="Change in account equity since yesterday's close.")
+
+        # ── Risk gauges ───────────────────────────────────────────────────────────
+        gcol1, gcol2 = st.columns(2)
+
+        with gcol1:
             cap_frac = open_pos / _max_positions if _max_positions else 0
             cap_icon = "🔴" if cap_frac >= 1.0 else "🟡" if cap_frac >= 0.67 else "🟢"
+            st.markdown("**Position Capacity**")
             st.progress(min(cap_frac, 1.0),
-                        text=f"{cap_icon} {open_pos} / {_max_positions} positions used")
+                        text=f"{cap_icon} {open_pos} / {_max_positions} positions used  ·  profile: {_acct_prof_name}")
 
-        with risk_col2:
-            st.subheader("Daily Loss Limit")
+        with gcol2:
             max_loss  = portfolio * _max_loss_pct
             loss_used = abs(day_pl) if day_pl < 0 else 0
             loss_frac = min(loss_used / max_loss, 1.0) if max_loss else 0
             loss_icon = "🔴" if loss_frac >= 0.8 else "🟡" if loss_frac >= 0.5 else "🟢"
+            st.markdown("**Daily Loss Limit**")
             st.progress(loss_frac,
-                        text=f"{loss_icon} ${loss_used:,.2f} of ${max_loss:,.2f} max ({loss_frac:.0%} used  ·  {_acct_prof_name})")
+                        text=f"{loss_icon} ${loss_used:,.2f} of ${max_loss:,.2f} max  ·  {loss_frac:.0%} used")
 
-        st.divider()
-
-        # ── Open positions table ──────────────────────────────────────────────────
-        positions = acct.get("positions", [])
-        st.subheader(f"Open Positions ({len(positions)} / 3)")
+        # ── Open positions table — enriched with stop/target/days/score ───────────
+        st.markdown(f"**Open Equity Positions ({open_pos})**")
 
         if not positions:
-            st.info("No open positions.")
+            st.info("No open Alpaca positions.")
         else:
+            # Build a lookup: most recent BUY journal entry per symbol → has the
+            # original stop_loss, take_profit, signal_score, entry timestamp.
+            recent_entries = fetch_entries(30)  # 30 days is plenty
+            entry_by_sym: dict = {}
+            for e in recent_entries:
+                if e.get("action") == "BUY" and e.get("execution_status") in ("FILLED", "SUBMITTED", "SIMULATED"):
+                    sym = e.get("symbol")
+                    if sym and sym not in entry_by_sym:  # most-recent-first iteration not guaranteed; capture latest below
+                        entry_by_sym[sym] = e
+                    elif sym and e.get("timestamp", "") > entry_by_sym[sym].get("timestamp", ""):
+                        entry_by_sym[sym] = e
+
+            from datetime import date as _date_cls, datetime as _dt_cls
+
             prows = []
             for p in positions:
-                pl    = float(p.get("unrealized_pl", 0))
-                plpct = float(p.get("unrealized_plpc", 0)) * 100
+                sym       = p.get("symbol", "")
+                qty       = float(p.get("qty", 0))
+                entry_px  = float(p.get("avg_entry", 0))
+                cur_px    = float(p.get("current_price", 0))
+                pl        = float(p.get("unrealized_pl", 0))
+                plpct     = float(p.get("unrealized_plpc", 0)) * 100
+
+                je = entry_by_sym.get(sym, {})
+                stop      = float(je.get("stop_loss",   0) or 0)
+                target    = float(je.get("take_profit", 0) or 0)
+                score     = je.get("signal_score", "—")
+
+                # R:R remaining = distance to target / distance to stop, from CURRENT price
+                rr_left = "—"
+                if stop > 0 and target > 0 and cur_px > 0:
+                    risk   = max(cur_px - stop, 0.01)
+                    reward = max(target - cur_px, 0)
+                    rr_left = f"1:{reward/risk:.1f}" if reward > 0 else "0"
+
+                # Days held
+                days_held = "—"
+                ts = je.get("timestamp", "")
+                if ts:
+                    try:
+                        opened = _dt_cls.fromisoformat(ts).date()
+                        days_held = (_date_cls.today() - opened).days
+                    except Exception:
+                        pass
+
                 prows.append({
-                    "Symbol":        p.get("symbol"),
-                    "Qty":           float(p.get("qty", 0)),
-                    "Avg Entry":     float(p.get("avg_entry", 0)),
-                    "Current Price": float(p.get("current_price", 0)),
-                    "Unrealized P&L": pl,
-                    "P&L %":         plpct,
+                    "Symbol":   sym,
+                    "Qty":      qty,
+                    "Entry":    entry_px,
+                    "Current":  cur_px,
+                    "Stop":     stop if stop > 0 else None,
+                    "Target":   target if target > 0 else None,
+                    "P&L $":    pl,
+                    "P&L %":    plpct,
+                    "R:R Left": rr_left,
+                    "Days":     days_held,
+                    "Score":    score,
                 })
+
             pdf = pd.DataFrame(prows)
 
             def _pl_colour(v):
-                return "color:#00c853;font-weight:bold" if v >= 0 else "color:#ff5252;font-weight:bold"
+                if isinstance(v, (int, float)):
+                    return "color:#00c853;font-weight:bold" if v >= 0 else "color:#ff5252;font-weight:bold"
+                return ""
 
             st.dataframe(
                 pdf.style
-                   .map(_pl_colour, subset=["Unrealized P&L", "P&L %"])
+                   .map(_pl_colour, subset=["P&L $", "P&L %"])
                    .format({
-                       "Avg Entry":      "${:,.2f}",
-                       "Current Price":  "${:,.2f}",
-                       "Unrealized P&L": "${:+,.2f}",
-                       "P&L %":          "{:+.2f}%",
-                       "Qty":            "{:,.4f}",
-                   }),
+                       "Entry":    "${:,.2f}",
+                       "Current":  "${:,.2f}",
+                       "Stop":     "${:,.2f}",
+                       "Target":   "${:,.2f}",
+                       "P&L $":    "${:+,.2f}",
+                       "P&L %":    "{:+.2f}%",
+                       "Qty":      "{:,.4f}",
+                   }, na_rep="—"),
                 use_container_width=True,
                 hide_index=True,
             )
+            st.caption(
+                "📖  **Stop** / **Target** / **Score** are pulled from the journal entry that opened each position.  "
+                "**R:R Left** = distance to target ÷ distance to stop from the current price (how much reward remains relative to remaining risk)."
+            )
 
-        # ── Bybit crypto account ──────────────────────────────────────────────────
+        # ═════════════════════════════════════════════════════════════════════════
+        # 🪙 BYBIT — Crypto
+        # ═════════════════════════════════════════════════════════════════════════
         st.divider()
         bybit_mode = "Testnet" if _bybit().testnet else "Live"
-        st.subheader(f"Bybit Crypto Account ({bybit_mode})")
+        st.markdown(f"### 🪙 Bybit  —  Crypto ({bybit_mode})  ·  ${bybit_value:,.2f}")
 
-        bybit_bal = fetch_bybit_balance()
-        if "error" in bybit_bal:
+        if not bybit_ok:
             st.info(f"Bybit: {bybit_bal['error']}")
         else:
-            account_value  = float(bybit_bal.get("account_value", 0))
-            total_usdt     = float(bybit_bal.get("total_usdt", 0))
-            free_usdt      = float(bybit_bal.get("free_usdt", 0))
-            funding_usdt   = float(bybit_bal.get("funding_usdt", 0))
-            position_value = float(bybit_bal.get("position_value", 0))
-            holdings       = bybit_bal.get("positions", [])
-            n_pos          = len(holdings)
-            fetched        = bybit_bal.get("fetched_at", "")
-
-            # ── Top metrics (5 cols, mirrors Alpaca structure) ─────────────────────
-            cb1, cb2, cb3, cb4, cb5 = st.columns(5)
-            cb1.metric("Account Value",   f"${account_value:,.2f}",
-                       help="USDT across both wallets + positions valued at current spot price")
-            cb2.metric("Free to Trade",   f"${free_usdt:,.2f}",
-                       help="Available USDT in the Unified Trading wallet")
-            cb3.metric("Funding USDT",    f"${funding_usdt:,.2f}",
-                       help="USDT parked in the Funding account — transfer to Unified before trading")
-            cb4.metric("Position Value",  f"${position_value:,.2f}",
-                       f"{(position_value/account_value*100):.1f}% of account" if account_value else "—")
-            cb5.metric("Open Positions",  f"{n_pos}",
-                       f"{n_pos} held" if n_pos else "none")
+            cb1, cb2, cb3, cb4 = st.columns(4)
+            cb1.metric("Account Value",   f"${bybit_value:,.2f}",
+                       help="USDT across both wallets + crypto holdings valued at current spot price.")
+            cb2.metric("Free USDT",       f"${bybit_free:,.2f}",
+                       help="USDT in the Unified Trading wallet — what the bot can spend on new orders.")
+            cb3.metric("Funding USDT",    f"${bybit_funding:,.2f}",
+                       help="USDT parked in the Funding account. Transfer to Unified before it can be used to trade.")
+            cb4.metric("Invested",        f"${bybit_invested:,.2f}",
+                       f"{(bybit_invested/bybit_value*100):.1f}% of account" if bybit_value else "—",
+                       help="Value of non-USDT crypto holdings at current spot price.")
 
             # ── Holdings table ──────────────────────────────────────────────────────
-            if holdings:
+            st.markdown(f"**Crypto Holdings ({bybit_npos})**")
+
+            if bybit_holds:
                 rows = []
-                for p in holdings:
+                for p in bybit_holds:
                     val = p.get("value_usd")
-                    pct = (val / account_value * 100) if (val and account_value) else None
+                    pct = (val / bybit_value * 100) if (val and bybit_value) else None
                     rows.append({
                         "Asset":     p.get("currency"),
                         "Amount":    float(p.get("amount", 0)),
@@ -844,8 +931,7 @@ with tab_account:
                     })
                 hdf = pd.DataFrame(rows)
 
-                # Crypto palette: cyan accent for value, violet for percent — distinct from Alpaca's green/red P&L
-                def _cyan(_):  return "color:#26c6da;font-weight:bold"
+                def _cyan(_):   return "color:#26c6da;font-weight:bold"
                 def _violet(_): return "color:#b388ff;font-weight:bold"
 
                 st.dataframe(
@@ -863,12 +949,15 @@ with tab_account:
                     use_container_width=True,
                     hide_index=True,
                 )
+                st.caption(
+                    "📖  **Unified** wallet holds tradeable balances; **Funding** is a holding wallet — it must be transferred to Unified before the bot can use it."
+                )
             else:
                 st.caption("No non-USDT holdings.")
 
+            fetched = bybit_bal.get("fetched_at", "")
             if fetched:
-                st.caption(f"Last updated: {fetched[:16].replace('T', ' ')} UTC "
-                           f"(refreshed every ~15 min by local task)")
+                st.caption(f"Last updated: {fetched[:16].replace('T', ' ')} UTC  ·  refreshed every ~15 min by the trading-bot workflow")
 
         # ── Day P&L history chart ─────────────────────────────────────────────────
         st.divider()
