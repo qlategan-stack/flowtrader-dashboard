@@ -69,17 +69,32 @@ jobs:
           ls -la journal/ || true
 
       # ── 4. Commit updated journal files if anything changed ───────────────
+      # Add each tracked file individually so a missing file (e.g. no
+      # weekly_summary.md yet) doesn't abort the whole git add and leave
+      # nothing staged.
       - name: Commit and push journal updates
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git add journal/trades.jsonl journal/bot.log \
-                  journal/weekly_summary.md \
-                  journal/weekly_research_memo.md \
-                  journal/weekly_research_memo.json \
-                  journal/bybit_balance.json \
-                  2>/dev/null || true
-          git diff --staged --quiet && echo "No journal changes to commit" || (
+          for f in \
+            journal/trades.jsonl \
+            journal/bot.log \
+            journal/weekly_summary.md \
+            journal/weekly_research_memo.md \
+            journal/weekly_research_memo.json \
+            journal/bybit_balance.json; do
+            if [ -f "$f" ]; then
+              git add "$f"
+              echo "Staged: $f"
+            else
+              echo "Skipped (not present): $f"
+            fi
+          done
+          echo "── Staged changes ──"
+          git diff --staged --stat
+          if git diff --staged --quiet; then
+            echo "No journal changes to commit"
+          else
             git commit -m "chore: sync journal $(date -u '+%Y-%m-%d %H:%M UTC')"
             git push
-          )
+          fi
