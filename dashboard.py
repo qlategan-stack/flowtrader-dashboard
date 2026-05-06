@@ -1529,6 +1529,89 @@ with tab_research:
 
         st.divider()
 
+        # ── Crypto Outlook ────────────────────────────────────────────────────
+        crypto_outlook = memo.get("crypto_outlook") or {}
+        if crypto_outlook:
+            st.markdown("### 🪙 Crypto Outlook")
+            st.caption("BTC dominance, market sentiment, and crypto-specific regime read.")
+
+            mr_active_c = bool(crypto_outlook.get("mean_reversion_active_crypto", True))
+            regime_c    = _txt(crypto_outlook.get("regime", "Unknown"))
+
+            cc1, cc2 = st.columns(2)
+            with cc1:
+                with st.container(border=True):
+                    st.markdown("**Crypto Regime**")
+                    st.markdown(f"<div style='font-size:1.4rem;font-weight:700'>{regime_c}</div>", unsafe_allow_html=True)
+                    if mr_active_c:
+                        st.caption("✅ Mean reversion is engaged for crypto pairs.")
+                    else:
+                        st.caption("⏸ Mean reversion paused — research conditions don't support crypto entries.")
+            with cc2:
+                with st.container(border=True):
+                    st.markdown("**Mean Reversion (Crypto)**")
+                    if mr_active_c:
+                        st.markdown("<div style='font-size:1.6rem;font-weight:700;color:#40916c'>▶ ACTIVE</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown("<div style='font-size:1.6rem;font-weight:700;color:#ffab00'>⏸ PAUSED</div>", unsafe_allow_html=True)
+                    st.caption("Whether the crypto book is allowed to take new mean-reversion entries this week.")
+
+            crypto_rows = []
+            sentiment_read = _txt(crypto_outlook.get("sentiment_read", ""))
+            dominance_read = _txt(crypto_outlook.get("dominance_read", ""))
+            if sentiment_read and sentiment_read != "—":
+                crypto_rows.append(("Sentiment Read", sentiment_read))
+            if dominance_read and dominance_read != "—":
+                crypto_rows.append(("Dominance Read", dominance_read))
+            for label, value in crypto_rows:
+                lc, vc = st.columns([1, 4])
+                lc.markdown(f"**{label}**")
+                vc.markdown(value)
+
+            # Top crypto opportunities (separate from equity ones)
+            crypto_opps = crypto_outlook.get("top_crypto_opportunities") or []
+            if crypto_opps:
+                st.markdown("**🎯 Top Crypto Opportunities**")
+                for i, opp in enumerate(crypto_opps, start=1):
+                    if isinstance(opp, dict):
+                        sym       = opp.get("symbol", "?")
+                        rationale = _txt(opp.get("rationale", opp.get("reason", "")))
+                        direction = _txt(opp.get("direction", ""))
+                        strength  = _txt(opp.get("signal_strength", ""))
+                        bits = [f"#{i}", f"**{sym}**"]
+                        if strength and strength != "—":
+                            bits.append(f"signal: {strength}")
+                        if direction and direction != "—":
+                            bits.append(f"direction: {direction[:40]}{'…' if len(direction) > 40 else ''}")
+                        with st.expander("  ·  ".join(bits)):
+                            if rationale and rationale != "—":
+                                st.markdown(rationale)
+                            if direction and direction != "—":
+                                st.markdown(f"**Direction:** {direction}")
+                    else:
+                        st.markdown(f"- #{i} — {_txt(opp)}")
+
+            # Crypto-specific risk warnings
+            crypto_risks = crypto_outlook.get("crypto_risk_warnings") or []
+            if crypto_risks:
+                st.markdown("**⚠️ Crypto-Specific Risks**")
+                for r in crypto_risks:
+                    if isinstance(r, dict):
+                        emoji, sev_tag = _severity_style(r.get("severity", ""))
+                        title  = r.get("event", r.get("title", "Risk"))
+                        detail = _txt(r.get("detail", r.get("description", "")))
+                        header = f"{emoji}  **{sev_tag}**  ·  {title}"
+                        if str(r.get("severity", "")).upper() == "CRITICAL":
+                            st.error(header + "  \n" + detail)
+                        elif str(r.get("severity", "")).upper() == "HIGH":
+                            st.warning(header + "  \n" + detail)
+                        else:
+                            st.info(header + "  \n" + detail)
+                    else:
+                        st.info(_txt(r))
+
+            st.divider()
+
         # ── Top opportunities ─────────────────────────────────────────────────
         opportunities = memo.get("top_opportunities", []) or []
         st.markdown(f"### 🎯 Top Opportunities  ·  {len(opportunities)} flagged")
