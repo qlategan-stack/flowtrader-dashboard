@@ -47,14 +47,26 @@ jobs:
           if_no_artifact_found: warn
 
       # ── 3. Flatten artifact subdirectory if present ──────────────────────
-      # dawidd6 places files in journal/<artifact-name>/ — move them up one level
+      # dawidd6 places files in journal/<artifact-name>/ — copy them up one
+      # level with -f so any existing dashboard-side file gets overwritten.
+      # cp + rm is more reliable than mv across edge cases; we also log what
+      # happens so future failures don't disappear into /dev/null.
       - name: Flatten artifact directory
         run: |
           shopt -s nullglob
+          echo "── Before flatten ──"
+          ls -la journal/ || true
           for subdir in journal/trading-journal-*/; do
-            mv "$subdir"* journal/ 2>/dev/null || true
-            rmdir "$subdir" 2>/dev/null || true
+            echo "── Flattening $subdir ──"
+            ls -la "$subdir" || true
+            for f in "$subdir"*; do
+              name=$(basename "$f")
+              cp -fv "$f" "journal/$name"
+            done
+            rm -rf "$subdir"
           done
+          echo "── After flatten ──"
+          ls -la journal/ || true
 
       # ── 4. Commit updated journal files if anything changed ───────────────
       - name: Commit and push journal updates
