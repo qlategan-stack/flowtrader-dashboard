@@ -335,9 +335,13 @@ def _dark_bar(vals, dates, yprefix="$", height=220):
 now_str = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
 mode_badge = '<span class="badge-paper">PAPER</span>' if PAPER_MODE else '<span class="badge-live">LIVE</span>'
 
+# App build marker — bumped whenever the rendered features change.  Lets the
+# user verify which version Streamlit Cloud is actually serving.
+APP_BUILD = "2026-05-07 · crypto-outlook"
+
 h1, h2, h3 = st.columns([5, 2, 1])
 h1.markdown(f"## 📈 FlowTrader  {mode_badge}", unsafe_allow_html=True)
-h2.caption(f"Updated: {now_str}")
+h2.caption(f"Updated: {now_str}  ·  Build: {APP_BUILD}")
 if h3.button("⟳ Refresh", width="stretch"):
     st.cache_data.clear()
     st.rerun()
