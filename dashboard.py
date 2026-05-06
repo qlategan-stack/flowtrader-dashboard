@@ -1411,167 +1411,327 @@ with tab_research:
 
     if not memo:
         st.info(
-            "No research memo found yet.\n\n"
-            "The Research Analyst runs automatically **every Sunday at 18:00 EST** via GitHub Actions.\n\n"
-            "To run it manually: `python main.py research-analyst`"
+            "**No research memo yet.**  "
+            "The Research Analyst runs automatically every **Sunday and Wednesday at 18:00 EDT** via GitHub Actions, "
+            "and writes a fresh memo to `journal/weekly_research_memo.json`.  "
+            "To run it manually right now from your terminal:  `python main.py research-analyst`"
         )
     else:
-        gen_at   = memo.get("generated_at", "Unknown")
-        valid_to = memo.get("valid_until", "Unknown")
-        expired  = memo.get("expired", False)
+        # ── Helpers ────────────────────────────────────────────────────────────
+        def _txt(v, default: str = "—") -> str:
+            """Coerce arbitrary memo values to a displayable string."""
+            if v is None or v == "":
+                return default
+            if isinstance(v, (str, int, float, bool)):
+                return str(v)
+            if isinstance(v, dict):
+                # Prefer human-readable keys if present
+                for k in ("text", "description", "detail", "reason", "warning", "trend_or_range"):
+                    if k in v:
+                        return str(v[k])
+                return json.dumps(v, ensure_ascii=False)[:300]
+            if isinstance(v, list):
+                return ", ".join(_txt(x) for x in v) or default
+            return str(v)
 
-        # ── Memo header ───────────────────────────────────────────────────────
-        rh1, rh2 = st.columns([3, 1])
-        with rh1:
-            st.subheader("Weekly Research Memo")
-            st.caption(f"Generated: {gen_at[:19].replace('T',' ')} EST   |   Valid until: {valid_to[:10]}")
-        with rh2:
-            if expired:
-                st.warning("⚠️ Memo expired — run fresh analysis")
+        def _severity_style(sev: str) -> tuple[str, str]:
+            """Return (emoji, severity-tag) for a severity string."""
+            s = (sev or "").upper()
+            if s in ("CRITICAL",):     return "🔴", "CRITICAL"
+            if s in ("HIGH",):         return "🟠", "HIGH"
+            if s in ("MEDIUM", "MED"): return "🟡", "MEDIUM"
+            if s in ("LOW",):          return "🔵", "LOW"
+            return "⚪", s or "INFO"
 
-        # ── Confidence + Regime ───────────────────────────────────────────────
-        confidence = memo.get("confidence_score", 0)
-        raw_regime = memo.get("market_regime", "UNKNOWN")
-        if isinstance(raw_regime, dict):
-            regime = raw_regime.get("trend_or_range", str(raw_regime))[:120]
+        gen_at_raw   = memo.get("generated_at", "")
+        valid_to_raw = memo.get("valid_until", "")
+        gen_at       = gen_at_raw[:16].replace("T", " ") if gen_at_raw else "—"
+        valid_to     = valid_to_raw[:10] if valid_to_raw else "—"
+
+        # ── Page title strip ──────────────────────────────────────────────────
+        st.markdown("## 🧠 Weekly Research Memo")
+        st.caption(f"Generated **{gen_at}**  ·  Valid until **{valid_to}**  ·  Refreshed every Sunday + Wednesday at 18:00 EDT")
+
+        if memo.get("expired"):
+            st.warning("⚠️ This memo has passed its valid-until date. The next scheduled run will refresh it.")
+
+        # ── Top header band: 3 status cards ───────────────────────────────────
+        confidence  = int(memo.get("confidence_score", 0) or 0)
+        raw_regime  = memo.get("market_regime") or {}
+        if not isinstance(raw_regime, dict):
+            raw_regime = {"trend_or_range": str(raw_regime)}
+        mr_active   = bool(raw_regime.get("mean_reversion_active", True))
+        regime_txt  = _txt(raw_regime.get("trend_or_range", "Unknown"))
+
+        # Trade posture is derived from the confidence score
+        if confidence >= 7:
+            posture_label, posture_detail = "🟢 Normal", "Standard sizing.  Trade A/B/C grade setups."
+        elif confidence >= 5:
+            posture_label, posture_detail = "🟡 Selective", "Prefer A-grade setups.  Consider half-size on B-grade."
+        elif confidence >= 3:
+            posture_label, posture_detail = "🟠 Cautious", "A-grade only.  Half normal size."
         else:
-            regime = str(raw_regime)
-        reason     = memo.get("confidence_reason", "")
+            posture_label, posture_detail = "🔴 Defensive", "Stand aside or A-grade only at quarter size."
 
-        conf_col, reg_col, reason_col = st.columns([1, 1, 3])
-
-        conf_color = "#00c853" if confidence >= 7 else "#ffab00" if confidence >= 5 else "#ff5252"
-        conf_col.metric("Trading Confidence", f"{confidence}/10")
-
-        reg_color = "#ff5252" if "TREND" in regime.upper() else "#00c853"
-        reg_col.metric("Market Regime", regime)
-
-        reason_col.info(f"**Rationale:** {reason}")
-
-        # ── Confidence gauge (horizontal bar) ────────────────────────────────
-        st.progress(confidence / 10,
-                    text=f"Confidence {confidence}/10  —  {'Strong conditions' if confidence >= 7 else 'Moderate conditions' if confidence >= 5 else 'Caution — reduced activity recommended'}")
-
-        st.divider()
-
-        # ── Top 3 Opportunities ───────────────────────────────────────────────
-        opportunities = memo.get("top_opportunities", [])
-        st.subheader(f"Top {len(opportunities)} Opportunities This Week")
-
-        if opportunities:
-            opp_cols = st.columns(min(len(opportunities), 3))
-            for i, opp in enumerate(opportunities[:3]):
-                with opp_cols[i]:
-                    if isinstance(opp, dict):
-                        sym    = opp.get("symbol", "?")
-                        why    = opp.get("reason", opp.get("why", ""))
-                        score  = opp.get("signal_strength", opp.get("score", ""))
-                        sizing = opp.get("position_size_note", "")
-                        st.markdown(f"### {sym}")
-                        st.caption(why[:200] if why else "—")
-                        if score:
-                            st.caption(f"Signal strength: {score}")
-                        if sizing:
-                            st.caption(f"Sizing note: {sizing}")
-                    else:
-                        st.markdown(f"- {str(opp)[:200]}")
-        else:
-            st.info("No specific opportunities identified this week.")
-
-        st.divider()
-
-        # ── Sector Performance ────────────────────────────────────────────────
-        sector_focus = memo.get("sector_focus", {})
-        st.subheader("Sector Focus")
-
-        sec_col1, sec_col2 = st.columns(2)
-        with sec_col1:
-            favour = sector_focus.get("favour", sector_focus.get("best", []))
-            st.markdown("**Sectors to Favour**")
-            if isinstance(favour, list):
-                for s in favour:
-                    st.success(f"✅ {s}" if isinstance(s, str) else f"✅ {s.get('sector','?')} — {s.get('reason','')[:80]}")
-            elif favour:
-                st.success(str(favour))
-
-        with sec_col2:
-            avoid_sec = sector_focus.get("avoid", sector_focus.get("worst", []))
-            st.markdown("**Sectors to Avoid / Underweight**")
-            if isinstance(avoid_sec, list):
-                for s in avoid_sec:
-                    st.error(f"⛔ {s}" if isinstance(s, str) else f"⛔ {s.get('sector','?')} — {s.get('reason','')[:80]}")
-            elif avoid_sec:
-                st.error(str(avoid_sec))
-
-        st.divider()
-
-        # ── Watchlist Changes ─────────────────────────────────────────────────
-        wl_changes = memo.get("watchlist_changes", {})
-        st.subheader("Watchlist Recommendations")
-
-        wc1, wc2, wc3 = st.columns(3)
-        with wc1:
-            adds = wl_changes.get("add", [])
-            st.markdown("**Add to Watchlist**")
-            if adds:
-                for sym in adds:
-                    st.success(f"➕ {sym}")
-            else:
-                st.caption("No additions recommended")
-
-        with wc2:
-            removes = wl_changes.get("remove", [])
-            st.markdown("**Remove from Watchlist**")
-            if removes:
-                for sym in removes:
-                    st.warning(f"➖ {sym}")
-            else:
-                st.caption("No removals recommended")
-
-        with wc3:
-            avoid_syms = wl_changes.get("avoid_earnings", wl_changes.get("avoid", []))
-            st.markdown("**Avoid (Earnings Risk)**")
-            if avoid_syms:
-                for sym in avoid_syms:
-                    st.error(f"⚠️ {sym}")
-            else:
-                st.caption("No earnings conflicts this week")
-
-        st.divider()
-
-        # ── Risk Warnings ─────────────────────────────────────────────────────
-        risk_warnings = memo.get("risk_warnings", [])
-        st.subheader("Risk Warnings")
-
-        if risk_warnings:
-            for warn in risk_warnings:
-                if isinstance(warn, dict):
-                    severity = str(warn.get("severity", "")).upper()
-                    text     = warn.get("warning", warn.get("description", str(warn)))
-                    if severity in ["HIGH", "CRITICAL"]:
-                        st.error(f"🔴 {text}")
-                    elif severity == "MEDIUM":
-                        st.warning(f"🟡 {text}")
-                    else:
-                        st.info(f"🔵 {text}")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            with st.container(border=True):
+                st.markdown("**Trading Confidence**")
+                st.markdown(f"<div style='font-size:2.4rem;font-weight:700;line-height:1'>{confidence}<span style='font-size:1.2rem;color:#888'> / 10</span></div>", unsafe_allow_html=True)
+                st.progress(confidence / 10)
+        with c2:
+            with st.container(border=True):
+                st.markdown("**Mean Reversion**")
+                if mr_active:
+                    st.markdown("<div style='font-size:1.6rem;font-weight:700;color:#40916c'>▶ ACTIVE</div>", unsafe_allow_html=True)
+                    st.caption("Strategy is engaged — bot will take qualifying setups.")
                 else:
-                    st.warning(f"⚠️ {str(warn)}")
-        else:
-            st.success("No significant risk warnings for this week.")
+                    st.markdown("<div style='font-size:1.6rem;font-weight:700;color:#ffab00'>⏸ PAUSED</div>", unsafe_allow_html=True)
+                    st.caption("Strategy on hold — research conditions don't support entries.")
+        with c3:
+            with st.container(border=True):
+                st.markdown("**Trade Posture**")
+                st.markdown(f"<div style='font-size:1.4rem;font-weight:700'>{posture_label}</div>", unsafe_allow_html=True)
+                st.caption(posture_detail)
+
+        # ── What this means (plain-English summary) ───────────────────────────
+        reason = _txt(memo.get("confidence_reason", ""))
+        if reason and reason != "—":
+            st.markdown("##### 📋 What this means for the bot this week")
+            st.info(reason)
 
         st.divider()
 
-        # ── Raw analysis (collapsible) ────────────────────────────────────────
-        with st.expander("Full Raw Analysis from Claude"):
-            raw = memo.get("raw_analysis", "")
-            if raw:
-                st.markdown(raw)
-            else:
-                st.info("No raw analysis text available.")
+        # ── Market conditions detail ──────────────────────────────────────────
+        st.markdown("### 🌐 Market Conditions")
 
-        # ── Full JSON (debug) ─────────────────────────────────────────────────
-        with st.expander("Memo JSON (debug)"):
-            st.json({k: v for k, v in memo.items() if k != "raw_analysis"})
+        # Build labelled rows from whatever fields the memo provides
+        rows = []
+        if regime_txt and regime_txt != "—":
+            rows.append(("Regime",         regime_txt))
+        vix_read = _txt(raw_regime.get("vix_interpretation", ""))
+        if vix_read and vix_read != "—":
+            rows.append(("VIX Read",       vix_read))
+        sizing = _txt(raw_regime.get("vix_position_sizing_guidance", raw_regime.get("position_sizing_guidance", "")))
+        if sizing and sizing != "—":
+            rows.append(("Sizing Guidance", sizing))
+        mr_rec = _txt(raw_regime.get("mean_reversion_recommendation", ""))
+        if mr_rec and mr_rec != "—":
+            rows.append(("Recommendation", mr_rec))
+
+        if rows:
+            for label, value in rows:
+                lc, vc = st.columns([1, 4])
+                lc.markdown(f"**{label}**")
+                vc.markdown(value)
+        else:
+            st.caption("No market-conditions detail was recorded in this memo.")
+
+        st.divider()
+
+        # ── Top opportunities ─────────────────────────────────────────────────
+        opportunities = memo.get("top_opportunities", []) or []
+        st.markdown(f"### 🎯 Top Opportunities  ·  {len(opportunities)} flagged")
+        st.caption("Per-symbol setups the analyst flagged for this week. Expand each to read the full rationale.")
+
+        if not opportunities:
+            st.info("No specific opportunities flagged this week.")
+        else:
+            for i, opp in enumerate(opportunities, start=1):
+                if isinstance(opp, dict):
+                    sym       = opp.get("symbol", "?")
+                    rank      = opp.get("rank", i)
+                    direction = _txt(opp.get("direction", ""))
+                    strength  = _txt(opp.get("signal_strength", opp.get("score", "")))
+                    rationale = _txt(opp.get("rationale", opp.get("reason", opp.get("why", ""))))
+                    sizing_n  = _txt(opp.get("position_size_note", ""))
+
+                    # Header line for the expander label — short summary
+                    bits = [f"#{rank}", f"**{sym}**"]
+                    if strength and strength != "—":
+                        bits.append(f"signal: {strength}")
+                    if direction and direction != "—":
+                        bits.append(f"direction: {direction[:40]}{'…' if len(direction) > 40 else ''}")
+                    label = "  ·  ".join(bits)
+
+                    with st.expander(label, expanded=(i == 1)):
+                        if rationale and rationale != "—":
+                            st.markdown(f"**Rationale**  \n{rationale}")
+                        if direction and direction != "—":
+                            st.markdown(f"**Direction**  \n{direction}")
+                        if sizing_n and sizing_n != "—":
+                            st.markdown(f"**Position size note**  \n{sizing_n}")
+                else:
+                    st.markdown(f"- #{i}  ·  {_txt(opp)}")
+
+        st.divider()
+
+        # ── Watchlist changes ─────────────────────────────────────────────────
+        wl_changes = memo.get("watchlist_changes") or {}
+        adds       = wl_changes.get("add", []) or []
+        reduces    = wl_changes.get("remove_or_reduce", wl_changes.get("remove", [])) or []
+        avoid_earn = wl_changes.get("avoid_earnings", []) or []
+
+        st.markdown("### 🔄 Watchlist Changes")
+        st.caption("The analyst's recommendations on what to add, remove, or temporarily avoid.")
+
+        wc1, wc2 = st.columns(2)
+        with wc1:
+            st.markdown("**➕ Add**")
+            if adds:
+                for item in adds:
+                    if isinstance(item, dict):
+                        sym = item.get("symbol", "?")
+                        rsn = _txt(item.get("reason", ""))
+                        st.success(f"**{sym}** — {rsn}")
+                    else:
+                        st.success(f"**{_txt(item)}**")
+            else:
+                st.caption("No additions recommended.")
+        with wc2:
+            st.markdown("**➖ Reduce / Remove**")
+            if reduces:
+                for item in reduces:
+                    if isinstance(item, dict):
+                        sym    = item.get("symbol", "?")
+                        rsn    = _txt(item.get("reason", ""))
+                        action = _txt(item.get("action", ""))
+                        line   = f"**{sym}** — {rsn}"
+                        if action and action != "—":
+                            line += f"  \n*Action: {action}*"
+                        st.warning(line)
+                    else:
+                        st.warning(f"**{_txt(item)}**")
+            else:
+                st.caption("No reductions recommended.")
+
+        if avoid_earn:
+            st.markdown("**⚠️ Avoid this week (earnings)**")
+            for item in avoid_earn:
+                if isinstance(item, dict):
+                    sym = item.get("symbol", "?")
+                    rsn = _txt(item.get("reason", ""))
+                    st.error(f"**{sym}** — {rsn}")
+                else:
+                    st.error(f"**{_txt(item)}**")
+
+        st.divider()
+
+        # ── Sector focus ──────────────────────────────────────────────────────
+        sector_focus = memo.get("sector_focus") or {}
+        st.markdown("### 🏭 Sector Focus")
+        st.caption("Sectors the analyst sees as best-suited or least-suited for mean-reversion entries this week.")
+
+        favour_list = (sector_focus.get("best_mean_reversion_sectors")
+                       or sector_focus.get("favour")
+                       or sector_focus.get("best")
+                       or [])
+        avoid_list  = (sector_focus.get("worst_mean_reversion_sectors")
+                       or sector_focus.get("avoid")
+                       or sector_focus.get("worst")
+                       or [])
+
+        sf1, sf2 = st.columns(2)
+        with sf1:
+            st.markdown("**✅ Favour**")
+            if favour_list:
+                for s in favour_list:
+                    if isinstance(s, dict):
+                        sec   = s.get("sector", s.get("etf", "?"))
+                        etf   = s.get("etf", "")
+                        rsn   = _txt(s.get("reasoning", s.get("reason", "")))
+                        cond  = _txt(s.get("condition", ""))
+                        title = f"{sec}" + (f" ({etf})" if etf and etf not in sec else "")
+                        block = f"**{title}**  \n{rsn}"
+                        if cond and cond != "—":
+                            block += f"  \n*Condition: {cond}*"
+                        st.success(block)
+                    else:
+                        st.success(_txt(s))
+            else:
+                st.caption("No sectors flagged.")
+        with sf2:
+            st.markdown("**⛔ Avoid / Underweight**")
+            if avoid_list:
+                for s in avoid_list:
+                    if isinstance(s, dict):
+                        sec   = s.get("sector", s.get("etf", "?"))
+                        etf   = s.get("etf", "")
+                        rsn   = _txt(s.get("reasoning", s.get("reason", "")))
+                        cond  = _txt(s.get("condition", ""))
+                        title = f"{sec}" + (f" ({etf})" if etf and etf not in sec else "")
+                        block = f"**{title}**  \n{rsn}"
+                        if cond and cond != "—":
+                            block += f"  \n*Condition: {cond}*"
+                        st.error(block)
+                    else:
+                        st.error(_txt(s))
+            else:
+                st.caption("No sectors flagged.")
+
+        st.divider()
+
+        # ── Risk warnings ─────────────────────────────────────────────────────
+        st.markdown("### ⚠️ Risk Warnings")
+        st.caption("Macro, geopolitical, or technical risks the bot should account for this week.")
+
+        rw       = memo.get("risk_warnings") or {}
+        warnings: list = []
+
+        if isinstance(rw, dict):
+            # Flatten all categories into one list of {category, event/title, severity, detail}
+            for category, items in rw.items():
+                if isinstance(items, list):
+                    for item in items:
+                        if isinstance(item, dict):
+                            warnings.append({
+                                "category": category.replace("_", " ").title(),
+                                "title":    item.get("event", item.get("title", item.get("warning", "Risk"))),
+                                "severity": item.get("severity", item.get("priority", "")),
+                                "detail":   _txt(item.get("detail", item.get("description", item.get("text", "")))),
+                            })
+                        else:
+                            warnings.append({
+                                "category": category.replace("_", " ").title(),
+                                "title":    "Note",
+                                "severity": "",
+                                "detail":   _txt(item),
+                            })
+                elif items:
+                    warnings.append({
+                        "category": category.replace("_", " ").title(),
+                        "title":    "Note",
+                        "severity": "",
+                        "detail":   _txt(items),
+                    })
+        elif isinstance(rw, list):
+            for item in rw:
+                if isinstance(item, dict):
+                    warnings.append({
+                        "category": item.get("category", "Risk"),
+                        "title":    item.get("event", item.get("title", item.get("warning", "Risk"))),
+                        "severity": item.get("severity", item.get("priority", "")),
+                        "detail":   _txt(item.get("detail", item.get("description", item.get("text", "")))),
+                    })
+                else:
+                    warnings.append({"category": "Risk", "title": "Note", "severity": "", "detail": _txt(item)})
+
+        # Sort by severity rank: CRITICAL > HIGH > MEDIUM > LOW > others
+        sev_rank = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "MED": 2, "LOW": 3}
+        warnings.sort(key=lambda w: sev_rank.get(str(w["severity"]).upper(), 9))
+
+        if not warnings:
+            st.success("✅ No significant risk warnings for this week.")
+        else:
+            for w in warnings:
+                emoji, sev_tag = _severity_style(w["severity"])
+                header = f"{emoji}  **{sev_tag}**  ·  {w['title']}  ·  *{w['category']}*"
+                if str(w["severity"]).upper() == "CRITICAL":
+                    st.error(header + "  \n" + w["detail"])
+                elif str(w["severity"]).upper() == "HIGH":
+                    st.warning(header + "  \n" + w["detail"])
+                else:
+                    st.info(header + "  \n" + w["detail"])
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
