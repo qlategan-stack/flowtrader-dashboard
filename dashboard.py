@@ -914,22 +914,27 @@ with tab_account:
                        f"{(bybit_invested/bybit_value*100):.1f}% of account" if bybit_value else "—",
                        help="Value of non-USDT crypto holdings at current spot price.")
 
-            # ── Holdings table ──────────────────────────────────────────────────────
-            st.markdown(f"**Crypto Positions ({bybit_npos})**")
+            # ── Bot-managed crypto positions only ──────────────────────────────────
+            # Re-use the journal lookup we built for Alpaca positions.  Bybit
+            # holding `currency` is "BTC"; journal symbol is "BTC/USDT".
+            def _find_crypto_entry(currency: str) -> dict:
+                for quote in ("USDT", "USDC", "USD"):
+                    sym = f"{currency}/{quote}"
+                    if sym in entry_by_sym:
+                        return entry_by_sym[sym]
+                return {}
 
-            if bybit_holds:
-                # Re-use the journal lookup we built for Alpaca positions.  Bybit
-                # holding `currency` is "BTC"; journal symbol is "BTC/USDT".
-                # Try a few common quote currencies in priority order.
-                def _find_crypto_entry(currency: str) -> dict:
-                    for quote in ("USDT", "USDC", "USD"):
-                        sym = f"{currency}/{quote}"
-                        if sym in entry_by_sym:
-                            return entry_by_sym[sym]
-                    return {}
+            # Filter to holdings that have a journal entry — pre-existing
+            # testnet/faucet balances aren't real bot trades and only confuse
+            # the picture.
+            bot_holds = [p for p in bybit_holds if _find_crypto_entry(p.get("currency", ""))]
+            n_bot     = len(bot_holds)
 
+            st.markdown(f"**Crypto Positions ({n_bot})**")
+
+            if bot_holds:
                 rows = []
-                for p in bybit_holds:
+                for p in bot_holds:
                     coin     = p.get("currency", "")
                     amount   = float(p.get("amount", 0))
                     cur_px   = float(p["price_usd"]) if p.get("price_usd") else 0
@@ -942,21 +947,17 @@ with tab_account:
                     target   = float(je.get("take_profit",   0) or 0)
                     score    = je.get("signal_score", "—")
 
-                    # P&L: only meaningful if we have an entry from the journal
+                    pl, plpct = None, None
                     if entry_px > 0 and cur_px > 0:
                         pl    = (cur_px - entry_px) * amount
                         plpct = (cur_px / entry_px - 1) * 100
-                    else:
-                        pl, plpct = None, None
 
-                    # R:R remaining
                     rr_left = "—"
                     if stop > 0 and target > 0 and cur_px > 0:
                         risk   = max(cur_px - stop, 0.0001)
                         reward = max(target - cur_px, 0)
                         rr_left = f"1:{reward/risk:.1f}" if reward > 0 else "0"
 
-                    # Days held
                     days_held = "—"
                     ts = je.get("timestamp", "")
                     if ts:
@@ -968,7 +969,6 @@ with tab_account:
 
                     rows.append({
                         "Asset":     coin,
-                        "Source":    "🤖 Bot" if je else "👤 Pre-existing",
                         "Amount":    amount,
                         "Entry":     entry_px if entry_px > 0 else None,
                         "Current":   cur_px if cur_px > 0 else None,
@@ -1010,14 +1010,32 @@ with tab_account:
                     use_container_width=True,
                     hide_index=True,
                 )
-                st.caption(
-                    "📖  **Source** — 🤖 Bot means FlowTrader opened this within risk limits (5% on Low Safety, 10% absolute hard cap); "
-                    "👤 Pre-existing means no journal record — typically a testnet faucet drop or a manual transfer that was already in the wallet before the bot started.  "
-                    "Pre-existing positions can be any size; the bot's caps only apply to orders FlowTrader places itself."
-                )
+                # If there are wallet balances the bot didn't open, mention it
+                # quietly so the user isn't confused why Account Value > positions shown.
+                hidden = len(bybit_holds) - n_bot
+                if hidden > 0:
+                    st.caption(
+                        f"📖  Showing {n_bot} bot-managed position(s).  "
+                        f"{hidden} non-bot wallet balance(s) (testnet faucet / manual transfer) hidden — "
+                        f"see Wallet split below for the full ledger."
+                    )
+                else:
+                    st.caption(
+                        "📖  **Stop / Target / Score** come from the journal entry that opened each position.  "
+                        "**R:R Left** = distance to target ÷ distance to stop from the current price."
+                    )
+            else:
+                if bybit_holds:
+                    st.caption(
+                        "No bot-managed crypto positions yet.  "
+                        f"({len(bybit_holds)} wallet balance(s) visible in Account Value are pre-existing — see Wallet split below.)"
+                    )
+                else:
+                    st.caption("No non-USDT holdings.")
 
-                # ── Wallet split (kept as collapsed reference) ──────────────────
-                with st.expander("Wallet split — Unified vs Funding"):
+            # ── Wallet split (always show if there are any holdings) ────────────
+            if bybit_holds:
+                with st.expander(f"Wallet split — Unified vs Funding ({len(bybit_holds)} balance(s))"):
                     split_rows = [
                         {
                             "Asset":   p.get("currency"),
@@ -1037,10 +1055,9 @@ with tab_account:
                         hide_index=True,
                     )
                     st.caption(
-                        "**Unified** wallet holds tradeable balances; **Funding** is a holding wallet — it must be transferred to Unified before the bot can use it."
+                        "Raw wallet ledger including pre-existing balances.  "
+                        "**Unified** holds tradeable balances; **Funding** must be transferred to Unified before the bot can use it."
                     )
-            else:
-                st.caption("No non-USDT holdings.")
 
             fetched = bybit_bal.get("fetched_at", "")
             if fetched:
