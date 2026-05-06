@@ -15,8 +15,9 @@ on:
     - cron: '15 18 * * 1-5'
     - cron: '45 18 * * 1-5'   # after 14:30 EST last scan
 
-    # ── After Sunday research analyst (18:00 EDT = 22:00 UTC) ──────────────
+    # ── After Sun+Wed research analyst (18:00 EDT = 22:00 UTC) ─────────────
     - cron: '30 22 * * 0'
+    - cron: '30 22 * * 3'
 
   workflow_dispatch:           # Manual trigger from GitHub UI
 
