@@ -852,6 +852,7 @@ with tab_account:
 
                 prows.append({
                     "Symbol":   sym,
+                    "Source":   "🤖 Bot" if je else "👤 Manual",
                     "Qty":      qty,
                     "Entry":    entry_px,
                     "Current":  cur_px,
@@ -887,8 +888,9 @@ with tab_account:
                 hide_index=True,
             )
             st.caption(
-                "📖  **Stop** / **Target** / **Score** are pulled from the journal entry that opened each position.  "
-                "**R:R Left** = distance to target ÷ distance to stop from the current price (how much reward remains relative to remaining risk)."
+                "📖  **Source** — 🤖 Bot means this position has a journal entry (FlowTrader bought it within risk limits); 👤 Manual means no journal record (held before the bot started, or opened directly in Alpaca).  "
+                "**Stop** / **Target** / **Score** come from that journal entry.  "
+                "**R:R Left** = distance to target ÷ distance to stop from the current price."
             )
 
         # ═════════════════════════════════════════════════════════════════════════
@@ -966,6 +968,7 @@ with tab_account:
 
                     rows.append({
                         "Asset":     coin,
+                        "Source":    "🤖 Bot" if je else "👤 Pre-existing",
                         "Amount":    amount,
                         "Entry":     entry_px if entry_px > 0 else None,
                         "Current":   cur_px if cur_px > 0 else None,
@@ -1008,8 +1011,9 @@ with tab_account:
                     hide_index=True,
                 )
                 st.caption(
-                    "📖  **Entry / Stop / Target / Score** are pulled from the journal entry that opened each position.  "
-                    "Holdings that pre-date the bot (e.g. testnet faucet drops, manual transfers) will show '—' since there's no journal record."
+                    "📖  **Source** — 🤖 Bot means FlowTrader opened this within risk limits (5% on Low Safety, 10% absolute hard cap); "
+                    "👤 Pre-existing means no journal record — typically a testnet faucet drop or a manual transfer that was already in the wallet before the bot started.  "
+                    "Pre-existing positions can be any size; the bot's caps only apply to orders FlowTrader places itself."
                 )
 
                 # ── Wallet split (kept as collapsed reference) ──────────────────
