@@ -175,7 +175,14 @@ def fetch_account():
 
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_portfolio_history(period: str = "1M"):
-    return _fetcher().get_portfolio_history(period=period, timeframe="1D")
+    f = _fetcher()
+    # Self-heal across redeploys: @st.cache_resource holds the MarketDataFetcher
+    # instance through hot reloads, so a freshly-added method may be absent on
+    # the cached instance. Drop the cached instance and rebuild once.
+    if not hasattr(f, "get_portfolio_history"):
+        _fetcher.clear()
+        f = _fetcher()
+    return f.get_portfolio_history(period=period, timeframe="1D")
 
 @st.cache_data(ttl=REFRESH_SEC)
 def fetch_snapshot(watchlist: tuple):
