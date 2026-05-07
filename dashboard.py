@@ -174,6 +174,10 @@ def fetch_account():
     return _fetcher().get_account_snapshot()
 
 @st.cache_data(ttl=REFRESH_SEC)
+def fetch_portfolio_history(period: str = "1M"):
+    return _fetcher().get_portfolio_history(period=period, timeframe="1D")
+
+@st.cache_data(ttl=REFRESH_SEC)
 def fetch_snapshot(watchlist: tuple):
     return _fetcher().build_market_snapshot(list(watchlist))
 
@@ -930,17 +934,18 @@ with tab_account:
                         return entry_by_sym[sym]
                 return {}
 
-            # Filter to holdings that have a journal entry — pre-existing
-            # testnet/faucet balances aren't real bot trades and only confuse
-            # the picture.
-            bot_holds = [p for p in bybit_holds if _find_crypto_entry(p.get("currency", ""))]
-            n_bot     = len(bot_holds)
+            # Show every wallet balance — bot-opened and pre-existing both —
+            # so the user sees the full picture. The Source column distinguishes
+            # 🤖 Bot (has a journal entry) from 👤 Wallet (testnet faucet,
+            # manual transfer, or any holding the bot didn't open).
+            n_bot = sum(1 for p in bybit_holds if _find_crypto_entry(p.get("currency", "")))
+            n_total = len(bybit_holds)
 
-            st.markdown(f"**Crypto Positions ({n_bot})**")
+            st.markdown(f"**Crypto Positions ({n_total})**  ·  {n_bot} bot-managed · {n_total - n_bot} wallet")
 
-            if bot_holds:
+            if bybit_holds:
                 rows = []
-                for p in bot_holds:
+                for p in bybit_holds:
                     coin     = p.get("currency", "")
                     amount   = float(p.get("amount", 0))
                     cur_px   = float(p["price_usd"]) if p.get("price_usd") else 0
@@ -951,7 +956,8 @@ with tab_account:
                     entry_px = float(je.get("entry_price",   0) or 0)
                     stop     = float(je.get("stop_loss",     0) or 0)
                     target   = float(je.get("take_profit",   0) or 0)
-                    score    = je.get("signal_score", "—")
+                    score    = je.get("signal_score", "—") if je else "—"
+                    source   = "🤖 Bot" if je else "👤 Wallet"
 
                     pl, plpct = None, None
                     if entry_px > 0 and cur_px > 0:
@@ -975,6 +981,7 @@ with tab_account:
 
                     rows.append({
                         "Asset":     coin,
+                        "Source":    source,
                         "Amount":    amount,
                         "Entry":     entry_px if entry_px > 0 else None,
                         "Current":   cur_px if cur_px > 0 else None,
@@ -1016,28 +1023,14 @@ with tab_account:
                     use_container_width=True,
                     hide_index=True,
                 )
-                # If there are wallet balances the bot didn't open, mention it
-                # quietly so the user isn't confused why Account Value > positions shown.
-                hidden = len(bybit_holds) - n_bot
-                if hidden > 0:
-                    st.caption(
-                        f"📖  Showing {n_bot} bot-managed position(s).  "
-                        f"{hidden} non-bot wallet balance(s) (testnet faucet / manual transfer) hidden — "
-                        f"see Wallet split below for the full ledger."
-                    )
-                else:
-                    st.caption(
-                        "📖  **Stop / Target / Score** come from the journal entry that opened each position.  "
-                        "**R:R Left** = distance to target ÷ distance to stop from the current price."
-                    )
+                st.caption(
+                    "📖  **Source** — 🤖 Bot = position opened by FlowTrader within risk limits (has a journal entry); "
+                    "👤 Wallet = pre-existing balance (testnet faucet, manual transfer, or held before the bot started).  "
+                    "**Stop / Target / Score** are populated only for bot-opened positions.  "
+                    "**R:R Left** = distance to target ÷ distance to stop from the current price."
+                )
             else:
-                if bybit_holds:
-                    st.caption(
-                        "No bot-managed crypto positions yet.  "
-                        f"({len(bybit_holds)} wallet balance(s) visible in Account Value are pre-existing — see Wallet split below.)"
-                    )
-                else:
-                    st.caption("No non-USDT holdings.")
+                st.caption("No non-USDT holdings.")
 
             # ── Wallet split (always show if there are any holdings) ────────────
             if bybit_holds:
@@ -1070,23 +1063,32 @@ with tab_account:
                 st.caption(f"Last updated: {fetched[:16].replace('T', ' ')} UTC  ·  refreshed every ~15 min by the trading-bot workflow")
 
         # ── Day P&L history chart ─────────────────────────────────────────────────
+        # Pulls Alpaca's actual end-of-session daily P&L (portfolio/history endpoint),
+        # not journal snapshots — the journal records P&L at the moment of bot
+        # decisions, which can be stale by hours from the real close.
         st.divider()
-        st.subheader("Day P&L History (last 14 days)")
+        st.subheader("Day P&L History (last month, trading days)")
 
-        hist = fetch_entries(14)
-        pl_by_date: dict = {}
-        for e in hist:
-            d  = e.get("date", "")
-            pl = e.get("day_pl_at_decision")
-            if d and pl is not None:
-                pl_by_date[d] = pl  # last value for the day wins
-
-        if pl_by_date:
-            dates = sorted(pl_by_date)
-            vals  = [pl_by_date[d] for d in dates]
-            st.plotly_chart(_dark_bar(vals, dates, yprefix="$"), use_container_width=True)
+        from datetime import date as _date_cls_chart
+        ph = fetch_portfolio_history("1M")
+        if "error" in ph:
+            st.warning(f"Could not load Alpaca portfolio history: {ph['error']}")
         else:
-            st.info("No journal data yet — P&L history will populate after the first bot run.")
+            rows = ph.get("history", []) or []
+            # Drop today's intraday bucket if Alpaca hasn't closed the session yet —
+            # it shows a partial value that will be misleading next to closed days.
+            today_str = _date_cls_chart.today().strftime("%Y-%m-%d")
+            closed = [r for r in rows if r["date"] != today_str]
+            if closed:
+                dates = [r["date"] for r in closed]
+                vals  = [r["profit_loss"] for r in closed]
+                st.plotly_chart(_dark_bar(vals, dates, yprefix="$"), use_container_width=True)
+                st.caption(
+                    "Source: Alpaca `/v2/account/portfolio/history` (1D timeframe). "
+                    "Today's bar is omitted until the session closes."
+                )
+            else:
+                st.info("No closed trading days in the last month yet.")
 
         # ── Journal performance summary ───────────────────────────────────────────
         st.divider()

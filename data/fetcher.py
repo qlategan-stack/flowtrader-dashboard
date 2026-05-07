@@ -89,6 +89,45 @@ class MarketDataFetcher:
             logger.error(f"Account fetch error: {e}")
             return {"error": str(e)}
 
+    def get_portfolio_history(self, period: str = "1M", timeframe: str = "1D") -> dict:
+        """Fetch Alpaca's actual daily P&L history (post-close per-day values).
+
+        Period strings: "1D", "7D", "1M", "3M", "1A" — Alpaca only returns
+        market-session datapoints, so weekends/holidays are skipped.
+        """
+        if not self.alpaca_key:
+            return {"error": "Alpaca client not initialized"}
+        try:
+            base = "https://paper-api.alpaca.markets" if self.paper else "https://api.alpaca.markets"
+            r = requests.get(
+                f"{base}/v2/account/portfolio/history",
+                headers={
+                    "APCA-API-KEY-ID": self.alpaca_key,
+                    "APCA-API-SECRET-KEY": self.alpaca_secret,
+                },
+                params={"period": period, "timeframe": timeframe},
+                timeout=10,
+            )
+            r.raise_for_status()
+            data = r.json()
+            ts  = data.get("timestamp")     or []
+            pl  = data.get("profit_loss")   or []
+            eq  = data.get("equity")        or []
+            out = []
+            for i, t in enumerate(ts):
+                if t is None:
+                    continue
+                d = datetime.fromtimestamp(t, tz=pytz.timezone("America/New_York")).strftime("%Y-%m-%d")
+                out.append({
+                    "date": d,
+                    "profit_loss": float(pl[i]) if i < len(pl) and pl[i] is not None else 0.0,
+                    "equity":      float(eq[i]) if i < len(eq) and eq[i] is not None else None,
+                })
+            return {"history": out}
+        except Exception as e:
+            logger.error(f"Portfolio history fetch error: {e}")
+            return {"error": str(e)}
+
     def get_bars(self, symbol: str, days: int = 30) -> Optional[pd.DataFrame]:
         """Fetch OHLCV bars for a symbol."""
         if not self.stock_client:
