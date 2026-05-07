@@ -1,25 +1,14 @@
 name: FlowTrader — Sync Journal to Dashboard
 
+# DISABLED 2026-05-07: this workflow conflicts with the local
+# trading-bot/scripts/push_journal.py, which is the canonical writer
+# to journal/trades.jsonl on origin/main. When both ran, origin
+# diverged from local and pushes failed silently — freezing the
+# Streamlit dashboard's P&L charts on stale data. push_journal.py
+# now owns the sync; this workflow is kept (manual trigger only)
+# as an emergency fallback if the local task scheduler stops.
 on:
-  # ── Mirror the trading-bot schedule so dashboard updates after each run ──
-  schedule:
-    - cron: '45 13 * * 1-5'   # ~15 min after 09:30 EST bot run
-    - cron: '15 14 * * 1-5'   # ~15 min after 10:00 EST
-    - cron: '45 14 * * 1-5'
-    - cron: '15 15 * * 1-5'
-    - cron: '45 15 * * 1-5'
-    - cron: '15 16 * * 1-5'
-    - cron: '45 16 * * 1-5'
-    - cron: '15 17 * * 1-5'
-    - cron: '45 17 * * 1-5'
-    - cron: '15 18 * * 1-5'
-    - cron: '45 18 * * 1-5'   # after 14:30 EST last scan
-
-    # ── After Sun+Wed research analyst (18:00 EDT = 22:00 UTC) ─────────────
-    - cron: '30 22 * * 0'
-    - cron: '30 22 * * 3'
-
-  workflow_dispatch:           # Manual trigger from GitHub UI
+  workflow_dispatch:           # Manual trigger only — no schedule
 
 jobs:
   sync:
