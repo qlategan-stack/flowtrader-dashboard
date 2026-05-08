@@ -16,7 +16,7 @@
       "enabled": true
     },
     "rmt_correlation": {
-      "enabled": true
+      "enabled": false
     },
     "wasserstein_regime": {
       "enabled": false
@@ -25,5 +25,5 @@
       "enabled": false
     }
   },
-  "updated_at": "2026-05-08T21:01:37.221162Z"
+  "updated_at": "2026-05-08T21:01:38.826858Z"
 }
