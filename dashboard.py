@@ -70,10 +70,24 @@ RISK_PROFILES = CFG.get("risk_profiles", {})
 REFRESH_SEC   = 60
 PAPER_MODE    = os.getenv("PAPER_TRADING", "true").lower() == "true"
 
-MEMO_JSON         = Path("journal/weekly_research_memo.json")
-RISK_PROFILE_JSON = Path("journal/risk_profile.json")
-_GH_REPO          = "qlategan-stack/flowtrader-dashboard"
-_GH_PROFILE_PATH  = "journal/risk_profile.json"
+MEMO_JSON           = Path("journal/weekly_research_memo.json")
+RISK_PROFILE_JSON   = Path("journal/risk_profile.json")
+STRATEGIES_JSON     = Path("journal/math_strategies.json")
+_GH_REPO            = "qlategan-stack/flowtrader-dashboard"
+_GH_PROFILE_PATH    = "journal/risk_profile.json"
+_GH_STRATEGIES_PATH = "journal/math_strategies.json"
+
+# Mathematical strategy metadata — mirrored from trading-bot/strategies/engine.py
+MATH_STRATEGIES = {
+    "wavelet_denoising":  {"label": "Wavelet Denoising",   "role": "per-symbol",  "deps": "pywt",   "blurb": "Denoise prices via DWT before indicators run."},
+    "hurst_exponent":     {"label": "Hurst Exponent",       "role": "per-symbol",  "deps": "—",      "blurb": "Confirms (H<0.5) or rejects (H>0.5) mean reversion."},
+    "entropy_regime":     {"label": "Entropy Regime",       "role": "per-symbol",  "deps": "—",      "blurb": "Detects ordered vs chaotic return distributions."},
+    "levy_jump":          {"label": "Lévy Jump Detection",  "role": "per-symbol",  "deps": "—",      "blurb": "Flags structural jumps via z-score thresholding."},
+    "transfer_entropy":   {"label": "Transfer Entropy",     "role": "multi-asset", "deps": "—",      "blurb": "Identifies which coins lead vs follow info flow."},
+    "rmt_correlation":    {"label": "RMT Correlation",      "role": "multi-asset", "deps": "scipy",  "blurb": "Cleans correlation matrix via Marčenko-Pastur bounds."},
+    "wasserstein_regime": {"label": "Wasserstein Regime",   "role": "multi-asset", "deps": "scipy",  "blurb": "Detects distributional regime shifts."},
+    "tda_features":       {"label": "TDA Homology",         "role": "multi-asset", "deps": "ripser", "blurb": "Topological crash early-warning on BTC."},
+}
 
 
 def _read_active_profile() -> str:
@@ -111,6 +125,56 @@ def _write_profile_to_github(profile_name: str) -> bool:
         return r.status_code in (200, 201)
     except Exception:
         return False
+
+
+def _read_active_strategies() -> dict:
+    """Return {strategy_key: bool_enabled}. Falls back to all-disabled."""
+    try:
+        raw = json.loads(STRATEGIES_JSON.read_text(encoding="utf-8"))
+        strategies = raw.get("strategies", {})
+        return {k: bool(strategies.get(k, {}).get("enabled", False)) for k in MATH_STRATEGIES}
+    except Exception:
+        return {k: False for k in MATH_STRATEGIES}
+
+
+def _write_strategies_to_github(strategies_state: dict) -> bool:
+    """Commit math_strategies.json to GitHub so the bot picks it up on next pull."""
+    import base64
+    import requests as _req
+    token = os.getenv("GITHUB_TOKEN", "")
+    if not token:
+        return False
+    payload_dict = {
+        "strategies": {k: {"enabled": bool(v)} for k, v in strategies_state.items()},
+        "updated_at": datetime.utcnow().isoformat() + "Z",
+    }
+    content = json.dumps(payload_dict, indent=2) + "\n"
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    url = f"https://api.github.com/repos/{_GH_REPO}/contents/{_GH_STRATEGIES_PATH}"
+    sha = ""
+    try:
+        r = _req.get(url, headers=headers, timeout=8)
+        if r.status_code == 200:
+            sha = r.json().get("sha", "")
+    except Exception:
+        pass
+    enabled = sorted(k for k, v in strategies_state.items() if v)
+    msg = f"chore: math strategies → {', '.join(enabled) or 'none'}"
+    payload = {"message": msg, "content": base64.b64encode(content.encode()).decode()}
+    if sha:
+        payload["sha"] = sha
+    try:
+        # Also write locally so the dashboard reflects the new state immediately
+        STRATEGIES_JSON.parent.mkdir(parents=True, exist_ok=True)
+        STRATEGIES_JSON.write_text(content, encoding="utf-8")
+    except Exception:
+        pass
+    try:
+        r = _req.put(url, headers=headers, json=payload, timeout=10)
+        return r.status_code in (200, 201)
+    except Exception:
+        return False
+
 
 SYMBOL_NAMES = {
     "NVDA": "NVIDIA Corporation",
@@ -278,6 +342,37 @@ with st.sidebar:
             c1, c2 = st.columns([3, 2])
             c1.caption(label)
             c2.caption(f"**{val}**")
+
+    st.divider()
+
+    # ── Math Strategies ───────────────────────────────────────────────────────
+    st.markdown("**🔬 Math Strategies**")
+    st.caption("Toggle on/off to A/B test their signal impact. Saves to GitHub — bot picks up on next run (~30 min).")
+
+    current_strats = _read_active_strategies()
+    new_strats: dict = {}
+    for key, meta in MATH_STRATEGIES.items():
+        help_txt = f"{meta['role']}  ·  deps: {meta['deps']}  ·  {meta['blurb']}"
+        new_strats[key] = st.toggle(
+            meta["label"],
+            value=current_strats.get(key, False),
+            key=f"strat_{key}",
+            help=help_txt,
+        )
+
+    if new_strats != current_strats:
+        if _write_strategies_to_github(new_strats):
+            active = [MATH_STRATEGIES[k]["label"] for k, v in new_strats.items() if v]
+            label = ", ".join(active) if active else "none (pure TA)"
+            st.success(f"Saved. Active: {label}")
+        else:
+            st.error("Could not save — add GITHUB_TOKEN to Streamlit secrets.")
+
+    active_count = sum(1 for v in new_strats.values() if v)
+    if active_count == 0:
+        st.caption("All disabled — pure TA mode")
+    else:
+        st.caption(f"{active_count} strategy/strategies active")
 
     st.divider()
 
