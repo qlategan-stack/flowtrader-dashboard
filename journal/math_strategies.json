@@ -19,11 +19,11 @@
       "enabled": true
     },
     "wasserstein_regime": {
-      "enabled": true
+      "enabled": false
     },
     "tda_features": {
       "enabled": false
     }
   },
-  "updated_at": "2026-05-08T13:18:47.084027Z"
+  "updated_at": "2026-05-08T21:01:37.221162Z"
 }
