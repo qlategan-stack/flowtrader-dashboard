@@ -10,7 +10,7 @@
       "enabled": true
     },
     "levy_jump": {
-      "enabled": false
+      "enabled": true
     },
     "transfer_entropy": {
       "enabled": false
@@ -25,5 +25,5 @@
       "enabled": false
     }
   },
-  "updated_at": "2026-05-08T13:15:20.061521Z"
+  "updated_at": "2026-05-08T13:15:27.786134Z"
 }
