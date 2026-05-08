@@ -273,6 +273,63 @@ def fetch_bybit_balance():
 def fetch_entries(days: int):
     return _journal().get_entries(days=days)
 
+@st.cache_data(ttl=120)
+def fetch_alpaca_order_history(days: int = 90) -> dict:
+    """
+    Query Alpaca for all orders in the last N days.
+    Returns {order_id: enrichment_dict} for the Trades tab.
+    Bracket orders have 'legs' — stop_loss and take_profit child orders.
+    When a child fills, that's the actual exit price and exit type.
+    """
+    from datetime import timedelta, timezone
+    tc = _fetcher().trading_client
+    if not tc:
+        return {}
+    try:
+        from alpaca.trading.requests import GetOrdersRequest
+        from alpaca.trading.enums import QueryOrderStatus
+        after_dt = datetime.now(timezone.utc) - timedelta(days=days)
+        orders = tc.get_orders(filter=GetOrdersRequest(
+            status=QueryOrderStatus.ALL,
+            limit=500,
+            after=after_dt,
+        ))
+        result = {}
+        for o in (orders or []):
+            filled_price = float(o.filled_avg_price) if getattr(o, "filled_avg_price", None) else None
+            filled_qty   = float(o.filled_qty)       if getattr(o, "filled_qty", None)        else None
+            exit_price   = None
+            exit_type    = None
+            closed_at    = None
+            for leg in (getattr(o, "legs", None) or []):
+                if str(getattr(leg, "status", "")).lower() in ("filled", "partially_filled"):
+                    exit_price = float(leg.filled_avg_price) if getattr(leg, "filled_avg_price", None) else None
+                    leg_type   = str(getattr(leg, "order_type", "")).lower()
+                    exit_type  = "TAKE_PROFIT" if "limit" in leg_type else "STOP_LOSS"
+                    closed_at  = str(getattr(leg, "filled_at", "") or "")
+                    break
+            o_status = str(getattr(o, "status", "")).lower()
+            if exit_price:
+                display_status = "CLOSED"
+            elif o_status in ("canceled", "cancelled", "expired"):
+                display_status = "CANCELLED"
+            elif filled_price:
+                display_status = "OPEN"
+            else:
+                display_status = o_status.upper()
+            result[str(o.id)] = {
+                "status":       display_status,
+                "filled_price": filled_price,
+                "filled_qty":   filled_qty,
+                "exit_price":   exit_price,
+                "exit_type":    exit_type,
+                "closed_at":    closed_at,
+            }
+        return result
+    except Exception as e:
+        logger.warning(f"Alpaca order history fetch failed: {e}")
+        return {}
+
 @st.cache_data(ttl=60)
 def load_research_memo() -> dict:
     """Load the weekly research memo.  TTL kept short so a fresh memo
@@ -1517,127 +1574,130 @@ with tab_journal:
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_trades:
 
-    all_t_entries = fetch_entries(90)   # pull 90 days so we can pair BUY→SELL
+    all_t_entries = fetch_entries(90)
 
-    # ── Split into executed entries only ─────────────────────────────────────
-    EXEC_STATUSES = {"FILLED", "SIMULATED", "SUBMITTED"}
-    executed = [
+    # Pull Alpaca order history to get actual fill + exit data
+    try:
+        alpaca_orders = fetch_alpaca_order_history(90)
+    except Exception:
+        alpaca_orders = {}
+
+    # Include SUBMITTED, FILLED, SIMULATED, and REJECTED — all meaningful attempts
+    SHOW_STATUSES = {"FILLED", "SIMULATED", "SUBMITTED", "REJECTED"}
+    attempted = [
         e for e in all_t_entries
-        if e.get("execution_status") in EXEC_STATUSES
+        if e.get("execution_status") in SHOW_STATUSES
         and e.get("action") in ("BUY", "SELL")
         and e.get("symbol") not in (None, "", "N/A", "None", "none", "null")
     ]
 
-    if not executed:
+    if not attempted:
         st.info(
-            "No executed trades yet. "
+            "No trade attempts yet. "
             "The bot is scanning and skipping until a setup meets the signal threshold. "
-            "Trades with execution status FILLED, SUBMITTED, or SIMULATED will appear here."
+            "Trades with execution status FILLED, SUBMITTED, SIMULATED, or REJECTED will appear here."
         )
     else:
-        # ── Pair BUY→SELL to compute per-trade P&L ───────────────────────────
-        # Walk chronologically; stack open BUYs per symbol, pop when SELL arrives.
-        chrono      = sorted(executed, key=lambda e: e.get("timestamp", ""))
-        open_buys: dict[str, list] = {}   # symbol → list of open BUY entries (FIFO)
-        trade_pairs: list[dict]    = []   # fully matched pairs
-        orphan_buys: list[dict]    = []   # BUYs with no matching SELL yet
+        # ── Build trade records, enriched with Alpaca bracket order data ──────
+        def _fmt_pl(v):
+            return "—" if v is None else f"${v:+,.2f}"
 
-        for e in chrono:
-            sym = e.get("symbol", "")
-            if e.get("action") == "BUY":
-                open_buys.setdefault(sym, []).append(e)
-            elif e.get("action") == "SELL" and sym in open_buys and open_buys[sym]:
-                buy_e = open_buys[sym].pop(0)
-                qty   = buy_e.get("quantity") or e.get("quantity") or 1
-                buy_p = float(buy_e.get("entry_price") or 0)
-                sel_p = float(e.get("entry_price") or 0)
-                gross = (sel_p - buy_p) * qty
-                trade_pairs.append({
-                    "open_date":   buy_e.get("date", ""),
-                    "open_time":   buy_e.get("time_est", "").split(".")[0],
-                    "close_date":  e.get("date", ""),
-                    "close_time":  e.get("time_est", "").split(".")[0],
-                    "symbol":      sym,
-                    "qty":         qty,
-                    "entry":       buy_p,
-                    "exit":        sel_p,
-                    "stop":        buy_e.get("stop_loss"),
-                    "target":      buy_e.get("take_profit"),
-                    "rr":          buy_e.get("risk_reward"),
-                    "score":       buy_e.get("signal_score", 0),
-                    "signals":     buy_e.get("signals_fired", []),
-                    "gross_pl":    gross,
-                    "order_id":    buy_e.get("order_id", "—"),
-                    "paper":       buy_e.get("paper_trade", True),
-                    "status":      "CLOSED",
-                })
+        def _pl_cell(v: str):
+            if v.startswith("$+") or (v.startswith("$") and "-" not in v and v != "—"):
+                return "color:#2D8C7A;font-weight:bold"
+            if "$-" in v:
+                return "color:#E86060;font-weight:bold"
+            return "color:#888"
 
-        # Remaining unmatched BUYs → still open
-        for sym, buys in open_buys.items():
-            for buy_e in buys:
-                orphan_buys.append({
-                    "open_date":  buy_e.get("date", ""),
-                    "open_time":  buy_e.get("time_est", "").split(".")[0],
-                    "close_date": "—",
-                    "close_time": "—",
-                    "symbol":     sym,
-                    "qty":        buy_e.get("quantity") or 1,
-                    "entry":      float(buy_e.get("entry_price") or 0),
-                    "exit":       None,
-                    "stop":       buy_e.get("stop_loss"),
-                    "target":     buy_e.get("take_profit"),
-                    "rr":         buy_e.get("risk_reward"),
-                    "score":      buy_e.get("signal_score", 0),
-                    "signals":    buy_e.get("signals_fired", []),
-                    "gross_pl":   None,
-                    "order_id":   buy_e.get("order_id", "—"),
-                    "paper":      buy_e.get("paper_trade", True),
-                    "status":     "OPEN",
-                })
+        def _status_cell(v: str):
+            colours = {"OPEN": "#F5C400", "CLOSED": "#40916c",
+                       "REJECTED": "#ff5252", "CANCELLED": "#888"}
+            return f"color:{colours.get(v, '#888')};font-weight:bold"
 
-        all_trades = sorted(
-            trade_pairs + orphan_buys,
-            key=lambda t: t["open_date"] + t["open_time"],
-            reverse=True,
-        )
+        def _exit_cell(v: str):
+            if v == "TAKE_PROFIT": return "color:#40916c;font-weight:bold"
+            if v == "STOP_LOSS":   return "color:#ff5252;font-weight:bold"
+            return "color:#888"
+
+        trade_records = []
+        for e in sorted(attempted, key=lambda x: x.get("timestamp", ""), reverse=True):
+            order_id   = e.get("order_id") or ""
+            alp        = alpaca_orders.get(str(order_id), {}) if order_id else {}
+            j_entry    = float(e.get("entry_price") or 0)
+            act_entry  = alp.get("filled_price") or j_entry
+            exit_price = alp.get("exit_price")
+            exit_type  = alp.get("exit_type") or "—"
+            qty        = alp.get("filled_qty") or float(e.get("quantity") or 1)
+
+            if e.get("execution_status") == "REJECTED":
+                status = "REJECTED"
+            elif alp:
+                status = alp.get("status", "OPEN")
+            else:
+                status = "OPEN"
+
+            gross_pl = None
+            if act_entry and exit_price and status == "CLOSED":
+                gross_pl = (exit_price - act_entry) * qty
+
+            trade_records.append({
+                "date":        e.get("date", ""),
+                "time":        e.get("time_est", "").split(".")[0],
+                "symbol":      e.get("symbol", ""),
+                "qty":         qty,
+                "planned_entry": j_entry,
+                "actual_entry":  act_entry,
+                "exit_price":  exit_price,
+                "stop":        e.get("stop_loss"),
+                "target":      e.get("take_profit"),
+                "exit_type":   exit_type,
+                "rr":          e.get("risk_reward"),
+                "score":       e.get("signal_score", 0),
+                "signals":     e.get("signals_fired", []),
+                "gross_pl":    gross_pl,
+                "status":      status,
+                "order_id":    order_id,
+                "paper":       e.get("paper_trade", True),
+                "rejection_reason": e.get("rejection_reason", ""),
+            })
 
         # ── Summary KPIs ─────────────────────────────────────────────────────
-        total_exec   = len(all_trades)
-        open_count   = sum(1 for t in all_trades if t["status"] == "OPEN")
-        closed_count = sum(1 for t in all_trades if t["status"] == "CLOSED")
-        winners      = sum(1 for t in all_trades if (t["gross_pl"] or 0) > 0)
-        losers       = sum(1 for t in all_trades if (t["gross_pl"] or 0) < 0)
-        total_pl     = sum(t["gross_pl"] or 0 for t in all_trades)
-        win_rate     = (winners / closed_count * 100) if closed_count else 0
-        deployed     = sum((t["entry"] or 0) * (t["qty"] or 0) for t in all_trades)
+        closed   = [t for t in trade_records if t["status"] == "CLOSED"]
+        open_pos = [t for t in trade_records if t["status"] == "OPEN"]
+        rejected = [t for t in trade_records if t["status"] == "REJECTED"]
+        winners  = [t for t in closed if (t["gross_pl"] or 0) > 0]
+        total_pl = sum(t["gross_pl"] or 0 for t in closed)
+        win_rate = len(winners) / len(closed) * 100 if closed else 0
 
         k1, k2, k3, k4, k5 = st.columns(5)
-        k1.metric("Total Executed",   total_exec)
-        k2.metric("Open Positions",   open_count)
-        k3.metric("Closed Trades",    closed_count)
-        k4.metric("Win Rate",         f"{win_rate:.0f}%" if closed_count else "—")
-        k5.metric("Gross P&L",        f"${total_pl:+,.2f}",
-                  delta=f"${total_pl:+,.2f}",
-                  delta_color="normal" if total_pl >= 0 else "inverse")
+        k1.metric("All Attempts",  len(trade_records))
+        k2.metric("Open",          len(open_pos))
+        k3.metric("Closed",        len(closed))
+        k4.metric("Rejected",      len(rejected))
+        k5.metric("Gross P&L",     f"${total_pl:+,.2f}",
+                  delta=f"Win rate {win_rate:.0f}%" if closed else None)
 
-        st.caption(
-            "ℹ️  Per-trade P&L is computed from journal BUY→SELL pairs. "
-            "Open trades show no P&L until a matching SELL is logged. "
-            "Paper mode — no real money at risk."
-        )
+        if not alpaca_orders:
+            st.caption(
+                "Alpaca order history unavailable — showing journal data only. "
+                "Exit prices and actual P&L require an Alpaca API connection."
+            )
+        else:
+            st.caption(
+                f"Exit data sourced from Alpaca bracket order legs. "
+                f"{len(closed)} closed · {len(open_pos)} open · {len(rejected)} rejected. Paper mode."
+            )
         st.divider()
 
-        # ── P&L by closed trade (bar chart) ──────────────────────────────────
-        closed_pairs = [t for t in reversed(all_trades) if t["status"] == "CLOSED"]
-        if closed_pairs:
-            st.subheader("Per-Trade P&L")
-            bar_labels = [f"{t['symbol']} {t['close_date']}" for t in closed_pairs]
-            bar_vals   = [t["gross_pl"] for t in closed_pairs]
+        # ── Closed trade P&L bar chart ────────────────────────────────────────
+        if closed:
+            st.subheader("Closed Trade P&L")
+            bar_labels = [f"{t['symbol']} {t['date']}" for t in reversed(closed)]
+            bar_vals   = [t["gross_pl"] or 0 for t in reversed(closed)]
             bar_colors = ["#2D8C7A" if v >= 0 else "#E86060" for v in bar_vals]
             bar_fig = go.Figure(go.Bar(
                 x=bar_labels, y=bar_vals,
-                marker_color=bar_colors,
-                marker_line_width=0,
+                marker_color=bar_colors, marker_line_width=0,
                 text=[f"${v:+,.2f}" for v in bar_vals],
                 textposition="outside",
             ))
@@ -1652,79 +1712,64 @@ with tab_trades:
             st.divider()
 
         # ── Trade table ───────────────────────────────────────────────────────
-        st.subheader("All Executed Trades")
-
-        def _fmt_pl(v):
-            if v is None:
-                return "—"
-            return f"${v:+,.2f}"
-
-        def _pl_style(v: str):
-            if v.startswith("$+") or (v.startswith("$") and "-" not in v and v != "—"):
-                return "color:#2D8C7A;font-weight:bold"
-            if "$-" in v:
-                return "color:#E86060;font-weight:bold"
-            return "color:#888"
-
-        def _status_style(v: str):
-            return "color:#F5C400;font-weight:bold" if v == "OPEN" else "color:#555"
-
+        st.subheader("All Trade Attempts")
         rows = []
-        for t in all_trades:
+        for t in trade_records:
             rows.append({
-                "Opened":    f"{t['open_date']} {t['open_time']}",
-                "Closed":    f"{t['close_date']} {t['close_time']}" if t["close_date"] != "—" else "—",
-                "Symbol":    t["symbol"],
-                "Qty":       t["qty"],
-                "Entry $":   f"${t['entry']:,.2f}" if t["entry"] else "—",
-                "Exit $":    f"${t['exit']:,.2f}" if t["exit"] else "—",
-                "Stop $":    _fp(t.get("stop")),
-                "Target $":  _fp(t.get("target")),
-                "R:R":       t["rr"] or "—",
-                "Score":     t["score"],
-                "P&L":       _fmt_pl(t["gross_pl"]),
-                "Status":    t["status"],
-                "Mode":      "Paper" if t["paper"] else "Live",
+                "Date/Time":  f"{t['date']} {t['time']}",
+                "Symbol":     t["symbol"],
+                "Qty":        t["qty"],
+                "Entry $":    f"${t['actual_entry']:,.2f}" if t["actual_entry"] else "—",
+                "Exit $":     f"${t['exit_price']:,.2f}" if t["exit_price"] else "—",
+                "Exit Type":  t["exit_type"],
+                "Stop $":     _fp(t["stop"]),
+                "Target $":   _fp(t["target"]),
+                "R:R":        t["rr"] or "—",
+                "Score":      t["score"],
+                "P&L":        _fmt_pl(t["gross_pl"]),
+                "Status":     t["status"],
             })
-
         tdf2 = pd.DataFrame(rows)
         st.dataframe(
             tdf2.style
-               .map(_pl_style,     subset=["P&L"])
-               .map(_status_style, subset=["Status"])
+               .map(_pl_cell,     subset=["P&L"])
+               .map(_status_cell, subset=["Status"])
+               .map(_exit_cell,   subset=["Exit Type"])
                .map(_score_colour, subset=["Score"]),
             use_container_width=True,
             hide_index=True,
         )
 
-        # ── Trade detail expander ─────────────────────────────────────────────
+        # ── Trade detail inspector ────────────────────────────────────────────
         st.divider()
         st.subheader("Trade Detail")
         trade_labels = [
-            f"{t['symbol']}  |  {t['open_date']} {t['open_time']}  |  {t['status']}  |  {_fmt_pl(t['gross_pl'])}"
-            for t in all_trades
+            f"{t['symbol']}  |  {t['date']} {t['time']}  |  {t['status']}  |  {_fmt_pl(t['gross_pl'])}"
+            for t in trade_records
         ]
         sel_idx = st.selectbox("Select trade", range(len(trade_labels)),
                                format_func=lambda i: trade_labels[i])
-        sel_t   = all_trades[sel_idx]
+        sel_t   = trade_records[sel_idx]
 
         d1, d2 = st.columns(2)
         with d1:
-            st.markdown("**Entry Details**")
+            st.markdown("**Trade Details**")
             st.json({
-                "symbol":      sel_t["symbol"],
-                "status":      sel_t["status"],
-                "opened":      f"{sel_t['open_date']} {sel_t['open_time']}",
-                "closed":      f"{sel_t['close_date']} {sel_t['close_time']}",
-                "quantity":    sel_t["qty"],
-                "entry_price": sel_t["entry"],
-                "exit_price":  sel_t["exit"],
-                "stop_loss":   sel_t["stop"],
-                "take_profit": sel_t["target"],
-                "risk_reward": sel_t["rr"],
-                "gross_pl":    sel_t["gross_pl"],
-                "order_id":    sel_t["order_id"],
-                "paper_trade": sel_t["paper"],
+                "symbol":           sel_t["symbol"],
+                "status":           sel_t["status"],
+                "date_time":        f"{sel_t['date']} {sel_t['time']}",
+                "quantity":         sel_t["qty"],
+                "planned_entry":    sel_t["planned_entry"],
+                "actual_entry":     sel_t["actual_entry"],
+                "exit_price":       sel_t["exit_price"],
+                "exit_type":        sel_t["exit_type"],
+                "stop_loss":        sel_t["stop"],
+                "take_profit":      sel_t["target"],
+                "risk_reward":      sel_t["rr"],
+                "gross_pl":         sel_t["gross_pl"],
+                "rejection_reason": sel_t["rejection_reason"] or None,
+                "order_id":         sel_t["order_id"] or None,
+                "paper_trade":      sel_t["paper"],
             })
         with d2:
             st.markdown("**Signals at Entry**")
