@@ -1,9 +1,9 @@
 {
-  "account_value": 90174.62,
+  "account_value": 90109.83,
   "total_usdt": 13958.68,
   "free_usdt": 13900.0,
   "funding_usdt": 58.68,
-  "position_value": 76215.94,
+  "position_value": 76151.15,
   "open_positions": 1,
   "positions": [
     {
@@ -11,11 +11,11 @@
       "amount": 0.95,
       "unified": 0.05,
       "funding": 0.9,
-      "price_usd": 80227.3,
-      "value_usd": 76215.94
+      "price_usd": 80159.1,
+      "value_usd": 76151.15
     }
   ],
   "exchange": "bybit",
   "testnet": true,
-  "fetched_at": "2026-05-08T23:18:37.594069+00:00"
+  "fetched_at": "2026-05-08T23:33:40.545010+00:00"
 }
