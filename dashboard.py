@@ -455,8 +455,8 @@ if h3.button("⟳ Refresh", width="stretch"):
 st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
-tab_market, tab_account, tab_journal, tab_trades, tab_research, tab_learn = st.tabs([
-    "🔍 Market", "💼 Account", "📓 Journal", "📈 Trades", "🧠 Research", "📚 Learn"
+tab_market, tab_account, tab_journal, tab_research, tab_trades, tab_learn = st.tabs([
+    "🔍 Market", "💼 Account", "📓 Journal", "🧠 Research", "📈 Trades", "📚 Learn"
 ])
 
 
@@ -1513,7 +1513,7 @@ with tab_journal:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 4 — COMPLETED TRADES
+# TAB 5 — COMPLETED TRADES
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_trades:
 
@@ -1734,7 +1734,7 @@ with tab_trades:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 5 — RESEARCH (Weekly Analyst Memo)
+# TAB 4 — RESEARCH (Weekly Analyst Memo)
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_research:
 
