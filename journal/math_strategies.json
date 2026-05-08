@@ -13,7 +13,7 @@
       "enabled": true
     },
     "transfer_entropy": {
-      "enabled": false
+      "enabled": true
     },
     "rmt_correlation": {
       "enabled": false
@@ -25,5 +25,5 @@
       "enabled": false
     }
   },
-  "updated_at": "2026-05-08T13:15:27.786134Z"
+  "updated_at": "2026-05-08T13:15:33.608431Z"
 }
