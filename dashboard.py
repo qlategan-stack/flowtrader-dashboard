@@ -455,8 +455,8 @@ if h3.button("⟳ Refresh", width="stretch"):
 st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
-tab_market, tab_account, tab_journal, tab_research, tab_learn = st.tabs([
-    "🔍 Market", "💼 Account", "📓 Journal", "🧠 Research", "📚 Learn"
+tab_market, tab_account, tab_journal, tab_trades, tab_research, tab_learn = st.tabs([
+    "🔍 Market", "💼 Account", "📓 Journal", "📈 Trades", "🧠 Research", "📚 Learn"
 ])
 
 
@@ -1513,7 +1513,228 @@ with tab_journal:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 4 — RESEARCH (Weekly Analyst Memo)
+# TAB 4 — COMPLETED TRADES
+# ═══════════════════════════════════════════════════════════════════════════════
+with tab_trades:
+
+    all_t_entries = fetch_entries(90)   # pull 90 days so we can pair BUY→SELL
+
+    # ── Split into executed entries only ─────────────────────────────────────
+    EXEC_STATUSES = {"FILLED", "SIMULATED", "SUBMITTED"}
+    executed = [
+        e for e in all_t_entries
+        if e.get("execution_status") in EXEC_STATUSES
+        and e.get("action") in ("BUY", "SELL")
+        and e.get("symbol") not in (None, "", "N/A", "None", "none", "null")
+    ]
+
+    if not executed:
+        st.info(
+            "No executed trades yet. "
+            "The bot is scanning and skipping until a setup meets the signal threshold. "
+            "Trades with execution status FILLED, SUBMITTED, or SIMULATED will appear here."
+        )
+    else:
+        # ── Pair BUY→SELL to compute per-trade P&L ───────────────────────────
+        # Walk chronologically; stack open BUYs per symbol, pop when SELL arrives.
+        chrono      = sorted(executed, key=lambda e: e.get("timestamp", ""))
+        open_buys: dict[str, list] = {}   # symbol → list of open BUY entries (FIFO)
+        trade_pairs: list[dict]    = []   # fully matched pairs
+        orphan_buys: list[dict]    = []   # BUYs with no matching SELL yet
+
+        for e in chrono:
+            sym = e.get("symbol", "")
+            if e.get("action") == "BUY":
+                open_buys.setdefault(sym, []).append(e)
+            elif e.get("action") == "SELL" and sym in open_buys and open_buys[sym]:
+                buy_e = open_buys[sym].pop(0)
+                qty   = buy_e.get("quantity") or e.get("quantity") or 1
+                buy_p = float(buy_e.get("entry_price") or 0)
+                sel_p = float(e.get("entry_price") or 0)
+                gross = (sel_p - buy_p) * qty
+                trade_pairs.append({
+                    "open_date":   buy_e.get("date", ""),
+                    "open_time":   buy_e.get("time_est", "").split(".")[0],
+                    "close_date":  e.get("date", ""),
+                    "close_time":  e.get("time_est", "").split(".")[0],
+                    "symbol":      sym,
+                    "qty":         qty,
+                    "entry":       buy_p,
+                    "exit":        sel_p,
+                    "stop":        buy_e.get("stop_loss"),
+                    "target":      buy_e.get("take_profit"),
+                    "rr":          buy_e.get("risk_reward"),
+                    "score":       buy_e.get("signal_score", 0),
+                    "signals":     buy_e.get("signals_fired", []),
+                    "gross_pl":    gross,
+                    "order_id":    buy_e.get("order_id", "—"),
+                    "paper":       buy_e.get("paper_trade", True),
+                    "status":      "CLOSED",
+                })
+
+        # Remaining unmatched BUYs → still open
+        for sym, buys in open_buys.items():
+            for buy_e in buys:
+                orphan_buys.append({
+                    "open_date":  buy_e.get("date", ""),
+                    "open_time":  buy_e.get("time_est", "").split(".")[0],
+                    "close_date": "—",
+                    "close_time": "—",
+                    "symbol":     sym,
+                    "qty":        buy_e.get("quantity") or 1,
+                    "entry":      float(buy_e.get("entry_price") or 0),
+                    "exit":       None,
+                    "stop":       buy_e.get("stop_loss"),
+                    "target":     buy_e.get("take_profit"),
+                    "rr":         buy_e.get("risk_reward"),
+                    "score":      buy_e.get("signal_score", 0),
+                    "signals":    buy_e.get("signals_fired", []),
+                    "gross_pl":   None,
+                    "order_id":   buy_e.get("order_id", "—"),
+                    "paper":      buy_e.get("paper_trade", True),
+                    "status":     "OPEN",
+                })
+
+        all_trades = sorted(
+            trade_pairs + orphan_buys,
+            key=lambda t: t["open_date"] + t["open_time"],
+            reverse=True,
+        )
+
+        # ── Summary KPIs ─────────────────────────────────────────────────────
+        total_exec   = len(all_trades)
+        open_count   = sum(1 for t in all_trades if t["status"] == "OPEN")
+        closed_count = sum(1 for t in all_trades if t["status"] == "CLOSED")
+        winners      = sum(1 for t in all_trades if (t["gross_pl"] or 0) > 0)
+        losers       = sum(1 for t in all_trades if (t["gross_pl"] or 0) < 0)
+        total_pl     = sum(t["gross_pl"] or 0 for t in all_trades)
+        win_rate     = (winners / closed_count * 100) if closed_count else 0
+        deployed     = sum((t["entry"] or 0) * (t["qty"] or 0) for t in all_trades)
+
+        k1, k2, k3, k4, k5 = st.columns(5)
+        k1.metric("Total Executed",   total_exec)
+        k2.metric("Open Positions",   open_count)
+        k3.metric("Closed Trades",    closed_count)
+        k4.metric("Win Rate",         f"{win_rate:.0f}%" if closed_count else "—")
+        k5.metric("Gross P&L",        f"${total_pl:+,.2f}",
+                  delta=f"${total_pl:+,.2f}",
+                  delta_color="normal" if total_pl >= 0 else "inverse")
+
+        st.caption(
+            "ℹ️  Per-trade P&L is computed from journal BUY→SELL pairs. "
+            "Open trades show no P&L until a matching SELL is logged. "
+            "Paper mode — no real money at risk."
+        )
+        st.divider()
+
+        # ── P&L by closed trade (bar chart) ──────────────────────────────────
+        closed_pairs = [t for t in reversed(all_trades) if t["status"] == "CLOSED"]
+        if closed_pairs:
+            st.subheader("Per-Trade P&L")
+            bar_labels = [f"{t['symbol']} {t['close_date']}" for t in closed_pairs]
+            bar_vals   = [t["gross_pl"] for t in closed_pairs]
+            bar_colors = ["#2D8C7A" if v >= 0 else "#E86060" for v in bar_vals]
+            bar_fig = go.Figure(go.Bar(
+                x=bar_labels, y=bar_vals,
+                marker_color=bar_colors,
+                marker_line_width=0,
+                text=[f"${v:+,.2f}" for v in bar_vals],
+                textposition="outside",
+            ))
+            bar_fig.update_layout(
+                plot_bgcolor="#0e1117", paper_bgcolor="#0e1117", font_color="#fafafa",
+                height=220, margin=dict(l=0, r=0, t=16, b=0),
+                xaxis=dict(showgrid=False),
+                yaxis=dict(title="P&L ($)", gridcolor="#1c1f26",
+                           zeroline=True, zerolinecolor="#444"),
+            )
+            st.plotly_chart(bar_fig, use_container_width=True)
+            st.divider()
+
+        # ── Trade table ───────────────────────────────────────────────────────
+        st.subheader("All Executed Trades")
+
+        def _fmt_pl(v):
+            if v is None:
+                return "—"
+            return f"${v:+,.2f}"
+
+        def _pl_style(v: str):
+            if v.startswith("$+") or (v.startswith("$") and "-" not in v and v != "—"):
+                return "color:#2D8C7A;font-weight:bold"
+            if "$-" in v:
+                return "color:#E86060;font-weight:bold"
+            return "color:#888"
+
+        def _status_style(v: str):
+            return "color:#F5C400;font-weight:bold" if v == "OPEN" else "color:#555"
+
+        rows = []
+        for t in all_trades:
+            rows.append({
+                "Opened":    f"{t['open_date']} {t['open_time']}",
+                "Closed":    f"{t['close_date']} {t['close_time']}" if t["close_date"] != "—" else "—",
+                "Symbol":    t["symbol"],
+                "Qty":       t["qty"],
+                "Entry $":   f"${t['entry']:,.2f}" if t["entry"] else "—",
+                "Exit $":    f"${t['exit']:,.2f}" if t["exit"] else "—",
+                "Stop $":    _fp(t.get("stop")),
+                "Target $":  _fp(t.get("target")),
+                "R:R":       t["rr"] or "—",
+                "Score":     t["score"],
+                "P&L":       _fmt_pl(t["gross_pl"]),
+                "Status":    t["status"],
+                "Mode":      "Paper" if t["paper"] else "Live",
+            })
+
+        tdf2 = pd.DataFrame(rows)
+        st.dataframe(
+            tdf2.style
+               .map(_pl_style,     subset=["P&L"])
+               .map(_status_style, subset=["Status"])
+               .map(_score_colour, subset=["Score"]),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        # ── Trade detail expander ─────────────────────────────────────────────
+        st.divider()
+        st.subheader("Trade Detail")
+        trade_labels = [
+            f"{t['symbol']}  |  {t['open_date']} {t['open_time']}  |  {t['status']}  |  {_fmt_pl(t['gross_pl'])}"
+            for t in all_trades
+        ]
+        sel_idx = st.selectbox("Select trade", range(len(trade_labels)),
+                               format_func=lambda i: trade_labels[i])
+        sel_t   = all_trades[sel_idx]
+
+        d1, d2 = st.columns(2)
+        with d1:
+            st.markdown("**Entry Details**")
+            st.json({
+                "symbol":      sel_t["symbol"],
+                "status":      sel_t["status"],
+                "opened":      f"{sel_t['open_date']} {sel_t['open_time']}",
+                "closed":      f"{sel_t['close_date']} {sel_t['close_time']}",
+                "quantity":    sel_t["qty"],
+                "entry_price": sel_t["entry"],
+                "exit_price":  sel_t["exit"],
+                "stop_loss":   sel_t["stop"],
+                "take_profit": sel_t["target"],
+                "risk_reward": sel_t["rr"],
+                "gross_pl":    sel_t["gross_pl"],
+                "order_id":    sel_t["order_id"],
+                "paper_trade": sel_t["paper"],
+            })
+        with d2:
+            st.markdown("**Signals at Entry**")
+            st.markdown(f"Score: **{sel_t['score']}/6**")
+            for sig in (sel_t["signals"] or []):
+                st.markdown(f"- {sig}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TAB 5 — RESEARCH (Weekly Analyst Memo)
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_research:
 
@@ -1943,7 +2164,7 @@ with tab_research:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 5 — LEARN
+# TAB 6 — LEARN
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_learn:
     import numpy as np
