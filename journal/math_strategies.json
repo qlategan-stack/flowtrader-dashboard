@@ -1,19 +1,19 @@
 {
   "strategies": {
     "wavelet_denoising": {
-      "enabled": true
+      "enabled": false
     },
     "hurst_exponent": {
       "enabled": true
     },
     "entropy_regime": {
-      "enabled": true
+      "enabled": false
     },
     "levy_jump": {
-      "enabled": true
+      "enabled": false
     },
     "transfer_entropy": {
-      "enabled": true
+      "enabled": false
     },
     "rmt_correlation": {
       "enabled": false
@@ -25,5 +25,5 @@
       "enabled": false
     }
   },
-  "updated_at": "2026-05-08T21:01:42.588867Z"
+  "updated_at": "2026-05-08T21:01:46.123875Z"
 }
