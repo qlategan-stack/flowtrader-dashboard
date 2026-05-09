@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FlowTrader — Trade Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>var t=localStorage.getItem('ft-theme');if(t)document.documentElement.className=t;</script>
+<style>
+:root {
+  --_y50:#FEF9E0;--_y100:#FDF0A0;--_y200:#FAE04D;--_y400:#F5C400;--_y600:#D4A800;--_y800:#A88000;--_y900:#6A5000;
+  --_n50:#E8EFF8;--_n100:#B8CCE8;--_n300:#6B9ED0;--_n500:#2D6BA8;--_n700:#1A3D6E;--_n900:#0D2040;--_n950:#071022;
+  --_g0:#FFFFFF;--_g50:#F7F6F3;--_g100:#E8E7E2;--_g200:#C8C7C0;--_g400:#949390;--_g600:#5C5B58;--_g800:#2E2E2C;--_g900:#1A1A18;--_g950:#0D0D0B;
+  --_teal:#2D8C7A;--_teal-light:#C8EDE7;--_teal-dark:#1a5c50;
+  --_coral:#E86060;--_coral-light:#FDDCDC;
+  --_terra:#C97A3A;
+  --font-display:'Barlow Condensed',sans-serif;
+  --font-body:'Barlow',sans-serif;
+  --r-sm:4px;--r-md:8px;--r-lg:12px;
+}
+.theme-light{color-scheme:light;--color-surface-page:var(--_g50);--color-surface-base:var(--_g0);--color-surface-elevated:var(--_g0);--color-surface-sunken:var(--_g100);--color-surface-secondary:var(--_n700);--color-text-primary:var(--_g950);--color-text-secondary:var(--_g600);--color-text-tertiary:var(--_g400);--color-text-on-navy:var(--_g0);--color-brand-primary:var(--_y400);--color-border-default:var(--_g200);--color-border-subtle:var(--_g100);--color-success-bg:#EDF7F5;--color-success-fg:var(--_teal-dark);--color-warning-bg:var(--_y50);--color-warning-fg:var(--_y900);--color-danger-bg:#FEF2F2;--color-danger-fg:#C0392B;--color-neutral-fg:var(--_g600);--shadow-md:0 4px 12px rgba(0,0,0,.08);}
+.theme-dark{color-scheme:dark;--color-surface-page:var(--_g950);--color-surface-base:var(--_g900);--color-surface-elevated:var(--_g800);--color-surface-sunken:var(--_g950);--color-surface-secondary:var(--_n700);--color-text-primary:var(--_g100);--color-text-secondary:var(--_g400);--color-text-tertiary:var(--_g600);--color-text-on-navy:var(--_g0);--color-brand-primary:var(--_y400);--color-border-default:rgba(255,255,255,.10);--color-border-subtle:rgba(255,255,255,.06);--color-success-bg:rgba(45,140,122,.14);--color-success-fg:var(--_teal-light);--color-warning-bg:rgba(245,196,0,.10);--color-warning-fg:var(--_y200);--color-danger-bg:rgba(232,96,96,.14);--color-danger-fg:var(--_coral-light);--color-neutral-fg:var(--_g400);--shadow-md:0 4px 12px rgba(0,0,0,.40);}
+.theme-brand{color-scheme:light;--color-surface-page:var(--_y400);--color-surface-base:var(--_y200);--color-surface-elevated:var(--_y50);--color-surface-sunken:var(--_y600);--color-surface-secondary:var(--_g950);--color-text-primary:var(--_g950);--color-text-secondary:var(--_y900);--color-text-tertiary:var(--_y800);--color-text-on-navy:var(--_g0);--color-brand-primary:var(--_g950);--color-border-default:rgba(0,0,0,.14);--color-border-subtle:rgba(0,0,0,.08);--color-success-bg:rgba(45,140,122,.14);--color-success-fg:var(--_teal-dark);--color-warning-bg:rgba(0,0,0,.08);--color-warning-fg:var(--_y900);--color-danger-bg:rgba(232,96,96,.14);--color-danger-fg:#C0392B;--color-neutral-fg:var(--_y900);--shadow-md:0 4px 12px rgba(0,0,0,.14);}
+.theme-navy{color-scheme:dark;--color-surface-page:var(--_n950);--color-surface-base:var(--_n900);--color-surface-elevated:var(--_n700);--color-surface-sunken:var(--_n950);--color-surface-secondary:var(--_n700);--color-text-primary:var(--_g0);--color-text-secondary:var(--_n100);--color-text-tertiary:var(--_n300);--color-text-on-navy:var(--_g0);--color-brand-primary:var(--_y400);--color-border-default:rgba(107,158,208,.20);--color-border-subtle:rgba(107,158,208,.12);--color-success-bg:rgba(45,140,122,.16);--color-success-fg:var(--_teal-light);--color-warning-bg:rgba(245,196,0,.12);--color-warning-fg:var(--_y200);--color-danger-bg:rgba(232,96,96,.16);--color-danger-fg:var(--_coral-light);--color-neutral-fg:var(--_n300);--shadow-md:0 4px 12px rgba(0,0,0,.50);}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--color-surface-page);color:var(--color-text-primary);min-height:100vh;font-size:14px;line-height:1.5}
+.theme-bar{display:flex;gap:4px;padding:6px 32px;background:var(--color-surface-secondary);border-bottom:1px solid var(--color-border-subtle)}
+.theme-bar button{background:transparent;border:1px solid transparent;color:var(--color-text-on-navy);opacity:.55;padding:4px 12px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.theme-bar button:hover{opacity:1}
+.theme-bar button.active{opacity:1;border-color:var(--color-brand-primary);color:var(--color-brand-primary)}
+
+.hdr{background:var(--color-surface-secondary);padding:24px 32px;border-bottom:2px solid var(--color-brand-primary);box-shadow:var(--shadow-md)}
+.hdr-title{font-family:var(--font-display);font-size:30px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--color-text-on-navy)}
+.hdr-title .accent{color:var(--color-brand-primary)}
+.hdr-meta{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;display:flex;gap:14px;flex-wrap:wrap}
+.hdr-meta .pill{background:rgba(255,255,255,.05);padding:2px 10px;border-radius:var(--r-pill,50px);border:1px solid rgba(255,255,255,.08)}
+
+main{padding:24px 32px;max-width:1400px;margin:0 auto}
+
+.summary{margin-bottom:28px}
+.summary-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.summary-title{font-family:var(--font-display);font-size:13px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:var(--color-text-tertiary)}
+.summary-range{font-size:12px;color:var(--color-text-tertiary)}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media (max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:var(--r-md);padding:12px 14px}
+.kpi-lbl{font-family:var(--font-display);font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:6px}
+.kpi-val{font-family:var(--font-display);font-size:22px;font-weight:900;color:var(--color-text-primary)}
+.kpi.success .kpi-val{color:var(--color-success-fg)}
+.kpi.danger  .kpi-val{color:var(--color-danger-fg)}
+.kpi.warning .kpi-val{color:var(--color-warning-fg)}
+
+.failures-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.failures-head h2{font-family:var(--font-display);font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.failures-count{font-size:12px;color:var(--color-text-tertiary)}
+
+.tabs-wrap{display:grid;grid-template-columns:280px 1fr;gap:18px;background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:var(--r-md);overflow:hidden;min-height:480px}
+@media (max-width:800px){.tabs-wrap{grid-template-columns:1fr;min-height:auto}}
+.tabs-list{background:var(--color-surface-sunken);border-right:1px solid var(--color-border-subtle);max-height:640px;overflow-y:auto;padding:8px}
+@media (max-width:800px){.tabs-list{max-height:240px;border-right:none;border-bottom:1px solid var(--color-border-subtle)}}
+.tab{display:block;width:100%;text-align:left;background:transparent;border:none;border-left:3px solid transparent;color:var(--color-text-secondary);padding:10px 12px;font-family:var(--font-body);font-size:12.5px;cursor:pointer;border-radius:0 var(--r-sm) var(--r-sm) 0;transition:all .15s;font-weight:500}
+.tab:hover{background:var(--color-surface-overlay,rgba(255,255,255,.04));color:var(--color-text-primary)}
+.tab.active{background:var(--color-surface-base);color:var(--color-text-primary);font-weight:700}
+.tab[data-kind="loss"].active{border-left-color:var(--color-danger-fg)}
+.tab[data-kind="exec_error"].active{border-left-color:var(--color-warning-fg)}
+.tab[data-kind="loss"]{border-left-color:rgba(232,96,96,.28)}
+.tab[data-kind="exec_error"]{border-left-color:rgba(245,196,0,.28)}
+.tab-panels{padding:20px 24px;overflow-y:auto;max-height:640px}
+.panel[hidden]{display:none}
+
+.panel-head{margin-bottom:16px}
+.panel-symbol{font-family:var(--font-display);font-size:28px;font-weight:900;letter-spacing:.02em}
+.panel-meta{font-size:11.5px;color:var(--color-text-tertiary);margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{display:inline-block;padding:2px 8px;border-radius:var(--r-pill,50px);font-family:var(--font-display);font-size:9.5px;font-weight:800;letter-spacing:.10em}
+.badge-loss{background:var(--color-danger-bg);color:var(--color-danger-fg)}
+.badge-error{background:var(--color-warning-bg);color:var(--color-warning-fg)}
+
+.data-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media (max-width:600px){.data-grid{grid-template-columns:repeat(2,1fr)}}
+.data-item{background:var(--color-surface-elevated);border:1px solid var(--color-border-subtle);border-radius:var(--r-sm);padding:10px 12px}
+.data-item .lbl{font-family:var(--font-display);font-size:9.5px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:4px}
+.data-item .val{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--color-text-primary)}
+.data-item .sub{font-size:10.5px;color:var(--color-text-tertiary);margin-top:2px}
+.data-pl.danger .val{color:var(--color-danger-fg)}
+.data-pl.success .val{color:var(--color-success-fg)}
+
+.signals-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{display:inline-block;padding:3px 9px;border-radius:var(--r-pill,50px);background:var(--color-surface-elevated);border:1px solid var(--color-border-subtle);font-size:11px;font-weight:600;color:var(--color-text-secondary)}
+.chip-score{background:var(--color-surface-secondary);color:var(--color-brand-primary);border-color:var(--color-brand-primary)}
+.chip-confidence{background:transparent;border-color:var(--color-border-default)}
+
+.error-block{background:var(--color-warning-bg);border:1px solid var(--color-warning-fg);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:14px}
+.error-reason{font-family:var(--font-body);font-weight:600;color:var(--color-warning-fg);font-size:13.5px}
+.error-kind{font-size:11px;color:var(--color-text-tertiary);margin-top:4px;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.05em}
+
+.lesson{background:var(--color-surface-elevated);border-left:3px solid var(--color-brand-primary);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:12px 14px;margin-bottom:14px}
+.lesson-label{font-family:var(--font-display);font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--color-brand-primary);margin-bottom:6px}
+.lesson-body{font-size:13.5px;line-height:1.55}
+
+.reasoning{margin-top:10px}
+.reasoning summary{cursor:pointer;font-size:11.5px;color:var(--color-text-tertiary);font-family:var(--font-display);text-transform:uppercase;letter-spacing:.06em;padding:6px 0}
+.reasoning summary:hover{color:var(--color-text-secondary)}
+.reasoning pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--color-surface-sunken);border:1px solid var(--color-border-subtle);border-radius:var(--r-sm);padding:10px;margin-top:6px;white-space:pre-wrap;word-break:break-word;max-height:240px;overflow-y:auto;color:var(--color-text-secondary)}
+
+.empty-state{text-align:center;padding:64px 24px;background:var(--color-surface-base);border:1px solid var(--color-border-subtle);border-radius:var(--r-md)}
+.empty-icon{font-size:48px;color:var(--color-success-fg);margin-bottom:12px;font-weight:300}
+.empty-title{font-family:var(--font-display);font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--color-text-tertiary)}
+
+footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-align:center;border-top:1px solid var(--color-border-subtle);margin-top:40px}
+</style>
+</head>
+<body>
+<div class="theme-bar">
+  <button onclick="ftTheme('theme-light',this)">Light</button>
+  <button onclick="ftTheme('theme-dark',this)" class="active">Dark</button>
+  <button onclick="ftTheme('theme-brand',this)">Brand</button>
+  <button onclick="ftTheme('theme-navy',this)">Navy</button>
+</div>
+
+<header class="hdr">
+  <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
+  <div class="hdr-meta">
+    <span class="pill">Report date: 2026-05-08</span>
+    <span class="pill">Generated: 2026-05-09 14:43 UTC</span>
+    <span class="pill">Failures-only view</span>
+  </div>
+</header>
+
+<main>
+
+<section class="summary">
+  <div class="summary-head">
+    <div class="summary-title">7-day window</div>
+    <div class="summary-range">2026-05-02 → 2026-05-08</div>
+  </div>
+  <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
+<div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
+<div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
+<div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">5</div></div>
+<div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
+</section>
+
+<section class="failures">
+  <div class="failures-head">
+    <h2>Failures — 2026-05-08</h2>
+    <div class="failures-count">2 total</div>
+  </div>
+  <div class="tabs-wrap">
+    <nav class="tabs-list" role="tablist">
+<button class="tab active" data-target="f-0" data-kind="exec_error">— · 10:03 · ERR</button>
+<button class="tab" data-target="f-1" data-kind="exec_error">— · 10:33 · ERR</button>
+    </nav>
+    <div class="tab-panels">
+<article class="panel active" id="f-0">
+<div class="panel-head">
+  <div class="panel-symbol">—</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-08 · 10:03:30 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">No symbol in decision</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>I&#x27;ll systematically analyze each setup against the hard rules and signal criteria before making a decision.
+
+---
+
+## PRE-TRADE ANALYSIS
+
+### Account State Check
+- Portfolio: $99,837.07 | Daily P&amp;L: -$315.92 (-0.32%) → Daily loss limit of -2% ($1,996.74) not hit ✅
+- Open Positions: 1/5 → Max 3 (system rules say 3, config says 5) — room to add ✅
+- Time: 10:00 EST → Well before 14:55 cutoff ✅
+- Max position risk: 1% of $99,837 = **$998.37**
+
+---
+
+### Candidate 1: AMD — SKIP (pre-flagged)
+- **ADX = </pre>
+</details>
+</article>
+<article class="panel" id="f-1" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">—</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-08 · 10:33:12 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">No symbol in decision</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>I&#x27;ll systematically evaluate each setup against the hard rules and signal criteria before making a decision.
+
+---
+
+## PRE-TRADE ANALYSIS
+
+### Account Status Check
+- Portfolio: $99,811.55 | Daily P&amp;L: -$341.44 (-0.34%) → Daily loss limit (-2% = -$1,996) **NOT breached**
+- Open Positions: 1/5 → Room to add (max 3 per CLAUDE.md, though account shows 1/5)
+- Time: 10:30 EST → **Well before 14:55 cutoff** ✅
+- Max risk per trade: 1% of $99,811.55 = **$998.12**
+
+---
+
+## SETUP-BY-SETUP EVALUATION
+
+### 1.</pre>
+</details>
+</article>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>FlowTrader trade-analysis · regenerated daily</footer>
+
+<script>
+const FT_THEMES=['theme-light','theme-dark','theme-brand','theme-navy'];
+function ftTheme(t,btn){document.documentElement.classList.remove(...FT_THEMES);document.documentElement.classList.add(t);localStorage.setItem('ft-theme',t);document.querySelectorAll('.theme-bar button').forEach(b=>b.classList.toggle('active',b===btn));}
+
+// Set the active theme button on load to match the html class
+(function(){
+  var cls=document.documentElement.className;
+  document.querySelectorAll('.theme-bar button').forEach(function(b){
+    var t=(b.getAttribute('onclick')||'').match(/'(theme-\w+)'/);
+    if(t&&t[1]===cls)b.classList.add('active');else b.classList.remove('active');
+  });
+})();
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    var target=btn.getAttribute('data-target');
+    document.querySelectorAll('.panel').forEach(function(p){
+      if(p.id===target){p.removeAttribute('hidden');p.classList.add('active');}
+      else{p.setAttribute('hidden','');p.classList.remove('active');}
+    });
+  });
+});
+</script>
+</body>
+</html>

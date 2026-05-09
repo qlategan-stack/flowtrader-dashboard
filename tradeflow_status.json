@@ -1,0 +1,33 @@
+{
+  "report_date": "2026-05-08",
+  "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
+  "generated_at": "2026-05-09T14:43:21Z",
+  "failure_count": 2,
+  "loss_count": 0,
+  "error_count": 2,
+  "summary_7day": {
+    "start_date": "2026-05-02",
+    "end_date": "2026-05-08",
+    "closed_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "win_rate_pct": null,
+    "exec_errors": 5,
+    "total_realized": 0,
+    "total_loss": 0
+  },
+  "top_failures": [
+    {
+      "symbol": "\u2014",
+      "time_est": "10:03:30",
+      "kind": "exec_error",
+      "headline": "No symbol in decision"
+    },
+    {
+      "symbol": "\u2014",
+      "time_est": "10:33:12",
+      "kind": "exec_error",
+      "headline": "No symbol in decision"
+    }
+  ]
+}
