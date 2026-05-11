@@ -70,12 +70,14 @@ RISK_PROFILES = CFG.get("risk_profiles", {})
 REFRESH_SEC   = 60
 PAPER_MODE    = os.getenv("PAPER_TRADING", "true").lower() == "true"
 
-MEMO_JSON           = Path("journal/weekly_research_memo.json")
-RISK_PROFILE_JSON   = Path("journal/risk_profile.json")
-STRATEGIES_JSON     = Path("journal/math_strategies.json")
-_GH_REPO            = "qlategan-stack/flowtrader-dashboard"
-_GH_PROFILE_PATH    = "journal/risk_profile.json"
-_GH_STRATEGIES_PATH = "journal/math_strategies.json"
+MEMO_JSON            = Path("journal/weekly_research_memo.json")
+RISK_PROFILE_JSON    = Path("journal/risk_profile.json")
+STRATEGIES_JSON      = Path("journal/math_strategies.json")
+SUGGESTIONS_IN_JSONL = Path("journal/suggestions_in.jsonl")
+_GH_REPO             = "qlategan-stack/flowtrader-dashboard"
+_GH_PROFILE_PATH     = "journal/risk_profile.json"
+_GH_STRATEGIES_PATH  = "journal/math_strategies.json"
+_GH_SUGGESTIONS_PATH = "journal/suggestions_in.jsonl"
 
 # Mathematical strategy metadata — mirrored from trading-bot/strategies/engine.py
 MATH_STRATEGIES = {
@@ -167,6 +169,57 @@ def _write_strategies_to_github(strategies_state: dict) -> bool:
         # Also write locally so the dashboard reflects the new state immediately
         STRATEGIES_JSON.parent.mkdir(parents=True, exist_ok=True)
         STRATEGIES_JSON.write_text(content, encoding="utf-8")
+    except Exception:
+        pass
+    try:
+        r = _req.put(url, headers=headers, json=payload, timeout=10)
+        return r.status_code in (200, 201)
+    except Exception:
+        return False
+
+
+def _load_suggestions() -> list[dict]:
+    """Read suggestions_in.jsonl. Returns [] if file missing or empty."""
+    if not SUGGESTIONS_IN_JSONL.exists():
+        return []
+    out = []
+    for line in SUGGESTIONS_IN_JSONL.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            out.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return out
+
+
+def _write_suggestions_to_github(records: list[dict]) -> bool:
+    """Commit suggestions_in.jsonl to dashboard repo via GitHub API."""
+    import base64
+    import requests as _req
+    token = os.getenv("GITHUB_TOKEN", "")
+    if not token:
+        return False
+    content = "\n".join(json.dumps(r) for r in records) + "\n"
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    url = f"https://api.github.com/repos/{_GH_REPO}/contents/{_GH_SUGGESTIONS_PATH}"
+    sha = ""
+    try:
+        r = _req.get(url, headers=headers, timeout=8)
+        if r.status_code == 200:
+            sha = r.json().get("sha", "")
+    except Exception:
+        pass
+    payload = {
+        "message": "chore: update suggestion status",
+        "content": base64.b64encode(content.encode()).decode(),
+    }
+    if sha:
+        payload["sha"] = sha
+    try:
+        SUGGESTIONS_IN_JSONL.parent.mkdir(parents=True, exist_ok=True)
+        SUGGESTIONS_IN_JSONL.write_text(content, encoding="utf-8")
     except Exception:
         pass
     try:
@@ -512,8 +565,8 @@ if h3.button("⟳ Refresh", width="stretch"):
 st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
-tab_market, tab_account, tab_journal, tab_research, tab_trades, tab_learn = st.tabs([
-    "🔍 Market", "💼 Account", "📓 Journal", "🧠 Research", "📈 Trades", "📚 Learn"
+tab_market, tab_account, tab_journal, tab_research, tab_trades, tab_suggest, tab_learn = st.tabs([
+    "🔍 Market", "💼 Account", "📓 Journal", "🧠 Research", "📈 Trades", "🧪 Suggestions", "📚 Learn"
 ])
 
 
@@ -2209,7 +2262,159 @@ with tab_research:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 6 — LEARN
+# TAB 6 — SUGGESTIONS (Analyst-in / Analyst-out approvals)
+# ═══════════════════════════════════════════════════════════════════════════════
+with tab_suggest:
+    st.markdown("## 🧪 Analyst Suggestions")
+    st.caption("Rule changes proposed by the journal analysts. Approve to patch the bot's CLAUDE.md.")
+
+    # Password gate
+    _SUGG_PW = os.getenv("DASHBOARD_PASSWORD", "")
+    if _SUGG_PW:
+        if not st.session_state.get("_sugg_unlocked"):
+            with st.form("sugg_unlock", clear_on_submit=False):
+                pw = st.text_input("Dashboard password", type="password")
+                ok = st.form_submit_button("Unlock")
+                if ok:
+                    if pw == _SUGG_PW:
+                        st.session_state["_sugg_unlocked"] = True
+                        st.rerun()
+                    else:
+                        st.error("Incorrect password.")
+            st.stop()
+
+    _suggestions = _load_suggestions()
+    if not _suggestions:
+        st.info(
+            "No suggestions yet. Run `python main.py analyst-full` in the trading-bot "
+            "to generate them, then `python scripts/push_journal.py` to sync."
+        )
+        st.stop()
+
+    pending  = [s for s in _suggestions if s.get("status") == "pending"]
+    actioned = [s for s in _suggestions if s.get("status") != "pending"]
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Pending",  len(pending))
+    c2.metric("Approved", sum(1 for s in actioned if s.get("status") == "approved"))
+    c3.metric("Archived", sum(1 for s in actioned if s.get("status") == "archived"))
+
+    sub_pending, sub_history = st.tabs([f"Pending ({len(pending)})", f"History ({len(actioned)})"])
+
+    _PRIORITY_BADGE = {
+        "high":   ("🔴", "#3b1f2b", "#f72585"),
+        "medium": ("🟡", "#2d2a1e", "#ffd60a"),
+        "low":    ("🟢", "#1b4332", "#40916c"),
+    }
+
+    def _render_suggestion(sugg: dict, *, allow_actions: bool):
+        emoji, bg, fg = _PRIORITY_BADGE.get(sugg.get("priority", "low"), _PRIORITY_BADGE["low"])
+        conf = float(sugg.get("confidence", 0))
+        title = sugg.get("title", sugg.get("id", "(untitled)"))
+        with st.container(border=True):
+            top = st.columns([5, 1, 1])
+            top[0].markdown(
+                f"**{emoji} {title}**  \n"
+                f"<span style='background:{bg};color:{fg};padding:2px 8px;border-radius:8px;"
+                f"font-size:0.75rem;font-weight:700;'>{sugg.get('priority','low').upper()}</span> "
+                f"<span style='color:#888;font-size:0.85rem;'>"
+                f"id: {sugg.get('id','?')} · confidence: {conf:.0%} · "
+                f"category: {sugg.get('category','?')} · type: {sugg.get('type','?')}</span>",
+                unsafe_allow_html=True,
+            )
+            top[1].markdown(f"<div style='text-align:right;color:#888;font-size:0.85rem;'>Generated<br>{sugg.get('generated_at','')[:10]}</div>", unsafe_allow_html=True)
+            if sugg.get("status") != "pending":
+                top[2].markdown(
+                    f"<div style='text-align:right;color:#888;font-size:0.85rem;'>"
+                    f"{sugg.get('status','').upper()}<br>{(sugg.get('actioned_at') or '')[:10]}</div>",
+                    unsafe_allow_html=True,
+                )
+
+            with st.expander("📊 Analysis", expanded=False):
+                st.write(sugg.get("analysis", "—"))
+
+            with st.expander("💡 Rationale", expanded=False):
+                st.write(sugg.get("rationale", "—"))
+
+            insight = sugg.get("insight") or {}
+            if insight:
+                with st.expander("🔍 Insight", expanded=False):
+                    if insight.get("why_now"):
+                        st.markdown("**Why now:**"); st.write(insight["why_now"])
+                    if insight.get("purpose"):
+                        st.markdown("**Purpose:**"); st.write(insight["purpose"])
+                    if insight.get("expected_effect"):
+                        st.markdown("**Expected effect:**"); st.write(insight["expected_effect"])
+                    if insight.get("risks"):
+                        st.markdown("**Risks:**"); st.write(insight["risks"])
+
+            current_rule  = sugg.get("current_rule", "")
+            proposed_rule = sugg.get("proposed_rule", "")
+            if current_rule or proposed_rule:
+                with st.expander("📝 CLAUDE.md diff", expanded=False):
+                    d1, d2 = st.columns(2)
+                    d1.markdown("**Current**"); d1.code(current_rule or "—", language="markdown")
+                    d2.markdown("**Proposed**"); d2.code(proposed_rule or "—", language="markdown")
+
+            if allow_actions:
+                btns = st.columns([1, 1, 4])
+                approve_clicked = btns[0].button("✅ Approve", key=f"approve_{sugg['id']}", type="primary")
+                archive_clicked = btns[1].button("🗄️ Archive", key=f"archive_{sugg['id']}")
+
+                if approve_clicked:
+                    if not current_rule or not proposed_rule:
+                        st.error("Missing current_rule or proposed_rule — cannot mark approved.")
+                    else:
+                        with st.spinner("Updating suggestion status…"):
+                            records = _load_suggestions()
+                            for r in records:
+                                if r.get("id") == sugg["id"]:
+                                    r["status"]      = "approved"
+                                    r["actioned_at"] = datetime.utcnow().isoformat() + "Z"
+                                    r["actioned_by"] = "approved"
+                                    break
+                            if _write_suggestions_to_github(records):
+                                st.success(
+                                    f"Approved {sugg['id']}. To apply to CLAUDE.md, run in trading-bot:\n\n"
+                                    f"```\npython scripts/apply_suggestions.py --commit\n```\n"
+                                    f"Add `--dry-run` first to preview the patch."
+                                )
+                                st.rerun()
+                            else:
+                                st.error("Approval failed — check GITHUB_TOKEN scope on qlategan-stack/flowtrader-dashboard.")
+
+                if archive_clicked:
+                    with st.spinner("Archiving…"):
+                        records = _load_suggestions()
+                        for r in records:
+                            if r.get("id") == sugg["id"]:
+                                r["status"]      = "archived"
+                                r["actioned_at"] = datetime.utcnow().isoformat() + "Z"
+                                r["actioned_by"] = "archived"
+                                break
+                        if _write_suggestions_to_github(records):
+                            st.success(f"Archived {sugg['id']}.")
+                            st.rerun()
+                        else:
+                            st.error("Archive failed — check GITHUB_TOKEN.")
+
+    with sub_pending:
+        if not pending:
+            st.info("No pending suggestions. All caught up.")
+        else:
+            for s in sorted(pending, key=lambda x: (x.get("priority", "low"), -float(x.get("confidence", 0)))):
+                _render_suggestion(s, allow_actions=True)
+
+    with sub_history:
+        if not actioned:
+            st.info("No actioned suggestions yet.")
+        else:
+            for s in sorted(actioned, key=lambda x: (x.get("actioned_at") or ""), reverse=True):
+                _render_suggestion(s, allow_actions=False)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TAB 7 — LEARN
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab_learn:
     import numpy as np
