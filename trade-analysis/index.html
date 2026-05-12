@@ -124,8 +124,8 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <header class="hdr">
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
-    <span class="pill">Report date: 2026-05-08</span>
-    <span class="pill">Generated: 2026-05-09 14:43 UTC</span>
+    <span class="pill">Report date: 2026-05-11</span>
+    <span class="pill">Generated: 2026-05-12 06:32 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,82 +135,149 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-05-02 → 2026-05-08</div>
+    <div class="summary-range">2026-05-05 → 2026-05-11</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
-<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">5</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">12</div></div>
 <div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
 </section>
 
 <section class="failures">
   <div class="failures-head">
-    <h2>Failures — 2026-05-08</h2>
-    <div class="failures-count">2 total</div>
+    <h2>Failures — 2026-05-11</h2>
+    <div class="failures-count">7 total</div>
   </div>
   <div class="tabs-wrap">
     <nav class="tabs-list" role="tablist">
-<button class="tab active" data-target="f-0" data-kind="exec_error">— · 10:03 · ERR</button>
-<button class="tab" data-target="f-1" data-kind="exec_error">— · 10:33 · ERR</button>
+<button class="tab active" data-target="f-0" data-kind="exec_error">META · 12:17 · ERR</button>
+<button class="tab" data-target="f-1" data-kind="exec_error">META · 12:35 · ERR</button>
+<button class="tab" data-target="f-2" data-kind="exec_error">META · 13:10 · ERR</button>
+<button class="tab" data-target="f-3" data-kind="exec_error">META · 13:28 · ERR</button>
+<button class="tab" data-target="f-4" data-kind="exec_error">META · 13:35 · ERR</button>
+<button class="tab" data-target="f-5" data-kind="exec_error">META · 13:48 · ERR</button>
+<button class="tab" data-target="f-6" data-kind="exec_error">META · 14:17 · ERR</button>
     </nav>
     <div class="tab-panels">
 <article class="panel active" id="f-0">
 <div class="panel-head">
-  <div class="panel-symbol">—</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-08 · 10:03:30 EST</div>
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 12:17:40 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">No symbol in decision</div>
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup in META — the signal logic worked exactly as designed — but the execution was blocked because you still held an existing 16-share position, preventing re-entry under the bot&#x27;s no-add rule. Before the session opens, audit your open positions against the bot&#x27;s watchlist so you can decide whether to close lingering holdings and free up those symbols for clean re-entry when a high-quality signal like this one emerges.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>I&#x27;ll systematically analyze each setup against the hard rules and signal criteria before making a decision.
-
----
-
-## PRE-TRADE ANALYSIS
-
-### Account State Check
-- Portfolio: $99,837.07 | Daily P&amp;L: -$315.92 (-0.32%) → Daily loss limit of -2% ($1,996.74) not hit ✅
-- Open Positions: 1/5 → Max 3 (system rules say 3, config says 5) — room to add ✅
-- Time: 10:00 EST → Well before 14:55 cutoff ✅
-- Max position risk: 1% of $99,837 = **$998.37**
-
----
-
-### Candidate 1: AMD — SKIP (pre-flagged)
-- **ADX = </pre>
+  <pre>META is the clear best setup in today&#x27;s session with a score of 4/6 and A_GRADE quality — the only symbol that genuinely qualifies under our signal rules. Price at $603.21 is sitting 6.81% below the 20-day MA ($647.26) and below the lower Bollinger Band (pct_b = 0.148), signaling meaningful mean reversion potential. RSI at 40.55 shows mild oversold conditions without being in freefall. ADX at 20.55 is just above the sub-20 threshold but comfortably below 25, confirming a ranging regime where mean reversion strategies are valid. News sentiment is positive (0.269, 10 articles). The setup is clea</pre>
 </details>
 </article>
 <article class="panel" id="f-1" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">—</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-08 · 10:33:12 EST</div>
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 12:35:30 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">No symbol in decision</div>
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot correctly identified a legitimate mean-reversion setup on META — strong deviation from the 20-day MA, a valid signal score, and a clean technical read — but the execution was blocked because you&#x27;re already holding 16 shares, a position that should have been resolved before this session&#x27;s scan ran. Before the next session, decide whether to close, hold, or scale out of that existing META position so the bot isn&#x27;t locked out of acting on its own signals by unresolved inventory.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>I&#x27;ll systematically evaluate each setup against the hard rules and signal criteria before making a decision.
-
----
-
-## PRE-TRADE ANALYSIS
-
-### Account Status Check
-- Portfolio: $99,811.55 | Daily P&amp;L: -$341.44 (-0.34%) → Daily loss limit (-2% = -$1,996) **NOT breached**
-- Open Positions: 1/5 → Room to add (max 3 per CLAUDE.md, though account shows 1/5)
-- Time: 10:30 EST → **Well before 14:55 cutoff** ✅
-- Max risk per trade: 1% of $99,811.55 = **$998.12**
-
----
-
-## SETUP-BY-SETUP EVALUATION
-
-### 1.</pre>
+  <pre>META is the only qualifying setup this session with a signal score of 3, meeting the medium_safety threshold of 2+. The stock is trading at $603.61, approximately 6.75% below its 20-day MA of $647.28 — a meaningful mean reversion candidate. RSI at 40.67 is mildly oversold without being extreme. ADX at 20.55 confirms a ranging regime, making mean reversion strategies viable. Bollinger %B at 0.15 places price near the lower band, adding confluence. The system-flagged stop at $594.67 (0.5x ATR below entry) risks roughly $8.94/share. At 1 position, sizing 1% of $98,367 = ~$984 max risk, which allo</pre>
+</details>
+</article>
+<article class="panel" id="f-2" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 13:10:35 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup on META — signal score of 4, price well below the 20-day MA, compressed Bollinger Band positioning, and a ranging regime all aligned — but the trade was blocked because you already hold 16 shares, triggering the no-add-to-existing-positions rule. Before the next signal fires, decide whether to close or keep your current META position so you&#x27;re not locked out of a high-conviction entry again.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>META is the only A-GRADE setup on the board today with a signal score of 4, well above the medium_safety threshold of 2. Price at 601.49 is 7.06% below the 20-day MA (647.17), sitting near the lower Bollinger Band (pct_b 0.136), RSI is at 40.05 (mildly oversold), ADX at 20.55 confirms a ranging regime, and news sentiment is positive. The mean reversion target (MA20 at 647.17) offers ~7.6% upside vs. ~1.5% stop risk — a favorable R:R of ~5:1. Caution flags: (1) Today&#x27;s P&amp;L is already -$1,249.04, which is approaching the -2% daily loss limit ($98,334.51 × 2% = $1,966.69). Current loss is 1.27% —</pre>
+</details>
+</article>
+<article class="panel" id="f-3" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 13:28:08 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot correctly identified a legitimate mean-reversion setup — the signal was valid — but the order was rejected because it tried to open a new position in META while 16 shares were already held, violating the no-add-to-position rule. Before the bot scans for entries, make sure you manually verify (or automate a pre-check) that any symbol flagged as a candidate has a flat position, and if META is still extended below its 20-day MA when you close those 16 shares, you can re-evaluate a clean re-entry at that point.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>META is the only B-GRADE setup in today&#x27;s scan with a signal score of 3, which exceeds the medium_safety threshold of 2. Price at $601.50 is trading 7.06% below the 20-day MA ($647.17), placing it well below the Bollinger midline and close to the lower band (lower BB at $584.44, pct_b of 0.136). RSI at 40.05 is mildly oversold. ADX at 20.55 confirms a ranging regime where mean reversion is the appropriate strategy. The market regime is assessed as RANGING with upside bias — favorable for this trade type. News sentiment is neutral (no positive tailwind, but no negative catalyst either). No earn</pre>
+</details>
+</article>
+<article class="panel" id="f-4" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 13:35:04 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup — solid signal score, price well below the moving average, and RSI in oversold territory — but the trade was blocked because you were already holding 16 shares of META, triggering the no-add-to-position rule. Before the next high-conviction signal fires, make it a habit to scan your open positions and close or size down any existing holdings in your watchlist symbols so you&#x27;re ready to act cleanly when the setup appears.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>META is the only A-GRADE setup in the watchlist with a signal score of 4, well above the medium_safety threshold of 2. Price at $601.88 is 7% below the 20-day MA ($647.19), sitting near the lower Bollinger Band (pct_b 0.139), and RSI at 40.16 is in mild oversold territory. ADX at 20.55 confirms a ranging regime, making mean reversion appropriate. News sentiment is positive (score 0.249, 10 articles). The setup is mean_reversion_eligible=true. HOWEVER, several risk factors moderate confidence to MEDIUM: (1) Today&#x27;s P&amp;L is already -$1,244.64, representing approximately -1.27% of portfolio — we a</pre>
+</details>
+</article>
+<article class="panel" id="f-5" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 13:48:46 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot&#x27;s signal reading was actually solid — META showed a legitimate mean-reversion setup with price well below the 20-day MA, compressed Bollinger position, and a ranging ADX — but the execution was blocked because you were already holding 16 shares, a position management rule the bot correctly enforced. Before the session, audit your open positions against your watchlist so you&#x27;re not burning signal opportunities on names you&#x27;re already in; if you want to add exposure to META, size up or close and re-enter intentionally rather than letting a duplicate trigger go to waste.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>META is the highest-scoring setup on the watchlist at 3/6 signals, meeting the medium_safety threshold of 2+. Price at $602.73 is 6.88% below the 20-day MA of $647.23, sitting near the lower Bollinger Band (pct_b = 0.144), and RSI at 40.41 is mildly oversold. ADX at 20.55 confirms a ranging regime — ideal for mean reversion. The market macro is RANGING with mean reversion ACTIVE for equities, which directly supports this trade. Risk is acceptable: stop at $593.79 (pre-calculated ATR-based stop), target at the 20-day MA $647.23, yielding roughly a 4.9:1 reward-to-risk ratio (~$44.50 gain vs ~$8</pre>
+</details>
+</article>
+<article class="panel" id="f-6" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">META</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-11 · 14:17:09 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot&#x27;s signal reading was sound — a 6.94% deviation below the 20-day MA with a ranging ADX and mild RSI oversold conditions is exactly the kind of setup this strategy targets — but the trade never executed because you were already holding 16 shares, triggering the position-duplication block. Before the bot scans for entries, make it a habit to review your open positions in META (and any other frequently signaled names), so you can decide whether to close the existing position first if you want fresh exposure at the new entry price.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>META is the only setup meeting the minimum signal threshold (3/6) with a B_GRADE quality rating. Price is at $602.29, sitting 6.94% below the 20-day MA of $647.21, which is the mean reversion target. RSI at 40.28 indicates mild oversold conditions. ADX at 20.55 confirms a ranging market, validating the mean reversion approach. The Bollinger %B at 0.141 places price near the lower band (lower BB at $584.59), providing additional confluence. Stop loss is pre-calculated at $593.35 (0.5x ATR below entry), giving a clean risk/reward of roughly 8.9 pts risk vs. 44.9 pts reward (~5:1 R/R). Position s</pre>
 </details>
 </article>
     </div>

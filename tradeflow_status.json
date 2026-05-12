@@ -1,33 +1,51 @@
 {
-  "report_date": "2026-05-08",
+  "report_date": "2026-05-11",
   "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
-  "generated_at": "2026-05-09T14:43:21Z",
-  "failure_count": 2,
+  "generated_at": "2026-05-12T06:32:41Z",
+  "failure_count": 7,
   "loss_count": 0,
-  "error_count": 2,
+  "error_count": 7,
   "summary_7day": {
-    "start_date": "2026-05-02",
-    "end_date": "2026-05-08",
+    "start_date": "2026-05-05",
+    "end_date": "2026-05-11",
     "closed_trades": 0,
     "wins": 0,
     "losses": 0,
     "win_rate_pct": null,
-    "exec_errors": 5,
+    "exec_errors": 12,
     "total_realized": 0,
     "total_loss": 0
   },
   "top_failures": [
     {
-      "symbol": "\u2014",
-      "time_est": "10:03:30",
+      "symbol": "META",
+      "time_est": "12:17:40",
       "kind": "exec_error",
-      "headline": "No symbol in decision"
+      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "\u2014",
-      "time_est": "10:33:12",
+      "symbol": "META",
+      "time_est": "12:35:30",
       "kind": "exec_error",
-      "headline": "No symbol in decision"
+      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
+    },
+    {
+      "symbol": "META",
+      "time_est": "13:10:35",
+      "kind": "exec_error",
+      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
+    },
+    {
+      "symbol": "META",
+      "time_est": "13:28:08",
+      "kind": "exec_error",
+      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
+    },
+    {
+      "symbol": "META",
+      "time_est": "13:35:04",
+      "kind": "exec_error",
+      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
     }
   ]
 }
