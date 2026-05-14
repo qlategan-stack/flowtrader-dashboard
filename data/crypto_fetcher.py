@@ -12,13 +12,14 @@ ccxt is used only for private operations (balance, orders).
 import os
 import logging
 import requests
+from pathlib import Path
 from typing import Optional
 import pandas as pd
 import pytz
 from datetime import datetime
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / ".env")
 logger = logging.getLogger(__name__)
 
 try:
@@ -729,3 +730,191 @@ class BybitFetcher:
 
         results.sort(key=lambda x: x["indicators"].get("signal_score", 0), reverse=True)
         return results
+
+
+class BinanceFetcher:
+    """
+    Binance Spot trading via ccxt — authenticated operations only.
+    Public market data (OHLCV, tickers) is handled by BybitFetcher's
+    multi-source fallback chain; no duplication needed here.
+
+    Set BINANCE_TESTNET=true to target testnet.binance.vision (default).
+    Set BINANCE_TESTNET=false for the live exchange.
+    """
+
+    def __init__(self):
+        self.api_key      = os.getenv("BINANCE_API_KEY", "")
+        self.api_secret   = os.getenv("BINANCE_SECRET_KEY", "")
+        self.testnet      = os.getenv("BINANCE_TESTNET", "true").lower() == "true"
+        self.exchange     = None
+        self._has_private = bool(self.api_key and self.api_secret)
+        self._markets_loaded = False
+
+        if CCXT_AVAILABLE and self._has_private:
+            self._connect()
+
+    def _connect(self):
+        try:
+            self.exchange = ccxt.binance({
+                "apiKey":  self.api_key,
+                "secret":  self.api_secret,
+                "options": {"defaultType": "spot"},
+                "enableRateLimit": True,
+            })
+            if self.testnet:
+                self.exchange.set_sandbox_mode(True)
+                # testnet.binance.vision uses a CA not in Python's certifi bundle;
+                # ccxt passes verify=exchange.verify to requests.
+                self.exchange.verify = False
+                import urllib3
+                urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            # load_markets() is deferred — it takes ~2 min on testnet and is only
+            # needed for precision methods used in order placement.
+            self._markets_loaded = False
+            mode = "TESTNET" if self.testnet else "LIVE"
+            logger.info(f"Binance connected ({mode}) — API key loaded")
+        except Exception as e:
+            self.exchange = None
+            self._has_private = False
+            logger.error(f"Binance connection failed: {e}")
+
+    def _ensure_markets(self):
+        """Load markets once, lazily — only needed before order placement."""
+        if not self._markets_loaded and self.exchange:
+            logger.info("Binance: loading markets (one-time, needed for order precision)…")
+            self.exchange.load_markets()
+            self._markets_loaded = True
+
+    # ── ACCOUNT ───────────────────────────────────────────────────────────────
+
+    def get_balance(self) -> dict:
+        """Fetch Binance spot USDT balance and open coin positions.
+
+        Ticker lookups are batched in one fetch_tickers() call (capped at 20
+        symbols) to avoid the per-coin request avalanche that testnet accounts
+        accumulate as dust after many test trades.
+        """
+        if not self.exchange or not self._has_private:
+            return {"error": "Binance not connected — add BINANCE_API_KEY to .env"}
+        try:
+            raw = self.exchange.fetch_balance()
+            usdt_free  = float((raw.get("USDT") or {}).get("free",  0) or 0)
+            usdt_total = float((raw.get("USDT") or {}).get("total", 0) or 0)
+
+            coin_amounts: dict = {}
+            for coin, data in (raw.get("total") or {}).items():
+                if coin == "USDT":
+                    continue
+                amount = float(data or 0)
+                # Filter dust, fake testnet tokens (non-ASCII names, digit-only names)
+                if amount > 1e-4 and coin.isascii() and coin.isalnum() and not coin.isdigit():
+                    coin_amounts[coin] = amount
+
+            prices: dict = {}
+            if coin_amounts:
+                symbols = [f"{c}/USDT" for c in list(coin_amounts)[:20]]
+                try:
+                    tickers = self.exchange.fetch_tickers(symbols)
+                    for sym, ticker in tickers.items():
+                        coin = sym.split("/")[0]
+                        prices[coin] = float(ticker.get("last", 0) or 0)
+                except Exception as te:
+                    logger.warning(f"Binance batch ticker fetch failed: {te}")
+
+            positions = []
+            for coin, amount in list(coin_amounts.items())[:20]:
+                price = prices.get(coin)
+                value = round(amount * price, 2) if price else None
+                positions.append({
+                    "currency":  coin,
+                    "amount":    round(amount, 8),
+                    "price_usd": round(price, 2) if price else None,
+                    "value_usd": value,
+                })
+
+            position_value = sum((p["value_usd"] or 0) for p in positions)
+            return {
+                "account_value":  round(usdt_total + position_value, 2),
+                "total_usdt":     round(usdt_total, 2),
+                "free_usdt":      round(usdt_free, 2),
+                "funding_usdt":   0.0,
+                "position_value": round(position_value, 2),
+                "open_positions": len(coin_amounts),
+                "positions":      positions,
+                "exchange":       "binance",
+                "testnet":        self.testnet,
+            }
+        except Exception as e:
+            logger.error(f"Binance balance error: {e}")
+            return {"error": str(e)}
+
+    # ── ORDER PLACEMENT ───────────────────────────────────────────────────────
+
+    def place_order(
+        self,
+        symbol: str,
+        side: str,
+        usdt_amount: float,
+        current_price: float,
+        stop_loss_price: float,
+        take_profit_price: float,
+    ) -> dict:
+        if not self.exchange or not self._has_private:
+            return {"status": "ERROR", "reason": "Binance not connected"}
+
+        self._ensure_markets()
+
+        try:
+            if side.upper() == "BUY":
+                order = self.exchange.create_market_buy_order(
+                    symbol, None,
+                    params={"quoteOrderQty": usdt_amount},
+                )
+                fill_price  = float(order.get("average") or order.get("price") or current_price)
+                base_filled = float(order.get("filled") or (usdt_amount / fill_price))
+
+                try:
+                    sl_price = self.exchange.price_to_precision(symbol, stop_loss_price)
+                    self.exchange.create_order(
+                        symbol, "STOP_LOSS_LIMIT", "sell",
+                        base_filled,
+                        price=float(sl_price),
+                        params={"stopPrice": float(sl_price), "timeInForce": "GTC"},
+                    )
+                except Exception as sl_err:
+                    logger.warning(f"Binance stop-loss order failed (main order still placed): {sl_err}")
+
+                return {
+                    "status":      "SUBMITTED",
+                    "exchange":    "binance",
+                    "testnet":     self.testnet,
+                    "symbol":      symbol,
+                    "side":        "BUY",
+                    "base_amount": round(base_filled, 6),
+                    "usdt_spent":  round(usdt_amount, 2),
+                    "fill_price":  round(fill_price, 6),
+                    "stop_loss":   stop_loss_price,
+                    "take_profit": take_profit_price,
+                    "order_id":    order.get("id"),
+                }
+
+            else:
+                base_amount = float(usdt_amount / current_price)
+                base_amount = float(self.exchange.amount_to_precision(symbol, base_amount))
+                order = self.exchange.create_market_sell_order(symbol, base_amount)
+                fill_price = float(order.get("average") or order.get("price") or current_price)
+                return {
+                    "status":        "SUBMITTED",
+                    "exchange":      "binance",
+                    "testnet":       self.testnet,
+                    "symbol":        symbol,
+                    "side":          "SELL",
+                    "base_amount":   round(base_amount, 6),
+                    "usdt_received": round(base_amount * fill_price, 2),
+                    "fill_price":    round(fill_price, 6),
+                    "order_id":      order.get("id"),
+                }
+
+        except Exception as e:
+            logger.error(f"Binance order error: {e}")
+            return {"status": "ERROR", "reason": str(e), "symbol": symbol}

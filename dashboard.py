@@ -22,7 +22,7 @@ import yaml
 from dotenv import load_dotenv
 
 # ── Secrets: .env locally, st.secrets on Streamlit Cloud ─────────────────────
-load_dotenv()
+load_dotenv(Path(__file__).parent / ".env")
 try:
     for _k, _v in st.secrets.items():
         os.environ.setdefault(_k, str(_v))
@@ -31,7 +31,7 @@ except Exception:
 
 sys.path.insert(0, str(Path(__file__).parent))
 from data.fetcher import MarketDataFetcher
-from data.crypto_fetcher import BybitFetcher
+from data.crypto_fetcher import BybitFetcher, BinanceFetcher
 from journal.logger import TradeJournal
 
 # ── Page config ───────────────────────────────────────────────────────────────
@@ -283,6 +283,18 @@ def _bybit():
     return BybitFetcher()
 
 @st.cache_resource
+def _crypto_ex():
+    """Return BinanceFetcher when BINANCE_API_KEY is set, else BybitFetcher."""
+    try:
+        for _k, _v in st.secrets.items():
+            os.environ[_k] = str(_v)
+    except Exception:
+        pass
+    if os.getenv("BINANCE_API_KEY"):
+        return BinanceFetcher()
+    return BybitFetcher()
+
+@st.cache_resource
 def _journal():
     return TradeJournal()
 
@@ -309,18 +321,18 @@ def fetch_snapshot(watchlist: tuple):
 def fetch_crypto_snapshot(symbols: tuple):
     return _bybit().build_crypto_snapshot(list(symbols))
 
-BYBIT_BALANCE_JSON = Path("journal/bybit_balance.json")
+CRYPTO_BALANCE_JSON = Path(__file__).parent / "journal" / "bybit_balance.json"
 
 @st.cache_data(ttl=REFRESH_SEC)
-def fetch_bybit_balance():
-    if BYBIT_BALANCE_JSON.exists():
+def fetch_crypto_balance():
+    if CRYPTO_BALANCE_JSON.exists():
         try:
-            data = json.loads(BYBIT_BALANCE_JSON.read_text(encoding="utf-8"))
+            data = json.loads(CRYPTO_BALANCE_JSON.read_text(encoding="utf-8"))
             if "error" not in data:
                 return data
         except Exception:
             pass
-    return _bybit().get_balance()
+    return _crypto_ex().get_balance()
 
 @st.cache_data(ttl=30)
 def fetch_entries(days: int):
@@ -701,10 +713,13 @@ with tab_market:
     crypto_wl = []  # ensure defined for the unified Symbol Detail block below
     if CRYPTO_LIST:
         st.divider()
-        _b           = _bybit()
-        order_mode   = "🟡 TESTNET" if _b.testnet else "🔴 LIVE"
-        has_key      = _b._has_private
-        st.subheader(f"Crypto Watchlist — Orders: Bybit {order_mode}")
+        _b           = _bybit()      # public market data (OHLCV/tickers multi-source)
+        _cx          = _crypto_ex()  # order routing — Binance or Bybit
+        _cx_name_mkt = "Binance" if isinstance(_cx, BinanceFetcher) else "Bybit"
+        _cx_testnet  = getattr(_cx, "testnet", True)
+        order_mode   = "🟡 TESTNET" if _cx_testnet else "🔴 LIVE"
+        has_key      = getattr(_cx, "_has_private", False)
+        st.subheader(f"Crypto Watchlist — Orders: {_cx_name_mkt} {order_mode}")
         st.caption("💡 **Price** updates live every 60 s via Binance ticker. **RSI / BB / ADX** are calculated from daily bars and only change once per day at midnight UTC.")
 
         with st.spinner("Fetching crypto market data…"):
@@ -720,12 +735,12 @@ with tab_market:
         }.get(active_source, "no source reachable")
         st.caption(
             f"📡 Market data source: **{source_label}**  ·  "
-            f"Order routing: Bybit {'Testnet' if _b.testnet else 'Live'} "
+            f"Order routing: {_cx_name_mkt} {'Testnet' if _cx_testnet else 'Live'} "
             f"({'API key loaded' if has_key else 'no key — read-only'})"
         )
 
         if not has_key:
-            st.caption("Add BYBIT_API_KEY + BYBIT_SECRET_KEY to Streamlit secrets to enable order placement.")
+            st.caption(f"Add {_cx_name_mkt.upper()}_API_KEY + {_cx_name_mkt.upper()}_SECRET_KEY to Streamlit secrets to enable order placement.")
 
         if crypto_wl:
             crows = []
@@ -947,40 +962,42 @@ with tab_account:
         open_pos   = len(positions)
         invested   = portfolio - cash
 
-        # ── Bybit figures (used in combined header) ───────────────────────────────
-        bybit_bal      = fetch_bybit_balance()
-        bybit_ok       = "error" not in bybit_bal
-        bybit_value    = float(bybit_bal.get("account_value", 0))  if bybit_ok else 0.0
-        bybit_free     = float(bybit_bal.get("free_usdt", 0))      if bybit_ok else 0.0
-        bybit_funding  = float(bybit_bal.get("funding_usdt", 0))   if bybit_ok else 0.0
-        bybit_invested = float(bybit_bal.get("position_value", 0)) if bybit_ok else 0.0
-        bybit_holds    = bybit_bal.get("positions", []) or []
-        bybit_npos     = len(bybit_holds)
+        # ── Crypto exchange figures (Binance or Bybit) ────────────────────────────
+        cx_bal     = fetch_crypto_balance()
+        cx_ok      = "error" not in cx_bal
+        cx_name    = cx_bal.get("exchange", "bybit").capitalize()
+        cx_mode    = "Testnet" if cx_bal.get("testnet", True) else "Live"
+        cx_value   = float(cx_bal.get("account_value", 0))  if cx_ok else 0.0
+        cx_free    = float(cx_bal.get("free_usdt", 0))      if cx_ok else 0.0
+        cx_funding = float(cx_bal.get("funding_usdt", 0))   if cx_ok else 0.0
+        cx_invested = float(cx_bal.get("position_value", 0)) if cx_ok else 0.0
+        cx_holds   = cx_bal.get("positions", []) or []
+        cx_npos    = len(cx_holds)
 
         # ═════════════════════════════════════════════════════════════════════════
         # 🌐 TOTAL — combined view across both venues
         # ═════════════════════════════════════════════════════════════════════════
-        st.markdown("### 🌐 Total Account  —  Alpaca + Bybit Combined")
+        st.markdown(f"### 🌐 Total Account  —  Alpaca + {cx_name} Combined")
 
-        total_value     = portfolio + bybit_value
-        total_available = buying_pwr + bybit_free
-        total_invested  = invested + bybit_invested
-        total_positions = open_pos + bybit_npos
+        total_value     = portfolio + cx_value
+        total_available = buying_pwr + cx_free
+        total_invested  = invested + cx_invested
+        total_positions = open_pos + cx_npos
 
         t1, t2, t3, t4, t5 = st.columns(5)
         t1.metric("Total Value",       f"${total_value:,.2f}",
-                  help="Total wealth across both venues — Alpaca equity portfolio + Bybit USDT and crypto holdings.")
+                  help=f"Total wealth across both venues — Alpaca equity portfolio + {cx_name} USDT and crypto holdings.")
         t2.metric("Available to Trade", f"${total_available:,.2f}",
-                  help="Cash you can deploy right now: Alpaca buying power + Bybit free USDT (in the Unified wallet).")
+                  help=f"Cash you can deploy right now: Alpaca buying power + {cx_name} free USDT.")
         t3.metric("Currently Invested", f"${total_invested:,.2f}",
                   f"{(total_invested/total_value*100):.1f}%" if total_value else "—",
                   help="Capital tied up in open positions across both venues.")
         t4.metric("Day P&L (Alpaca)",  f"${day_pl:+,.2f}",
                   f"{day_pl/portfolio*100:+.2f}%" if portfolio else "0%",
                   delta_color="normal",
-                  help="Today's realised + unrealised change on the Alpaca account. Bybit doesn't expose a comparable daily P&L figure.")
+                  help=f"Today's realised + unrealised change on the Alpaca account. {cx_name} doesn't expose a comparable daily P&L figure.")
         t5.metric("Open Positions",    f"{total_positions}",
-                  f"{open_pos} equity · {bybit_npos} crypto",
+                  f"{open_pos} equity · {cx_npos} crypto",
                   help="Combined count across both venues.")
 
         st.divider()
@@ -1116,29 +1133,26 @@ with tab_account:
             )
 
         # ═════════════════════════════════════════════════════════════════════════
-        # 🪙 BYBIT — Crypto
+        # 🪙 CRYPTO — Binance or Bybit
         # ═════════════════════════════════════════════════════════════════════════
         st.divider()
-        bybit_mode = "Testnet" if _bybit().testnet else "Live"
-        st.markdown(f"### 🪙 Bybit  —  Crypto ({bybit_mode})  ·  ${bybit_value:,.2f}")
+        st.markdown(f"### 🪙 {cx_name}  —  Crypto ({cx_mode})  ·  ${cx_value:,.2f}")
 
-        if not bybit_ok:
-            st.info(f"Bybit: {bybit_bal['error']}")
+        if not cx_ok:
+            st.info(f"{cx_name}: {cx_bal['error']}")
         else:
             cb1, cb2, cb3, cb4 = st.columns(4)
-            cb1.metric("Account Value",   f"${bybit_value:,.2f}",
-                       help="USDT across both wallets + crypto holdings valued at current spot price.")
-            cb2.metric("Free USDT",       f"${bybit_free:,.2f}",
-                       help="USDT in the Unified Trading wallet — what the bot can spend on new orders.")
-            cb3.metric("Funding USDT",    f"${bybit_funding:,.2f}",
-                       help="USDT parked in the Funding account. Transfer to Unified before it can be used to trade.")
-            cb4.metric("Invested",        f"${bybit_invested:,.2f}",
-                       f"{(bybit_invested/bybit_value*100):.1f}% of account" if bybit_value else "—",
+            cb1.metric("Account Value",   f"${cx_value:,.2f}",
+                       help="USDT balance + crypto holdings valued at current spot price.")
+            cb2.metric("Free USDT",       f"${cx_free:,.2f}",
+                       help="USDT available to place new orders.")
+            cb3.metric("Funding USDT",    f"${cx_funding:,.2f}",
+                       help="USDT in a separate funding/savings wallet (Bybit only; zero for Binance spot).")
+            cb4.metric("Invested",        f"${cx_invested:,.2f}",
+                       f"{(cx_invested/cx_value*100):.1f}% of account" if cx_value else "—",
                        help="Value of non-USDT crypto holdings at current spot price.")
 
-            # ── Bot-managed crypto positions only ──────────────────────────────────
-            # Re-use the journal lookup we built for Alpaca positions.  Bybit
-            # holding `currency` is "BTC"; journal symbol is "BTC/USDT".
+            # ── Crypto positions table ─────────────────────────────────────────────
             def _find_crypto_entry(currency: str) -> dict:
                 for quote in ("USDT", "USDC", "USD"):
                     sym = f"{currency}/{quote}"
@@ -1146,23 +1160,19 @@ with tab_account:
                         return entry_by_sym[sym]
                 return {}
 
-            # Show every wallet balance — bot-opened and pre-existing both —
-            # so the user sees the full picture. The Source column distinguishes
-            # 🤖 Bot (has a journal entry) from 👤 Wallet (testnet faucet,
-            # manual transfer, or any holding the bot didn't open).
-            n_bot = sum(1 for p in bybit_holds if _find_crypto_entry(p.get("currency", "")))
-            n_total = len(bybit_holds)
+            n_bot = sum(1 for p in cx_holds if _find_crypto_entry(p.get("currency", "")))
+            n_total = len(cx_holds)
 
             st.markdown(f"**Crypto Positions ({n_total})**  ·  {n_bot} bot-managed · {n_total - n_bot} wallet")
 
-            if bybit_holds:
+            if cx_holds:
                 rows = []
-                for p in bybit_holds:
+                for p in cx_holds:
                     coin     = p.get("currency", "")
                     amount   = float(p.get("amount", 0))
                     cur_px   = float(p["price_usd"]) if p.get("price_usd") else 0
                     val      = float(p.get("value_usd") or 0)
-                    pct      = (val / bybit_value * 100) if (val and bybit_value) else None
+                    pct      = (val / cx_value * 100) if (val and cx_value) else None
 
                     je       = _find_crypto_entry(coin)
                     entry_px = float(je.get("entry_price",   0) or 0)
@@ -1244,9 +1254,9 @@ with tab_account:
             else:
                 st.caption("No non-USDT holdings.")
 
-            # ── Wallet split (always show if there are any holdings) ────────────
-            if bybit_holds:
-                with st.expander(f"Wallet split — Unified vs Funding ({len(bybit_holds)} balance(s))"):
+            # ── Wallet split — Bybit only (Unified vs Funding) ────────────────
+            if cx_holds and cx_bal.get("exchange") == "bybit":
+                with st.expander(f"Wallet split — Unified vs Funding ({len(cx_holds)} balance(s))"):
                     split_rows = [
                         {
                             "Asset":   p.get("currency"),
@@ -1254,7 +1264,7 @@ with tab_account:
                             "Unified": float(p.get("unified", 0)),
                             "Funding": float(p.get("funding", 0)),
                         }
-                        for p in bybit_holds
+                        for p in cx_holds
                     ]
                     st.dataframe(
                         pd.DataFrame(split_rows).style.format({
@@ -1270,7 +1280,7 @@ with tab_account:
                         "**Unified** holds tradeable balances; **Funding** must be transferred to Unified before the bot can use it."
                     )
 
-            fetched = bybit_bal.get("fetched_at", "")
+            fetched = cx_bal.get("fetched_at", "")
             if fetched:
                 st.caption(f"Last updated: {fetched[:16].replace('T', ' ')} UTC  ·  refreshed every ~15 min by the trading-bot workflow")
 

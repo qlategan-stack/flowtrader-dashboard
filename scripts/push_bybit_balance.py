@@ -1,10 +1,11 @@
 """
-Local scheduled task — fetch Bybit testnet balance and commit it to the
+Local scheduled task — fetch crypto exchange balance and commit it to the
 dashboard repo so Streamlit Cloud can read journal/bybit_balance.json.
 
-Why local: Bybit's testnet/demo endpoints are CloudFront geo-blocked from
-US cloud datacenter IPs (Streamlit Cloud and likely GitHub Actions too).
-A residential IP is not blocked, so we run from there and push the result.
+Uses Binance when BINANCE_API_KEY is set in .env; falls back to Bybit.
+
+Why local: Bybit/Binance testnet endpoints may be geo-blocked from US cloud
+datacenters. A residential IP avoids this, so we run from here and push.
 
 Designed to run every 15 minutes via Windows Task Scheduler. Skips the
 commit when balance fields are unchanged so we don't spam the git log.
@@ -23,7 +24,10 @@ BALANCE_KEYS = ("total_usdt", "free_usdt", "open_positions", "positions")
 sys.path.insert(0, str(REPO_ROOT))
 os.chdir(REPO_ROOT)
 
-from data.crypto_fetcher import BybitFetcher  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
+load_dotenv(REPO_ROOT / ".env")
+
+from data.crypto_fetcher import BybitFetcher, BinanceFetcher  # noqa: E402
 
 
 def _git(*args: str) -> subprocess.CompletedProcess:
@@ -37,9 +41,16 @@ def _balance_unchanged(old: dict, new: dict) -> bool:
 
 
 def main() -> int:
-    bal = BybitFetcher().get_balance()
+    if os.getenv("BINANCE_API_KEY"):
+        fetcher = BinanceFetcher()
+        label = "binance"
+    else:
+        fetcher = BybitFetcher()
+        label = "bybit"
+
+    bal = fetcher.get_balance()
     if "error" in bal:
-        print(f"[bybit-push] fetch error: {bal['error']}")
+        print(f"[{label}-push] fetch error: {bal['error']}")
         return 1
 
     bal["fetched_at"] = datetime.now(timezone.utc).isoformat()
@@ -48,32 +59,32 @@ def main() -> int:
         try:
             old = json.loads(BALANCE_FILE.read_text(encoding="utf-8"))
             if _balance_unchanged(old, bal):
-                print("[bybit-push] balance unchanged, skipping commit")
+                print("[crypto-push] balance unchanged, skipping commit")
                 return 0
         except Exception:
             pass
 
     BALANCE_FILE.parent.mkdir(parents=True, exist_ok=True)
     BALANCE_FILE.write_text(json.dumps(bal, indent=2), encoding="utf-8")
-    print(f"[bybit-push] wrote {BALANCE_FILE.name}: "
+    print(f"[crypto-push] wrote {BALANCE_FILE.name}: "
           f"USDT={bal['total_usdt']} positions={bal['open_positions']}")
 
     rel = "journal/bybit_balance.json"
     _git("add", rel)
     if _git("diff", "--cached", "--quiet").returncode == 0:
-        print("[bybit-push] git diff empty after add — nothing to commit")
+        print("[crypto-push] git diff empty after add — nothing to commit")
         return 0
 
-    msg = f"chore: bybit balance snapshot {bal['fetched_at']}"
+    msg = f"chore: {label} balance snapshot {bal['fetched_at']}"
     cm = _git("commit", "-m", msg)
     if cm.returncode != 0:
-        print(f"[bybit-push] commit failed: {cm.stderr.strip()}")
+        print(f"[crypto-push] commit failed: {cm.stderr.strip()}")
         return 1
     push = _git("push")
     if push.returncode != 0:
-        print(f"[bybit-push] push failed: {push.stderr.strip()}")
+        print(f"[crypto-push] push failed: {push.stderr.strip()}")
         return 1
-    print("[bybit-push] pushed to origin")
+    print("[crypto-push] pushed to origin")
     return 0
 
 
