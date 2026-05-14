@@ -16,14 +16,14 @@
       "enabled": true
     },
     "rmt_correlation": {
-      "enabled": false
+      "enabled": true
     },
     "wasserstein_regime": {
-      "enabled": false
+      "enabled": true
     },
     "tda_features": {
       "enabled": false
     }
   },
-  "updated_at": "2026-05-14T19:34:02.051906Z"
+  "updated_at": "2026-05-14T19:34:03.435738Z"
 }
