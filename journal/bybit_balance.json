@@ -1,46 +1,46 @@
 {
-  "account_value": 102523.33,
+  "account_value": 102572.46,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 92523.33,
+  "position_value": 92572.46,
   "open_positions": 442,
   "positions": [
     {
       "currency": "BNB",
       "amount": 1.0,
-      "price_usd": 681.13,
-      "value_usd": 681.13
+      "price_usd": 681.3,
+      "value_usd": 681.3
     },
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 80988.41,
-      "value_usd": 80988.41
+      "price_usd": 81031.32,
+      "value_usd": 81031.32
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 2269.78,
-      "value_usd": 2269.78
+      "price_usd": 2271.49,
+      "value_usd": 2271.49
     },
     {
       "currency": "LTC",
       "amount": 8.0,
-      "price_usd": 58.05,
-      "value_usd": 464.4
+      "price_usd": 58.01,
+      "value_usd": 464.08
     },
     {
       "currency": "TRX",
       "amount": 1450.0,
       "price_usd": 0.35,
-      "value_usd": 512.57
+      "value_usd": 512.28
     },
     {
       "currency": "XRP",
       "amount": 351.0,
       "price_usd": 1.49,
-      "value_usd": 521.55
+      "value_usd": 521.83
     },
     {
       "currency": "GAS",
@@ -69,14 +69,14 @@
     {
       "currency": "ETC",
       "amount": 53.0,
-      "price_usd": 9.45,
-      "value_usd": 500.85
+      "price_usd": 9.48,
+      "value_usd": 502.44
     },
     {
       "currency": "ZEC",
       "amount": 1.0,
-      "price_usd": 550.96,
-      "value_usd": 550.96
+      "price_usd": 553.85,
+      "value_usd": 553.85
     },
     {
       "currency": "DASH",
@@ -100,7 +100,7 @@
       "currency": "ADA",
       "amount": 1885.0,
       "price_usd": 0.27,
-      "value_usd": 508.01
+      "value_usd": 508.2
     },
     {
       "currency": "XLM",
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-15T04:03:07.282228+00:00"
+  "fetched_at": "2026-05-15T04:18:05.338986+00:00"
 }
