@@ -1,46 +1,46 @@
 {
-  "account_value": 102111.51,
+  "account_value": 102094.04,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 92111.51,
+  "position_value": 92094.04,
   "open_positions": 442,
   "positions": [
     {
       "currency": "BNB",
       "amount": 1.0,
-      "price_usd": 687.52,
-      "value_usd": 687.52
+      "price_usd": 688.27,
+      "value_usd": 688.27
     },
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 80689.36,
-      "value_usd": 80689.36
+      "price_usd": 80671.31,
+      "value_usd": 80671.31
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 2261.18,
-      "value_usd": 2261.18
+      "price_usd": 2260.0,
+      "value_usd": 2260.0
     },
     {
       "currency": "LTC",
       "amount": 8.0,
-      "price_usd": 58.27,
-      "value_usd": 466.16
+      "price_usd": 58.32,
+      "value_usd": 466.56
     },
     {
       "currency": "TRX",
       "amount": 1450.0,
       "price_usd": 0.35,
-      "value_usd": 510.25
+      "value_usd": 510.4
     },
     {
       "currency": "XRP",
       "amount": 351.0,
       "price_usd": 1.47,
-      "value_usd": 516.92
+      "value_usd": 516.88
     },
     {
       "currency": "GAS",
@@ -63,20 +63,20 @@
     {
       "currency": "LINK",
       "amount": 50.0,
-      "price_usd": 10.34,
-      "value_usd": 517.0
+      "price_usd": 10.32,
+      "value_usd": 516.0
     },
     {
       "currency": "ETC",
       "amount": 53.0,
-      "price_usd": 9.35,
-      "value_usd": 495.55
+      "price_usd": 9.37,
+      "value_usd": 496.61
     },
     {
       "currency": "ZEC",
       "amount": 1.0,
-      "price_usd": 537.49,
-      "value_usd": 537.49
+      "price_usd": 537.74,
+      "value_usd": 537.74
     },
     {
       "currency": "DASH",
@@ -100,7 +100,7 @@
       "currency": "ADA",
       "amount": 1885.0,
       "price_usd": 0.27,
-      "value_usd": 505.37
+      "value_usd": 505.56
     },
     {
       "currency": "XLM",
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-15T10:48:15.966263+00:00"
+  "fetched_at": "2026-05-15T11:03:06.152170+00:00"
 }
