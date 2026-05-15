@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="900">
+<title>FlowTrader — Positions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>var t=localStorage.getItem('ft-theme');if(t)document.documentElement.className=t;</script>
+<style>
+/* ── RAW TOKENS ────────────────────────────────────────────────────────────── */
+:root {
+  --_y50:#FEF9E0;--_y100:#FDF0A0;--_y200:#FAE04D;
+  --_y400:#F5C400;--_y600:#D4A800;--_y800:#A88000;--_y900:#6A5000;
+  --_n50:#E8EFF8;--_n100:#B8CCE8;--_n300:#6B9ED0;
+  --_n500:#2D6BA8;--_n700:#1A3D6E;--_n900:#0D2040;--_n950:#071022;
+  --_g0:#FFFFFF;--_g50:#F7F6F3;--_g100:#E8E7E2;--_g200:#C8C7C0;
+  --_g400:#949390;--_g600:#5C5B58;--_g800:#2E2E2C;
+  --_g900:#1A1A18;--_g950:#0D0D0B;
+  --_teal:#2D8C7A;--_teal-light:#C8EDE7;--_teal-dark:#1a5c50;
+  --_coral:#E86060;--_coral-light:#FDDCDC;
+  --font-display:'Barlow Condensed',sans-serif;
+  --font-body:'Barlow',sans-serif;
+  --r-sm:4px;--r-md:8px;--r-lg:12px;--r-xl:16px;
+}
+.theme-dark {
+  color-scheme:dark;
+  --color-surface-page:var(--_g950);--color-surface-base:var(--_g900);
+  --color-surface-elevated:var(--_g800);--color-surface-sunken:var(--_g950);
+  --color-text-primary:var(--_g100);--color-text-secondary:var(--_g400);
+  --color-text-tertiary:var(--_g600);--color-text-on-brand:var(--_g950);
+  --color-brand-primary:var(--_y400);--color-brand-hover:var(--_y200);
+  --color-border-subtle:rgba(255,255,255,0.06);
+  --color-border-default:rgba(255,255,255,0.10);
+  --color-border-strong:rgba(255,255,255,0.20);
+  --color-success-bg:rgba(45,140,122,0.12);--color-success-fg:var(--_teal-light);
+  --color-danger-bg:rgba(232,96,96,0.12);--color-danger-fg:var(--_coral-light);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.40);
+}
+.theme-light {
+  color-scheme:light;
+  --color-surface-page:var(--_g50);--color-surface-base:var(--_g0);
+  --color-surface-elevated:var(--_g0);--color-surface-sunken:var(--_g100);
+  --color-text-primary:var(--_g950);--color-text-secondary:var(--_g600);
+  --color-text-tertiary:var(--_g400);--color-text-on-brand:var(--_g950);
+  --color-brand-primary:var(--_y400);--color-brand-hover:var(--_y600);
+  --color-border-subtle:var(--_g100);--color-border-default:var(--_g200);
+  --color-border-strong:var(--_g400);
+  --color-success-bg:#EDF7F5;--color-success-fg:var(--_teal-dark);
+  --color-danger-bg:#FEF2F2;--color-danger-fg:#C0392B;
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08);
+}
+.theme-navy {
+  color-scheme:dark;
+  --color-surface-page:var(--_n950);--color-surface-base:var(--_n900);
+  --color-surface-elevated:var(--_n700);--color-surface-sunken:var(--_n950);
+  --color-text-primary:var(--_g0);--color-text-secondary:var(--_n100);
+  --color-text-tertiary:var(--_n300);--color-text-on-brand:var(--_g950);
+  --color-brand-primary:var(--_y400);--color-brand-hover:var(--_y200);
+  --color-border-subtle:rgba(107,158,208,0.12);
+  --color-border-default:rgba(107,158,208,0.20);
+  --color-border-strong:rgba(107,158,208,0.35);
+  --color-success-bg:rgba(45,140,122,0.15);--color-success-fg:var(--_teal-light);
+  --color-danger-bg:rgba(232,96,96,0.14);--color-danger-fg:var(--_coral-light);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.50);
+}
+
+/* ── BASE ──────────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--color-surface-page);color:var(--color-text-primary);
+  font-family:var(--font-body);font-size:14px;line-height:1.5}
+
+/* ── HEADER ────────────────────────────────────────────────────────────────── */
+.hdr{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 24px;
+  background:var(--color-surface-base);
+  border-bottom:1px solid var(--color-border-default);
+  flex-wrap:wrap;
+}
+.hdr-brand{
+  font-family:var(--font-display);font-weight:900;font-size:22px;
+  letter-spacing:0.02em;color:var(--color-brand-primary);
+  display:flex;align-items:center;gap:8px;
+}
+.badge-paper{
+  background:rgba(245,196,0,0.15);color:var(--_y400);
+  border:1px solid rgba(245,196,0,0.35);
+  font-family:var(--font-display);font-weight:700;font-size:11px;
+  letter-spacing:0.12em;padding:2px 10px;border-radius:50px;
+}
+.badge-live{
+  background:rgba(232,96,96,0.15);color:var(--_coral);
+  border:1px solid rgba(232,96,96,0.35);
+  font-family:var(--font-display);font-weight:700;font-size:11px;
+  letter-spacing:0.12em;padding:2px 10px;border-radius:50px;
+}
+.hdr-pv{
+  font-family:var(--font-display);font-weight:900;font-size:28px;
+  color:var(--color-text-primary);margin-left:auto;
+}
+.hdr-pl{font-family:var(--font-display);font-weight:700;font-size:20px;}
+.hdr-ts{
+  font-size:11px;color:var(--color-text-tertiary);white-space:nowrap;
+  margin-left:8px;
+}
+
+/* ── THEME BAR ─────────────────────────────────────────────────────────────── */
+.theme-bar{
+  display:flex;gap:4px;padding:6px 24px;
+  background:var(--color-surface-elevated);
+  border-bottom:1px solid var(--color-border-subtle);
+}
+.theme-bar button{
+  font-family:var(--font-display);font-weight:700;font-size:11px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:4px 14px;border-radius:50px;border:1px solid var(--color-border-default);
+  background:transparent;color:var(--color-text-secondary);cursor:pointer;
+  transition:all 0.15s;
+}
+.theme-bar button:hover{border-color:var(--color-brand-primary);color:var(--color-brand-primary)}
+.theme-bar button.active{
+  background:var(--color-brand-primary);color:var(--color-text-on-brand);
+  border-color:var(--color-brand-primary);
+}
+
+/* ── LAYOUT ────────────────────────────────────────────────────────────────── */
+.page{max-width:1400px;margin:0 auto;padding:24px}
+.section-title{
+  font-family:var(--font-display);font-weight:800;font-size:13px;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--color-text-tertiary);margin-bottom:12px;margin-top:28px;
+}
+
+/* ── STAT CARDS ────────────────────────────────────────────────────────────── */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:8px}
+.card{
+  background:var(--color-surface-base);border:1px solid var(--color-border-subtle);
+  border-radius:var(--r-lg);padding:16px 20px;box-shadow:var(--shadow-md);
+}
+.card-label{
+  font-family:var(--font-body);font-weight:500;font-size:11px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--color-text-tertiary);margin-bottom:4px;
+}
+.card-value{
+  font-family:var(--font-display);font-weight:900;font-size:28px;
+  color:var(--color-text-primary);line-height:1;
+}
+.card-sub{
+  font-size:12px;color:var(--color-text-secondary);margin-top:4px;
+}
+
+/* ── POSITIONS TABLE ───────────────────────────────────────────────────────── */
+.tbl-wrap{
+  overflow-x:auto;
+  background:var(--color-surface-base);
+  border:1px solid var(--color-border-subtle);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow-md);
+}
+table{width:100%;border-collapse:collapse}
+thead tr{
+  background:var(--color-surface-elevated);
+  border-bottom:1px solid var(--color-border-default);
+}
+th{
+  font-family:var(--font-display);font-weight:700;font-size:11px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--color-text-tertiary);padding:12px 16px;
+  text-align:left;white-space:nowrap;
+}
+td{
+  padding:14px 16px;border-bottom:1px solid var(--color-border-subtle);
+  vertical-align:middle;white-space:nowrap;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.03)}
+.sym{
+  font-family:var(--font-display);font-weight:800;font-size:16px;
+  display:block;
+}
+.sym-name{
+  font-size:11px;color:var(--color-text-tertiary);display:block;margin-top:1px;
+}
+.pos{color:#2D8C7A}
+.neg{color:#E86060}
+.cell-sub{
+  display:block;font-size:11px;color:var(--color-text-tertiary);margin-top:2px;
+}
+.danger-cell{color:#E86060 !important;font-weight:600}
+.score-badge{
+  font-family:var(--font-display);font-weight:700;font-size:13px;
+  background:rgba(245,196,0,0.12);color:var(--_y400);
+  border:1px solid rgba(245,196,0,0.25);
+  padding:2px 10px;border-radius:50px;
+}
+.empty-row{
+  text-align:center;padding:40px;
+  color:var(--color-text-tertiary);font-style:italic;
+}
+
+/* ── GAUGE ─────────────────────────────────────────────────────────────────── */
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.gauge{
+  background:var(--color-surface-base);border:1px solid var(--color-border-subtle);
+  border-radius:var(--r-lg);padding:16px 20px;
+}
+.gauge-label{
+  font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;
+}
+.gauge-track{
+  height:8px;background:var(--color-border-subtle);border-radius:50px;overflow:hidden;
+}
+.gauge-fill{height:100%;border-radius:50px;transition:width 0.4s}
+.gauge-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:6px}
+
+/* ── CHART ─────────────────────────────────────────────────────────────────── */
+.chart-card{
+  background:var(--color-surface-base);border:1px solid var(--color-border-subtle);
+  border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow-md);
+  margin-top:0;
+}
+.chart-wrap{height:220px;position:relative}
+
+/* ── CRYPTO SECTION ────────────────────────────────────────────────────────── */
+.cx-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+
+/* ── FOOTER ────────────────────────────────────────────────────────────────── */
+.footer{
+  margin-top:40px;padding-top:16px;
+  border-top:1px solid var(--color-border-subtle);
+  font-size:11px;color:var(--color-text-tertiary);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<div class="hdr">
+  <div class="hdr-brand">⚡ FlowTrader</div>
+  <span class="badge-paper">PAPER</span>
+  <div class="hdr-pv">$0.00</div>
+  <div class="hdr-pl pos">▲ $0.00 (+0.00%)</div>
+  <div class="hdr-ts">Built 2026-05-15 17:49 UTC · auto-refreshes every 15 min</div>
+</div>
+
+<!-- ── THEME TOGGLE ────────────────────────────────────────────────────────── -->
+<div class="theme-bar">
+  <button onclick="ftTheme('theme-light',this)">Light</button>
+  <button onclick="ftTheme('theme-dark',this)" class="active">Dark</button>
+  <button onclick="ftTheme('theme-navy',this)">Navy</button>
+</div>
+
+<div class="page">
+
+  <!-- ── ACTIVE POSITIONS ──────────────────────────────────────────────────── -->
+  <div class="section-title">Active Positions (0)</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Qty</th>
+          <th>Entry</th>
+          <th>Current</th>
+          <th>P&amp;L $</th>
+          <th>P&amp;L %</th>
+          <th>Stop ↓ dist</th>
+          <th>Target ↑ dist</th>
+          <th>Score</th>
+          <th>Days</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="10" class="empty-row">No open positions</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── EQUITY CHART ───────────────────────────────────────────────────────── -->
+  <div class="section-title" style="margin-top:32px">Portfolio Equity — 30 Days</div>
+  <div class="chart-card">
+    <div class="chart-wrap">
+      <canvas id="equityChart"></canvas>
+    </div>
+  </div>
+
+  <!-- ── ACCOUNT HEALTH ────────────────────────────────────────────────────── -->
+  <div class="section-title">Account Health</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Portfolio</div>
+      <div class="card-value">$0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Day P&amp;L</div>
+      <div class="card-value pos">▲ $0.00</div>
+      <div class="card-sub">+0.00%</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Cash</div>
+      <div class="card-value">$0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Buying Power</div>
+      <div class="card-value">$0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Open Positions</div>
+      <div class="card-value">0</div>
+      <div class="card-sub">of 3 max</div>
+    </div>
+  </div>
+
+  <div class="gauges">
+    <div class="gauge">
+      <div class="gauge-label">🟢 Position Capacity — 0 / 3</div>
+      <div class="gauge-track">
+        <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
+      </div>
+      <div class="gauge-sub">0% capacity used</div>
+    </div>
+    <div class="gauge">
+      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $0.00</div>
+      <div class="gauge-track">
+        <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
+      </div>
+      <div class="gauge-sub">0% of 2% daily limit used</div>
+    </div>
+  </div>
+
+  <!-- ── CRYPTO ─────────────────────────────────────────────────────────────── -->
+  <div class="section-title">Crypto (Binance)</div>
+  <div class="cx-cards">
+    <div class="card">
+      <div class="card-label">Total USDT</div>
+      <div class="card-value">$10,000.00</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Open Positions</div>
+      <div class="card-value">442</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>⚡ FlowTrader · PAPER mode · 2026-05-15 · positions-dashboard-v1</span>
+    <span>Built 2026-05-15 17:49 UTC</span>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+const FT_THEMES = ['theme-light','theme-dark','theme-navy'];
+function ftTheme(t, btn) {
+  document.documentElement.classList.remove(...FT_THEMES);
+  document.documentElement.classList.add(t);
+  localStorage.setItem('ft-theme', t);
+  document.querySelectorAll('.theme-bar button').forEach(b => b.classList.toggle('active', b===btn));
+}
+
+// ── Equity chart ──────────────────────────────────────────────────────────────
+const chartDates  = [];
+const chartEquity = [];
+const chartPL     = [];
+
+if (chartDates.length > 0) {
+  const ctx = document.getElementById('equityChart').getContext('2d');
+  const validEquity = chartEquity.map((v,i) => (v !== null ? v : undefined));
+
+  // Determine line colour based on net change
+  const first = validEquity.find(v => v !== undefined);
+  const last  = [...validEquity].reverse().find(v => v !== undefined);
+  const lineColour = (last >= first) ? '#2D8C7A' : '#E86060';
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: chartDates,
+      datasets: [{
+        label: 'Portfolio Equity',
+        data: validEquity,
+        borderColor: lineColour,
+        backgroundColor: lineColour + '1A',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        spanGaps: true,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => '$' + ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2})
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#5C5B58', font: { family: 'Barlow', size: 11 }, maxTicksLimit: 10 }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: {
+            color: '#5C5B58', font: { family: 'Barlow', size: 11 },
+            callback: v => '$' + v.toLocaleString()
+          }
+        }
+      }
+    }
+  });
+} else {
+  document.querySelector('.chart-wrap').innerHTML =
+    '<p style="color:var(--color-text-tertiary);text-align:center;padding:60px 0">No portfolio history available</p>';
+}
+</script>
+</body>
+</html>
