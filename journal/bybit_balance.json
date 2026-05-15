@@ -1,28 +1,28 @@
 {
-  "account_value": 102305.48,
+  "account_value": 102678.57,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 92305.48,
+  "position_value": 92678.57,
   "open_positions": 442,
   "positions": [
     {
       "currency": "BNB",
       "amount": 1.0,
-      "price_usd": 677.52,
-      "value_usd": 677.52
+      "price_usd": 679.66,
+      "value_usd": 679.66
     },
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 80799.72,
-      "value_usd": 80799.72
+      "price_usd": 81149.99,
+      "value_usd": 81149.99
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 2260.99,
-      "value_usd": 2260.99
+      "price_usd": 2272.21,
+      "value_usd": 2272.21
     },
     {
       "currency": "LTC",
@@ -34,13 +34,13 @@
       "currency": "TRX",
       "amount": 1450.0,
       "price_usd": 0.35,
-      "value_usd": 511.7
+      "value_usd": 512.0
     },
     {
       "currency": "XRP",
       "amount": 351.0,
-      "price_usd": 1.48,
-      "value_usd": 518.25
+      "price_usd": 1.49,
+      "value_usd": 522.18
     },
     {
       "currency": "GAS",
@@ -63,8 +63,8 @@
     {
       "currency": "LINK",
       "amount": 50.0,
-      "price_usd": 10.38,
-      "value_usd": 519.0
+      "price_usd": 10.42,
+      "value_usd": 521.0
     },
     {
       "currency": "ETC",
@@ -75,14 +75,14 @@
     {
       "currency": "ZEC",
       "amount": 1.0,
-      "price_usd": 542.51,
-      "value_usd": 542.51
+      "price_usd": 547.62,
+      "value_usd": 547.62
     },
     {
       "currency": "DASH",
       "amount": 9.0,
-      "price_usd": 45.52,
-      "value_usd": 409.68
+      "price_usd": 45.44,
+      "value_usd": 408.96
     },
     {
       "currency": "NEO",
@@ -100,7 +100,7 @@
       "currency": "ADA",
       "amount": 1885.0,
       "price_usd": 0.27,
-      "value_usd": 506.5
+      "value_usd": 509.7
     },
     {
       "currency": "XLM",
@@ -123,11 +123,11 @@
     {
       "currency": "QTUM",
       "amount": 545.0,
-      "price_usd": 0.99,
-      "value_usd": 539.55
+      "price_usd": 0.98,
+      "value_usd": 535.19
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-15T02:33:08.335203+00:00"
+  "fetched_at": "2026-05-15T02:48:06.123104+00:00"
 }
