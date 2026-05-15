@@ -124,8 +124,8 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <header class="hdr">
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
-    <span class="pill">Report date: 2026-05-13</span>
-    <span class="pill">Generated: 2026-05-14 06:42 UTC</span>
+    <span class="pill">Report date: 2026-05-14</span>
+    <span class="pill">Generated: 2026-05-15 06:51 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,131 +135,77 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-05-07 → 2026-05-13</div>
+    <div class="summary-range">2026-05-08 → 2026-05-14</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
-<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">21</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">24</div></div>
 <div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
 </section>
 
 <section class="failures">
   <div class="failures-head">
-    <h2>Failures — 2026-05-13</h2>
-    <div class="failures-count">6 total</div>
+    <h2>Failures — 2026-05-14</h2>
+    <div class="failures-count">3 total</div>
   </div>
   <div class="tabs-wrap">
     <nav class="tabs-list" role="tablist">
-<button class="tab active" data-target="f-0" data-kind="exec_error">META · 12:05 · ERR</button>
-<button class="tab" data-target="f-1" data-kind="exec_error">META · 12:24 · ERR</button>
-<button class="tab" data-target="f-2" data-kind="exec_error">MSFT · 13:20 · ERR</button>
-<button class="tab" data-target="f-3" data-kind="exec_error">MSFT · 13:36 · ERR</button>
-<button class="tab" data-target="f-4" data-kind="exec_error">MSFT · 13:54 · ERR</button>
-<button class="tab" data-target="f-5" data-kind="exec_error">META · 14:23 · ERR</button>
+<button class="tab active" data-target="f-0" data-kind="exec_error">MSFT · 12:12 · ERR</button>
+<button class="tab" data-target="f-1" data-kind="exec_error">MSFT · 12:29 · ERR</button>
+<button class="tab" data-target="f-2" data-kind="exec_error">MSFT · 13:03 · ERR</button>
     </nav>
     <div class="tab-panels">
 <article class="panel active" id="f-0">
 <div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-13 · 12:05:10 EST</div>
+  <div class="panel-symbol">MSFT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-14 · 12:12:19 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 24 shares of MSFT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot actually identified a valid mean-reversion setup on META — the signal was legitimate and cleared all required thresholds — but the trade was blocked because you already held 16 shares, triggering the no-add-to-existing-positions rule. Before the bot scouts re-entry candidates, check your open positions first, and if you want exposure to this META setup, close the existing 16-share position cleanly before letting the bot re-enter on the new signal.</div>
+  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its no-add-to-position rule — the real mistake was entering the earlier 24-share position without a clear exit plan that would free up the slot before a new signal emerged. Next time, set a predefined exit trigger (price target, MA recross, or time stop) on any MSFT position at entry so the bot isn&#x27;t locked out when a fresh setup appears.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>META is the highest-quality setup available this session with a signal score of 3 (B_GRADE), clearing both the system default threshold (3/5) and the active medium_safety risk profile minimum (2/6). The price is 4.93% below the 20-day MA at $640.95, RSI is at 43.7 (mild oversold territory), and ADX at 20.62 confirms a ranging regime where mean reversion is the appropriate strategy. The Bollinger %B of 0.26 shows price is in the lower quarter of the band, adding confluence. Key guardrails checked: (1) No earnings within 48 hours confirmed — news is product/AI feature chatter, no earnings flag; </pre>
+  <pre>MSFT is the best available setup this session, though the bar is low. It scores 2/6, meeting the minimum medium_safety threshold. Price is 2.08% below the 20-day MA ($417.41), RSI is neutral at 50.16 (not oversold — no RSI signal), ADX is 15.66 (well under 25, confirming ranging regime). The Bollinger pct_b of 0.213 shows price is in the lower third of the band but not breaching the lower band itself, so no BB signal fires. News sentiment is neutral (score 0.04) and no earnings are flagged within 48 hours. The CMA investigation headline is a mild negative but not disqualifying. Position sizing</pre>
 </details>
 </article>
 <article class="panel" id="f-1" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-13 · 12:24:05 EST</div>
+  <div class="panel-symbol">MSFT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-14 · 12:29:44 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 24 shares of MSFT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal read was actually solid — META showed a legitimate mean-reversion setup with a qualifying score and meaningful distance from its 20-day MA — but the trade was dead on arrival because an existing 16-share position was never closed first. Before the bot scans for re-entries on any symbol, confirm your current holdings are flat, or build a pre-scan position check into your workflow so a good setup doesn&#x27;t get wasted on a rule violation.</div>
+  <div class="lesson-body">The bot&#x27;s technical read was actually solid — a legitimate mean-reversion signal in a ranging market — but the trade was blocked because you still held 24 shares of MSFT from a prior position that was never closed. Before the bot attempts re-entry on any symbol, check your open positions and close existing holdings first, since this strategy requires a clean slate to execute.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>META is the only B-grade setup in the watchlist with a signal score of 3, meeting both the system minimum (2) and the standard rules threshold (3). Price is at $610.03, sitting 4.83% below the 20-day MA ($640.98) which serves as the take-profit target — offering a solid ~5% mean reversion move. RSI at 43.98 is mildly oversold, price is at pct_b of 0.265 (near lower Bollinger half), and ADX at 20.56 confirms a ranging market where mean reversion strategies work best. ADX is just above 20 but well below the 25 trend filter threshold, so the TREND FILTER hard rule is not triggered. Stop loss is p</pre>
+  <pre>MSFT meets the minimum signal threshold of 2 under the active medium_safety risk profile. The stock is trading at $407.49, which is 2.36% below its 20-day MA of $417.34 — a clean mean reversion setup. ADX at 15.66 confirms a ranging market, which is the ideal regime for this strategy. Bollinger pct_b of 0.178 shows price near the lower band without breaking through (not a strong BB signal, but directionally supportive). RSI at 49.28 is neutral — no oversold confirmation, which is the primary weakness of this setup. News sentiment is neutral with no earnings catalyst flagged. The CMA investigat</pre>
 </details>
 </article>
 <article class="panel" id="f-2" hidden>
 <div class="panel-head">
   <div class="panel-symbol">MSFT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-13 · 13:20:11 EST</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-14 · 13:03:54 EST</div>
 </div>
 <div class="error-block">
   <div class="error-reason">Already hold 24 shares of MSFT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a valid mean-reversion setup on MSFT — the signal was technically sound — but the order was rejected because you still held 24 shares from a prior entry, triggering the bot&#x27;s rule against adding to open positions. Before the next signal fires, make sure to close any existing MSFT position first, and consider adding a pre-scan check or alert that flags open holdings in candidate symbols so you&#x27;re not caught off guard when a fresh setup emerges.</div>
+  <div class="lesson-body">The trade never executed because the bot correctly blocked a duplicate position entry — the real issue here isn&#x27;t signal quality but that you&#x27;re carrying an open 24-share MSFT lot that needs to be resolved before any new setup can be acted on. Before the next session, close or account for that existing position, and consider building a pre-trade checklist that flags open holdings in a symbol so a low-confidence setup (signal score of 2, neutral RSI, price not yet at the lower band) doesn&#x27;t even reach the execution stage until the slate is clean.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>MSFT is the only setup meeting the minimum threshold with a score of 3/6. Price at $404.71 is 3.17% below the 20-day MA ($417.96), sitting just above the lower Bollinger Band ($403.25, pct_b=0.05), confirming a compressed, oversold-ish condition in a ranging market. ADX at 16.58 is well below 25, confirming we are NOT in a trending regime — mean reversion is appropriate here. RSI at 47.23 is neutral (no RSI bonus), and there is no BelowVWAP signal, but positive news sentiment adds the third qualifying signal. Stop loss is pre-calculated at $399.57 (0.5x ATR below entry), take profit is the 20-</pre>
-</details>
-</article>
-<article class="panel" id="f-3" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">MSFT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-13 · 13:36:55 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 24 shares of MSFT; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot actually identified a genuinely strong mean-reversion setup — signal score of 3, price hugging the lower Bollinger Band — but the order was rejected because you were already holding 24 shares of MSFT, triggering the system&#x27;s no-add-to-existing-positions rule. Before the next session, check your open positions against your watchlist and either close the existing MSFT position if you want a clean re-entry, or consciously remove MSFT from consideration until that position is cleared.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>MSFT is the clear best setup in today&#x27;s session with a signal score of 3 (meeting the system&#x27;s hard rule of 3+ for standard entry, and easily clearing the medium_safety profile threshold of 2+). Price at $404.02 is sitting just above the lower Bollinger Band ($403.09, pct_b = 0.031), -3.33% below the 20-day MA ($417.92) which serves as our take-profit target, ADX is low at 16.58 confirming a ranging regime, and sentiment is modestly positive. The setup is B-grade quality. Risk per share is $5.14 (entry $404.02 minus stop $398.88). With account value ~$98,357, 1% risk cap = ~$983. Max shares = </pre>
-</details>
-</article>
-<article class="panel" id="f-4" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">MSFT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-13 · 13:54:33 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 24 shares of MSFT; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal read was actually solid — MSFT showed a legitimate mean-reversion setup with price near the lower Bollinger Band and a qualifying signal score, but the order was dead on arrival because an existing 24-share position was never closed first, making this a process failure, not a signal failure. Before the bot scans for re-entries on any symbol, confirm your open positions dashboard is clear of that ticker, and build a pre-scan checklist habit so a strong setup doesn&#x27;t get wasted on a rejected order.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>MSFT is the only B-GRADE setup in the session, with a signal score of 3 (meeting both the system default of 3+ and the active medium_safety threshold of 2+). Price at $404.135 is sitting just above the lower Bollinger Band ($403.12, pct_b=0.034), down -3.3% from the 20-day MA ($417.93), with ADX at 16.58 confirming a ranging regime well below the 25 threshold. RSI at 46.86 is not yet oversold — no RSI bonus applies — but the deviation from the mean is meaningful and the ranging regime is ideal for mean reversion. Positive news sentiment (score 0.16, 10 articles) adds a soft tailwind. The syste</pre>
-</details>
-</article>
-<article class="panel" id="f-5" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-13 · 14:23:45 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot actually identified a solid mean-reversion setup correctly — signal score 3, meaningful deviation from the 20-day MA, and a low-trend ADX — but the execution was blocked because you were already holding 16 shares of META, triggering the no-add-to-position rule. Before the bot scans for new entries, check your open positions first, and if you want to increase exposure to META, close the existing 16 shares cleanly and let the bot re-enter with a fresh position sized to current conditions.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>META is the strongest setup in today&#x27;s session with a signal score of 3 (B-GRADE), meeting the medium_safety threshold of 2+. The stock is trading at $618.31, which is 3.6% below its 20-day MA of $641.40 — a meaningful deviation in a ranging regime. ADX at 20.08 is just barely above 20 but well below 25, confirming we are NOT in a trending market, which makes mean reversion a valid strategy. RSI at 47.25 is neutral and does not add signal weight, but the positive sentiment score (0.201 across 10 articles) does. Key product news — Meta launching Instants on Instagram and Incognito Chat on Whats</pre>
+  <pre>MSFT is the best available setup this session, though confidence is low. It sits 2.19% below its 20-day MA of $417.38, RSI at 49.82 is neutral (no oversold signal), price is near but not below the lower Bollinger Band (pct_b 0.199), and ADX at 15.66 confirms a ranging regime — favorable for mean reversion. Signal score hits the minimum threshold of 2 under the active medium_safety risk profile. Position sizing: risking 1% of $98,539.80 = ~$985 max risk. Stop is $5.17 below entry (403.07), so max shares = $985 / $5.17 = ~190 shares. However, with 2 positions already open and max 5 allowed, and </pre>
 </details>
 </article>
     </div>

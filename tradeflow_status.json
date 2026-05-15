@@ -1,49 +1,37 @@
 {
-  "report_date": "2026-05-13",
+  "report_date": "2026-05-14",
   "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
-  "generated_at": "2026-05-14T06:42:00Z",
-  "failure_count": 6,
+  "generated_at": "2026-05-15T06:51:17Z",
+  "failure_count": 3,
   "loss_count": 0,
-  "error_count": 6,
+  "error_count": 3,
   "summary_7day": {
-    "start_date": "2026-05-07",
-    "end_date": "2026-05-13",
+    "start_date": "2026-05-08",
+    "end_date": "2026-05-14",
     "closed_trades": 0,
     "wins": 0,
     "losses": 0,
     "win_rate_pct": null,
-    "exec_errors": 21,
+    "exec_errors": 24,
     "total_realized": 0,
     "total_loss": 0
   },
   "top_failures": [
     {
-      "symbol": "META",
-      "time_est": "12:05:10",
-      "kind": "exec_error",
-      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
-    },
-    {
-      "symbol": "META",
-      "time_est": "12:24:05",
-      "kind": "exec_error",
-      "headline": "Already hold 16 shares of META; bot does not add to existing positions. Close be"
-    },
-    {
       "symbol": "MSFT",
-      "time_est": "13:20:11",
+      "time_est": "12:12:19",
       "kind": "exec_error",
       "headline": "Already hold 24 shares of MSFT; bot does not add to existing positions. Close be"
     },
     {
       "symbol": "MSFT",
-      "time_est": "13:36:55",
+      "time_est": "12:29:44",
       "kind": "exec_error",
       "headline": "Already hold 24 shares of MSFT; bot does not add to existing positions. Close be"
     },
     {
       "symbol": "MSFT",
-      "time_est": "13:54:33",
+      "time_est": "13:03:54",
       "kind": "exec_error",
       "headline": "Already hold 24 shares of MSFT; bot does not add to existing positions. Close be"
     }
