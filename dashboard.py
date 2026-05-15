@@ -14,12 +14,16 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+import logging
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 import yaml
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 # ── Secrets: .env locally, st.secrets on Streamlit Cloud ─────────────────────
 load_dotenv(Path(__file__).parent / ".env")
@@ -39,25 +43,67 @@ st.set_page_config(
     page_title="FlowTrader",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-    .stTabs [data-baseweb="tab"] { font-size: 15px; font-weight: 600; }
-    .stTabs [data-baseweb="tab-list"] { gap: 8px; }
-    div[data-testid="stMetricValue"] { font-size: 1.4rem; }
-    .badge-paper  { background:#1b3a4b; color:#4cc9f0; padding:3px 10px;
-                    border-radius:12px; font-size:0.8rem; font-weight:600; }
-    .badge-live   { background:#3b1f2b; color:#f72585; padding:3px 10px;
-                    border-radius:12px; font-size:0.8rem; font-weight:600; }
-    .badge-a      { background:#1b4332; color:#40916c; padding:2px 8px;
-                    border-radius:8px; font-weight:700; }
-    .badge-b      { background:#1b3a4b; color:#4cc9f0; padding:2px 8px;
-                    border-radius:8px; font-weight:700; }
-    .badge-c      { background:#2d2a1e; color:#ffd60a; padding:2px 8px;
-                    border-radius:8px; font-weight:700; }
-    .badge-skip   { color:#555; }
+:root {
+  --bg:#0a0d12; --surface:#131720; --elevated:#1c2230; --sidebar:#0d1117;
+  --border:#252d3a; --green:#00c853; --red:#ff5252; --yellow:#ffab00;
+  --blue:#4cc9f0; --accent:#3d6fff; --text:#e2e8f0; --muted:#64748b; --dim:#334155;
+}
+.stApp,[data-testid="stAppViewContainer"]{background:var(--bg)!important;font-family:'Inter',sans-serif!important;}
+[data-testid="stMain"],[data-testid="block-container"]{background:var(--bg)!important;}
+[data-testid="stSidebar"],[data-testid="stSidebarContent"]{background:var(--sidebar)!important;border-right:1px solid var(--border)!important;}
+[data-testid="stSidebar"] *{color:var(--text)!important;}
+[data-testid="stSidebar"] .stRadio label{font-size:0.9rem!important;}
+h1,h2,h3{font-family:'Inter',sans-serif!important;color:var(--text)!important;}
+hr{border-color:var(--border)!important;}
+[data-testid="stMetric"]{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+[data-testid="stMetricValue"]{font-family:'JetBrains Mono',monospace!important;font-size:1.35rem!important;color:var(--text)!important;}
+[data-testid="stMetricLabel"]{font-size:0.7rem!important;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)!important;}
+[data-testid="stMetricDelta"]{font-size:0.8rem!important;}
+.stButton>button{background:var(--elevated)!important;border:1px solid var(--border)!important;color:var(--text)!important;font-family:'Inter',sans-serif!important;border-radius:6px!important;font-size:0.82rem!important;}
+.stButton>button:hover{border-color:var(--accent)!important;color:var(--accent)!important;}
+.stProgress>div>div>div>div{background:var(--accent)!important;}
+.stTabs [data-baseweb="tab"]{font-family:'Inter',sans-serif!important;font-size:12px!important;font-weight:500!important;color:var(--muted)!important;}
+.stTabs [data-baseweb="tab"][aria-selected="true"]{color:var(--text)!important;}
+.stTabs [data-baseweb="tab-list"]{gap:2px;border-bottom:1px solid var(--border)!important;background:transparent!important;}
+[data-testid="stDataFrame"]{border:1px solid var(--border)!important;border-radius:8px;}
+/* ── Status bar ── */
+.ft-status{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 18px;margin-bottom:14px;font-family:'Inter',sans-serif;}
+.ft-status .bot{font-weight:700;font-size:1rem;color:var(--text);}
+.ft-status .pv{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:600;color:var(--text);}
+.ft-status .pos{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.88rem;}
+.ft-status .neg{color:var(--red);font-family:'JetBrains Mono',monospace;font-size:0.88rem;}
+.ft-status .cd{font-size:0.75rem;color:var(--muted);margin-left:auto;}
+/* ── Section label ── */
+.ft-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);padding-bottom:6px;margin-bottom:8px;border-bottom:1px solid var(--border);}
+/* ── Badges ── */
+.b-paper{background:#0d2240;color:#4cc9f0;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.05em;}
+.b-live{background:#2d0d1a;color:#ff5252;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.05em;}
+.b-A{background:#0d2e1a;color:#00c853;padding:2px 8px;border-radius:4px;font-weight:700;font-size:0.78rem;}
+.b-B{background:#0d2040;color:#4cc9f0;padding:2px 8px;border-radius:4px;font-weight:700;font-size:0.78rem;}
+.b-C{background:#2a2000;color:#ffab00;padding:2px 8px;border-radius:4px;font-weight:700;font-size:0.78rem;}
+.b-skip{background:var(--elevated);color:var(--muted);padding:2px 8px;border-radius:4px;font-weight:600;font-size:0.78rem;}
+.b-buy{background:#0d2e1a;color:#00c853;padding:2px 10px;border-radius:4px;font-weight:700;font-size:0.78rem;}
+.b-sell{background:#2d0d1a;color:#ff5252;padding:2px 10px;border-radius:4px;font-weight:700;font-size:0.78rem;}
+.b-hold{background:#1a1a00;color:#ffab00;padding:2px 10px;border-radius:4px;font-weight:700;font-size:0.78rem;}
+.b-sim{background:#201a2e;color:#a78bfa;padding:2px 8px;border-radius:4px;font-weight:600;font-size:0.76rem;}
+.b-filled{background:#0d2e1a;color:#00c853;padding:2px 8px;border-radius:4px;font-weight:600;font-size:0.76rem;}
+/* Signal dots */
+.dots{font-family:'JetBrains Mono',monospace;font-size:0.95rem;letter-spacing:0.05em;}
+.dg{color:var(--green);} .de{color:var(--dim);}
+/* legacy badges used in Learn tab */
+.badge-paper{background:#1b3a4b;color:#4cc9f0;padding:3px 10px;border-radius:12px;font-size:0.8rem;font-weight:600;}
+.badge-live{background:#3b1f2b;color:#f72585;padding:3px 10px;border-radius:12px;font-size:0.8rem;font-weight:600;}
+.badge-a{background:#1b4332;color:#40916c;padding:2px 8px;border-radius:8px;font-weight:700;}
+.badge-b{background:#1b3a4b;color:#4cc9f0;padding:2px 8px;border-radius:8px;font-weight:700;}
+.badge-c{background:#2d2a1e;color:#ffd60a;padding:2px 8px;border-radius:8px;font-weight:700;}
+.badge-skip{color:#555;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -406,31 +452,34 @@ def load_research_memo() -> dict:
     except Exception:
         return {}
 
-# ── Sidebar — Control Panel ───────────────────────────────────────────────────
+# ── Sidebar — Navigation + Controls ──────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## ⚙️ Control Panel")
-    st.caption(f"{'🟡 PAPER' if PAPER_MODE else '🔴 LIVE'} mode active")
+    # ── Page navigation ───────────────────────────────────────────────────────
+    st.markdown('<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#64748b;">Navigation</span>', unsafe_allow_html=True)
+    page = st.radio(
+        "page",
+        ["Overview", "Market", "Account", "Journal", "Trades", "Research", "Analyst", "Learn"],
+        label_visibility="collapsed",
+    )
     st.divider()
 
     # ── Data refresh ──────────────────────────────────────────────────────────
-    st.markdown("**Data**")
-    if st.button("⟳ Refresh All Data", width="stretch", help="Clear cache and reload market data, account, and journal"):
+    st.markdown('<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#64748b;">Data</span>', unsafe_allow_html=True)
+    if st.button("⟳ Refresh All", use_container_width=True, help="Clear cache and reload market data, account, and journal"):
         st.cache_data.clear()
         st.session_state.next_refresh = time.time() + REFRESH_SEC
         st.rerun()
-
-    if st.button("⟳ Refresh Market Only", width="stretch", help="Re-fetch watchlist prices and indicators"):
+    if st.button("⟳ Market Only", use_container_width=True, help="Re-fetch watchlist prices and indicators"):
         fetch_snapshot.clear()
         st.rerun()
-
-    if st.button("⟳ Refresh Account Only", width="stretch", help="Re-fetch account balance and positions"):
+    if st.button("⟳ Account Only", use_container_width=True, help="Re-fetch account balance and positions"):
         fetch_account.clear()
         st.rerun()
 
     st.divider()
 
     # ── Risk Profile ──────────────────────────────────────────────────────────
-    st.markdown("**Risk Profile**")
+    st.markdown('<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#64748b;">Risk Profile</span>', unsafe_allow_html=True)
     current_profile = _read_active_profile()
     profile_options = ["high_safety", "medium_safety", "low_safety"]
     profile_labels  = {"high_safety": "🟢 High Safety", "medium_safety": "🟡 Medium Safety", "low_safety": "🔴 Low Safety"}
@@ -468,47 +517,115 @@ with st.sidebar:
     st.divider()
 
     # ── Math Strategies ───────────────────────────────────────────────────────
-    st.markdown("**🔬 Math Strategies**")
-    st.caption("Toggle on/off to A/B test their signal impact. Saves to GitHub — bot picks up on next run (~30 min).")
-
-    current_strats = _read_active_strategies()
-    new_strats: dict = {}
-    for key, meta in MATH_STRATEGIES.items():
-        help_txt = f"{meta['role']}  ·  deps: {meta['deps']}  ·  {meta['blurb']}"
-        new_strats[key] = st.toggle(
-            meta["label"],
-            value=current_strats.get(key, False),
-            key=f"strat_{key}",
-            help=help_txt,
-        )
-
-    if new_strats != current_strats:
-        if _write_strategies_to_github(new_strats):
-            active = [MATH_STRATEGIES[k]["label"] for k, v in new_strats.items() if v]
-            label = ", ".join(active) if active else "none (pure TA)"
-            st.success(f"Saved. Active: {label}")
-        else:
-            st.error("Could not save — add GITHUB_TOKEN to Streamlit secrets.")
-
-    active_count = sum(1 for v in new_strats.values() if v)
-    if active_count == 0:
-        st.caption("All disabled — pure TA mode")
-    else:
-        st.caption(f"{active_count} strategy/strategies active")
+    with st.expander("🔬 Math Strategies"):
+        st.caption("Toggle on/off to A/B test their signal impact. Saves to GitHub — bot picks up on next run (~30 min).")
+        current_strats = _read_active_strategies()
+        new_strats: dict = {}
+        for key, meta in MATH_STRATEGIES.items():
+            help_txt = f"{meta['role']}  ·  deps: {meta['deps']}  ·  {meta['blurb']}"
+            new_strats[key] = st.toggle(
+                meta["label"],
+                value=current_strats.get(key, False),
+                key=f"strat_{key}",
+                help=help_txt,
+            )
+        if new_strats != current_strats:
+            if _write_strategies_to_github(new_strats):
+                active = [MATH_STRATEGIES[k]["label"] for k, v in new_strats.items() if v]
+                label = ", ".join(active) if active else "none (pure TA)"
+                st.success(f"Saved. Active: {label}")
+            else:
+                st.error("Could not save — add GITHUB_TOKEN to Streamlit secrets.")
+        active_count = sum(1 for v in new_strats.values() if v)
+        st.caption("All disabled — pure TA mode" if active_count == 0 else f"{active_count} active")
 
     st.divider()
 
-    # ── Bot info ──────────────────────────────────────────────────────────────
-    st.markdown("**Trading Bot**")
-    st.caption("The bot runs locally via Windows Task Scheduler every 30 min. Journal data syncs here automatically.")
-
-    st.divider()
-    st.markdown("**Auto-refresh**")
+    # ── Auto-refresh ──────────────────────────────────────────────────────────
     auto_refresh = st.toggle("Auto-refresh every 60 s", value=True,
                              help="Toggle to pause the automatic page refresh")
+    mode_badge = f"{'🟡 PAPER' if PAPER_MODE else '🔴 LIVE'}"
+    st.caption(f"{mode_badge}  ·  Build: {APP_BUILD}")
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Shared helpers (used across multiple pages) ───────────────────────────────
+
+def _txt(v, default: str = "—") -> str:
+    """Coerce arbitrary memo values to a displayable string."""
+    if v is None or v == "":
+        return default
+    if isinstance(v, (str, int, float, bool)):
+        return str(v)
+    if isinstance(v, dict):
+        for k in ("text", "description", "detail", "reason", "warning", "trend_or_range"):
+            if k in v:
+                return str(v[k])
+        return json.dumps(v, ensure_ascii=False)[:300]
+    if isinstance(v, list):
+        return ", ".join(_txt(x) for x in v) or default
+    return str(v)
+
+
+def _severity_style(sev: str) -> tuple:
+    s = (sev or "").upper()
+    if s == "CRITICAL": return "🔴", "CRITICAL"
+    if s == "HIGH":     return "🟠", "HIGH"
+    if s in ("MEDIUM", "MED"): return "🟡", "MEDIUM"
+    if s == "LOW":      return "🔵", "LOW"
+    return "⚪", s or "INFO"
+
+
+def _chart_layout(height=260, title="", yprefix="", **kwargs):
+    """Return a unified Plotly layout dict for a dark terminal chart."""
+    return dict(
+        plot_bgcolor="#0d1117",
+        paper_bgcolor="#0d1117",
+        font=dict(color="#e2e8f0", family="Inter, sans-serif", size=11),
+        height=height,
+        margin=dict(l=8, r=8, t=24 if title else 8, b=8),
+        title=dict(text=title, font=dict(size=12)) if title else None,
+        xaxis=dict(showgrid=False, color="#64748b"),
+        yaxis=dict(gridcolor="#1c2230", tickprefix=yprefix, color="#64748b"),
+        **kwargs,
+    )
+
+
+def _signal_dots(score: int, max_score: int = 6) -> str:
+    filled = "●" * score
+    empty  = "○" * (max_score - score)
+    return f'<span class="dots"><span class="dg">{filled}</span><span class="de">{empty}</span></span>'
+
+
+def _grade_badge(grade: str) -> str:
+    cls = {"A_GRADE": "b-A", "B_GRADE": "b-B", "C_GRADE": "b-C"}.get(grade, "b-skip")
+    lbl = grade.replace("_GRADE", "")
+    return f'<span class="{cls}">{lbl}</span>'
+
+
+def _fp(v) -> str:
+    """Format a price — returns '—' for None/0."""
+    if v is None or v == 0:
+        return "—"
+    try:
+        return f"${float(v):,.2f}"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _fpl(v) -> str:
+    """Format a P&L value with sign."""
+    if v is None:
+        return "—"
+    try:
+        return f"${float(v):+,.2f}"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _ft_sec(label: str) -> str:
+    return f'<div class="ft-sec">{label}</div>'
+
+
 def _grade_colour(grade: str) -> str:
     return {
         "A_GRADE": "color:#40916c;font-weight:700",
@@ -550,42 +667,157 @@ def _dark_bar(vals, dates, yprefix="$", height=220):
         marker_color=["#00c853" if v >= 0 else "#ff5252" for v in vals],
         marker_line_width=0,
     ))
-    fig.update_layout(
-        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
-        font_color="#fafafa", height=height,
-        margin=dict(l=0, r=0, t=4, b=0),
-        xaxis=dict(showgrid=False),
-        yaxis=dict(gridcolor="#1c1f26", tickprefix=yprefix),
-    )
+    fig.update_layout(**_chart_layout(height=height, yprefix=yprefix))
     return fig
 
-# ── Header ────────────────────────────────────────────────────────────────────
-now_str = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
-mode_badge = '<span class="badge-paper">PAPER</span>' if PAPER_MODE else '<span class="badge-live">LIVE</span>'
+# App build marker
+APP_BUILD = "2026-05-15 · redesign-v2"
 
-# App build marker — bumped whenever the rendered features change.  Lets the
-# user verify which version Streamlit Cloud is actually serving.
-APP_BUILD = "2026-05-07 · crypto-outlook"
+# ── Status bar (always visible, pulls live account data) ─────────────────────
+_sb_acct = fetch_account()
+_sb_port  = float(_sb_acct.get("portfolio_value", 0))
+_sb_pl    = float(_sb_acct.get("day_pl", 0))
+_sb_plpct = _sb_pl / _sb_port * 100 if _sb_port else 0
+_sb_sign  = "▲" if _sb_pl >= 0 else "▼"
+_sb_cls   = "pos" if _sb_pl >= 0 else "neg"
+_sb_mode  = '<span class="b-paper">PAPER</span>' if PAPER_MODE else '<span class="b-live">LIVE</span>'
+_sb_ts    = datetime.now().strftime("%H:%M:%S")
 
-h1, h2, h3 = st.columns([5, 2, 1])
-h1.markdown(f"## 📈 FlowTrader  {mode_badge}", unsafe_allow_html=True)
-h2.caption(f"Updated: {now_str}  ·  Build: {APP_BUILD}")
-if h3.button("⟳ Refresh", width="stretch"):
-    st.cache_data.clear()
-    st.rerun()
+if "next_refresh" not in st.session_state:
+    st.session_state.next_refresh = time.time() + REFRESH_SEC
+_sb_cd = max(0, int(st.session_state.next_refresh - time.time()))
 
-st.divider()
-
-# ── Tabs ──────────────────────────────────────────────────────────────────────
-tab_market, tab_account, tab_journal, tab_research, tab_trades, tab_suggest, tab_learn = st.tabs([
-    "🔍 Market", "💼 Account", "📓 Journal", "🧠 Research", "📈 Trades", "🧪 Suggestions", "📚 Learn"
-])
+st.markdown(
+    f'<div class="ft-status">'
+    f'<span class="bot">⚡ FlowTrader</span>'
+    f'{_sb_mode}'
+    f'<span class="pv">${_sb_port:,.2f}</span>'
+    f'<span class="{_sb_cls}">{_sb_sign} ${abs(_sb_pl):,.2f} ({_sb_plpct:+.2f}%)</span>'
+    f'<span class="cd">⟳ {_sb_cd}s · {_sb_ts}</span>'
+    f'</div>',
+    unsafe_allow_html=True,
+)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 1 — MARKET
+# PAGE — OVERVIEW (new)
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_market:
+if page == "Overview":
+    st.markdown("### System Overview")
+
+    # ── Account health ────────────────────────────────────────────────────────
+    ov_acct = _sb_acct
+    ov_port  = _sb_port
+    ov_pl    = _sb_pl
+    ov_cash  = float(ov_acct.get("cash", 0))
+    ov_bp    = float(ov_acct.get("buying_power", 0))
+    ov_pos   = ov_acct.get("positions", []) or []
+
+    # Pull market snapshot (non-blocking — may already be cached)
+    with st.spinner("Loading…"):
+        ov_snap = fetch_snapshot(tuple(WATCHLIST))
+
+    ov_wl      = ov_snap.get("watchlist", [])
+    ov_top     = ov_wl[0] if ov_wl else {}
+    ov_agrades = sum(1 for s in ov_wl if s.get("setup_quality") == "A_GRADE")
+    ov_scanned = len(ov_wl)
+    ov_topsc   = ov_top.get("indicators", {}).get("signal_score", 0)
+    ov_topsym  = ov_top.get("symbol", "—")
+
+    # Recent journal entries
+    ov_entries = fetch_entries(7)
+    ov_cycles  = len(ov_entries)
+    ov_trades  = sum(1 for e in ov_entries if e.get("action") in ("BUY", "SELL")
+                     and e.get("execution_status") in ("FILLED", "SIMULATED", "SUBMITTED"))
+    ov_skips   = sum(1 for e in ov_entries if e.get("action") == "SKIP")
+    ov_avgsc   = (sum(e.get("signal_score", 0) for e in ov_entries) / len(ov_entries)) if ov_entries else 0
+
+    # Risk profile
+    ov_prof_name = _read_active_profile()
+    ov_prof      = RISK_PROFILES.get(ov_prof_name, {})
+    ov_maxpos    = ov_prof.get("max_open_positions", 3)
+    ov_maxloss   = ov_port * ov_prof.get("max_daily_loss_pct", 0.02)
+    ov_lossused  = abs(ov_pl) if ov_pl < 0 else 0
+
+    # ── Three-column summary cards ────────────────────────────────────────────
+    oc1, oc2, oc3 = st.columns(3)
+
+    with oc1:
+        st.markdown(f'<div class="ft-sec">Account Health</div>', unsafe_allow_html=True)
+        oc1a, oc1b = st.columns(2)
+        oc1a.metric("Portfolio", f"${ov_port:,.0f}")
+        oc1b.metric("Day P&L", f"${ov_pl:+,.2f}", f"{ov_pl/ov_port*100:+.2f}%" if ov_port else "0%", delta_color="normal")
+        oc1c, oc1d = st.columns(2)
+        oc1c.metric("Buying Power", f"${ov_bp:,.0f}")
+        oc1d.metric("Cash", f"${ov_cash:,.0f}")
+
+    with oc2:
+        st.markdown(f'<div class="ft-sec">Market Pulse</div>', unsafe_allow_html=True)
+        oc2a, oc2b = st.columns(2)
+        oc2a.metric("Scanned", ov_scanned)
+        oc2b.metric("A-Grade", ov_agrades)
+        st.markdown(
+            f'Top Signal &nbsp; <b>{ov_topsym}</b> &nbsp;'
+            f'{_signal_dots(ov_topsc)} &nbsp; <span style="color:var(--muted);font-size:0.82rem">{ov_topsc}/6</span>',
+            unsafe_allow_html=True,
+        )
+
+    with oc3:
+        st.markdown(f'<div class="ft-sec">Bot Activity (7d)</div>', unsafe_allow_html=True)
+        oc3a, oc3b = st.columns(2)
+        oc3a.metric("Cycles", ov_cycles)
+        oc3b.metric("Trades", ov_trades)
+        oc3c, oc3d = st.columns(2)
+        oc3c.metric("Skips", ov_skips)
+        oc3d.metric("Avg Score", f"{ov_avgsc:.1f}/6")
+
+    st.divider()
+
+    # ── Risk gauges ───────────────────────────────────────────────────────────
+    st.markdown(f'<div class="ft-sec">Risk Status</div>', unsafe_allow_html=True)
+    rg1, rg2 = st.columns(2)
+    with rg1:
+        cap_frac = len(ov_pos) / ov_maxpos if ov_maxpos else 0
+        cap_icon = "🔴" if cap_frac >= 1.0 else "🟡" if cap_frac >= 0.67 else "🟢"
+        st.progress(min(cap_frac, 1.0),
+                    text=f"{cap_icon} Positions: {len(ov_pos)} / {ov_maxpos}  ·  {ov_prof_name}")
+    with rg2:
+        loss_frac = min(ov_lossused / ov_maxloss, 1.0) if ov_maxloss else 0
+        loss_icon = "🔴" if loss_frac >= 0.8 else "🟡" if loss_frac >= 0.5 else "🟢"
+        st.progress(loss_frac,
+                    text=f"{loss_icon} Daily Loss: ${ov_lossused:,.2f} / ${ov_maxloss:,.2f}")
+
+    st.divider()
+
+    # ── Recent activity ───────────────────────────────────────────────────────
+    st.markdown(f'<div class="ft-sec">Recent Journal Activity</div>', unsafe_allow_html=True)
+    for e in list(reversed(ov_entries))[:8]:
+        action  = e.get("action", "SKIP")
+        sym     = e.get("symbol") or "—"
+        score   = e.get("signal_score", 0)
+        execst  = e.get("execution_status", "—")
+        date_s  = e.get("date", "")
+        time_s  = e.get("time_est", "").split(".")[0]
+        action_cls = {"BUY": "b-buy", "SELL": "b-sell", "HOLD": "b-hold"}.get(action, "b-skip")
+        exec_cls   = {"SIMULATED": "b-sim", "FILLED": "b-filled"}.get(execst, "b-skip")
+        exec_html  = f' <span class="{exec_cls}">{execst}</span>' if action in ("BUY","SELL") else ""
+        st.markdown(
+            f'<div style="display:flex;align-items:center;gap:10px;padding:7px 0;'
+            f'border-bottom:1px solid var(--border);font-size:0.84rem;">'
+            f'<span style="color:var(--muted);min-width:90px">{date_s} {time_s}</span>'
+            f'<span class="{action_cls}">{action}</span>'
+            f'<span style="font-weight:600;min-width:60px">{sym}</span>'
+            f'{_signal_dots(score)}'
+            f'{exec_html}'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAGE — MARKET
+# ═══════════════════════════════════════════════════════════════════════════════
+elif page == "Market":
 
     with st.spinner("Fetching market data…"):
         snapshot = fetch_snapshot(tuple(WATCHLIST))
@@ -932,9 +1164,9 @@ with tab_market:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 2 — ACCOUNT
+# PAGE — ACCOUNT
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_account:
+elif page == "Account":
 
     with st.spinner("Fetching account data…"):
         acct = fetch_account()
@@ -1333,9 +1565,9 @@ with tab_account:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 3 — JOURNAL
+# PAGE — JOURNAL
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_journal:
+elif page == "Journal":
 
     # ── Filters ───────────────────────────────────────────────────────────────
     f1, f2, f3 = st.columns([1, 2, 3])
@@ -1500,25 +1732,6 @@ with tab_journal:
         def _clean_sym(v):
             return v if v not in _BLANK_SYMS else "—"
 
-        def _fp(v):
-            """Pre-format price — never passes None/0 to pandas."""
-            if v is None or v == 0:
-                return "—"
-            try:
-                return f"${float(v):,.2f}"
-            except (TypeError, ValueError):
-                return "—"
-
-        def _fpl(v):
-            """Format P&L with sign and colour hint in string."""
-            if v is None:
-                return "—"
-            try:
-                f = float(v)
-                return f"${f:+,.2f}"
-            except (TypeError, ValueError):
-                return "—"
-
         trade_entries = [e for e in reversed(filtered) if e.get("action") in ["BUY","SELL"]]
         skip_entries  = [e for e in reversed(filtered) if e.get("action") == "SKIP"]
 
@@ -1633,9 +1846,9 @@ with tab_journal:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 5 — COMPLETED TRADES
+# PAGE — TRADES
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_trades:
+elif page == "Trades":
 
     all_t_entries = fetch_entries(90)
 
@@ -1842,9 +2055,9 @@ with tab_trades:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 4 — RESEARCH (Weekly Analyst Memo)
+# PAGE — RESEARCH
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_research:
+elif page == "Research":
 
     memo = load_research_memo()
 
@@ -1856,32 +2069,6 @@ with tab_research:
             "To run it manually right now from your terminal:  `python main.py research-analyst`"
         )
     else:
-        # ── Helpers ────────────────────────────────────────────────────────────
-        def _txt(v, default: str = "—") -> str:
-            """Coerce arbitrary memo values to a displayable string."""
-            if v is None or v == "":
-                return default
-            if isinstance(v, (str, int, float, bool)):
-                return str(v)
-            if isinstance(v, dict):
-                # Prefer human-readable keys if present
-                for k in ("text", "description", "detail", "reason", "warning", "trend_or_range"):
-                    if k in v:
-                        return str(v[k])
-                return json.dumps(v, ensure_ascii=False)[:300]
-            if isinstance(v, list):
-                return ", ".join(_txt(x) for x in v) or default
-            return str(v)
-
-        def _severity_style(sev: str) -> tuple[str, str]:
-            """Return (emoji, severity-tag) for a severity string."""
-            s = (sev or "").upper()
-            if s in ("CRITICAL",):     return "🔴", "CRITICAL"
-            if s in ("HIGH",):         return "🟠", "HIGH"
-            if s in ("MEDIUM", "MED"): return "🟡", "MEDIUM"
-            if s in ("LOW",):          return "🔵", "LOW"
-            return "⚪", s or "INFO"
-
         gen_at_raw   = memo.get("generated_at", "")
         valid_to_raw = memo.get("valid_until", "")
         gen_at       = gen_at_raw[:16].replace("T", " ") if gen_at_raw else "—"
@@ -2272,9 +2459,9 @@ with tab_research:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 6 — SUGGESTIONS (Analyst-in / Analyst-out approvals)
+# PAGE — ANALYST (Suggestions + approvals)
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_suggest:
+elif page == "Analyst":
     st.markdown("## 🧪 Analyst Suggestions")
     st.caption("Rule changes proposed by the journal analysts. Approve to patch the bot's CLAUDE.md.")
 
@@ -2424,10 +2611,9 @@ with tab_suggest:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# TAB 7 — LEARN
+# PAGE — LEARN
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab_learn:
-    import numpy as np
+elif page == "Learn":
 
     st.markdown("## 📚 FlowTrader — Trading Guide")
     st.caption("Everything you need to understand what FlowTrader is doing and why. No prior trading experience needed.")
@@ -2864,17 +3050,6 @@ The bot will only place the trade if R:R ≥ 1.5 (risk 1, target 1.5 or better).
 
 
 # ── Continuous auto-refresh ───────────────────────────────────────────────────
-st.divider()
-footer_left, footer_right = st.columns([4, 1])
-footer_left.caption(
-    f"FlowTrader v1  ·  {'Paper' if PAPER_MODE else 'Live'} trading  ·  "
-    + (f"Auto-refreshes every {REFRESH_SEC} s" if auto_refresh else "Auto-refresh paused — toggle in sidebar to resume")
-)
-countdown_slot = footer_right.empty()
-
-if "next_refresh" not in st.session_state:
-    st.session_state.next_refresh = time.time() + REFRESH_SEC
-
 if auto_refresh:
     remaining = int(st.session_state.next_refresh - time.time())
     if remaining <= 0:
@@ -2882,8 +3057,5 @@ if auto_refresh:
         st.cache_data.clear()
         st.rerun()
     else:
-        countdown_slot.caption(f"Next refresh in {remaining}s")
         time.sleep(1)
         st.rerun()
-else:
-    countdown_slot.caption("Auto-refresh paused")
