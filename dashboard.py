@@ -452,6 +452,9 @@ def load_research_memo() -> dict:
     except Exception:
         return {}
 
+# App build marker
+APP_BUILD = "2026-05-15 · redesign-v2"
+
 # ── Sidebar — Navigation + Controls ──────────────────────────────────────────
 with st.sidebar:
     # ── Page navigation ───────────────────────────────────────────────────────
@@ -669,9 +672,6 @@ def _dark_bar(vals, dates, yprefix="$", height=220):
     ))
     fig.update_layout(**_chart_layout(height=height, yprefix=yprefix))
     return fig
-
-# App build marker
-APP_BUILD = "2026-05-15 · redesign-v2"
 
 # ── Status bar (always visible, pulls live account data) ─────────────────────
 _sb_acct = fetch_account()
