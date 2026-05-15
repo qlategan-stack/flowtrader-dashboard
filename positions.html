@@ -244,9 +244,9 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <div class="hdr">
   <div class="hdr-brand">⚡ FlowTrader</div>
   <span class="badge-paper">PAPER</span>
-  <div class="hdr-pv">$0.00</div>
-  <div class="hdr-pl pos">▲ $0.00 (+0.00%)</div>
-  <div class="hdr-ts">Built 2026-05-15 18:23 UTC · auto-refreshes every 30 min</div>
+  <div class="hdr-pv">$99,045.72</div>
+  <div class="hdr-pl pos">▲ $501.04 (+0.51%)</div>
+  <div class="hdr-ts">Built 2026-05-15 18:24 UTC · auto-refreshes every 30 min</div>
 </div>
 
 <!-- ── THEME TOGGLE ────────────────────────────────────────────────────────── -->
@@ -259,7 +259,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <div class="page">
 
   <!-- ── ACTIVE POSITIONS ──────────────────────────────────────────────────── -->
-  <div class="section-title">Active Positions (0)</div>
+  <div class="section-title">Active Positions (3)</div>
   <div class="tbl-wrap">
     <table>
       <thead>
@@ -277,7 +277,43 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         </tr>
       </thead>
       <tbody>
-        <tr><td colspan="10" class="empty-row">No open positions</td></tr>
+        
+      <tr>
+        <td><span class="sym">META</span><span class="sym-name">Meta</span></td>
+        <td>16</td>
+        <td>$600.49</td>
+        <td>$620.07</td>
+        <td class="pos">▲ $313.24</td>
+        <td class="pos">+3.26%</td>
+        <td>$591.60<span class="cell-sub">+4.59%</span></td>
+        <td>$643.93<span class="cell-sub">+3.85%</span></td>
+        <td><span class="score-badge">3/6</span></td>
+        <td>3d</td>
+      </tr>
+      <tr>
+        <td><span class="sym">MSFT</span><span class="sym-name">Microsoft</span></td>
+        <td>24</td>
+        <td>$408.07</td>
+        <td>$426.39</td>
+        <td class="pos">▲ $439.63</td>
+        <td class="pos">+4.49%</td>
+        <td>$402.88<span class="cell-sub">+5.51%</span></td>
+        <td>$418.31<span class="cell-sub">-1.89%</span></td>
+        <td><span class="score-badge">3/6</span></td>
+        <td>3d</td>
+      </tr>
+      <tr>
+        <td><span class="sym">NVDA</span><span class="sym-name">NVIDIA</span></td>
+        <td>43</td>
+        <td>$228.99</td>
+        <td>$230.57</td>
+        <td class="pos">▲ $68.00</td>
+        <td class="pos">+0.69%</td>
+        <td>$221.62<span class="cell-sub">+3.88%</span></td>
+        <td>$243.82<span class="cell-sub">+5.75%</span></td>
+        <td><span class="score-badge">4/6</span></td>
+        <td>0d</td>
+      </tr>
       </tbody>
     </table>
   </div>
@@ -295,38 +331,38 @@ tr:hover td{background:rgba(255,255,255,0.03)}
   <div class="cards">
     <div class="card">
       <div class="card-label">Portfolio</div>
-      <div class="card-value">$0</div>
+      <div class="card-value">$99,046</div>
     </div>
     <div class="card">
       <div class="card-label">Day P&amp;L</div>
-      <div class="card-value pos">▲ $0.00</div>
-      <div class="card-sub">+0.00%</div>
+      <div class="card-value pos">▲ $501.04</div>
+      <div class="card-sub">+0.51%</div>
     </div>
     <div class="card">
       <div class="card-label">Cash</div>
-      <div class="card-value">$0</div>
+      <div class="card-value">$68,977</div>
     </div>
     <div class="card">
       <div class="card-label">Buying Power</div>
-      <div class="card-value">$0</div>
+      <div class="card-value">$168,023</div>
     </div>
     <div class="card">
       <div class="card-label">Open Positions</div>
-      <div class="card-value">0</div>
+      <div class="card-value">3</div>
       <div class="card-sub">of 3 max</div>
     </div>
   </div>
 
   <div class="gauges">
     <div class="gauge">
-      <div class="gauge-label">🟢 Position Capacity — 0 / 3</div>
+      <div class="gauge-label">🔴 Position Capacity — 3 / 3</div>
       <div class="gauge-track">
-        <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
+        <div class="gauge-fill" style="width:100%;background:#E86060"></div>
       </div>
-      <div class="gauge-sub">0% capacity used</div>
+      <div class="gauge-sub">100% capacity used</div>
     </div>
     <div class="gauge">
-      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $0.00</div>
+      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $1,980.91</div>
       <div class="gauge-track">
         <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
       </div>
@@ -349,7 +385,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 
   <div class="footer">
     <span>⚡ FlowTrader · PAPER mode · 2026-05-15 · positions-dashboard-v1</span>
-    <span>Built 2026-05-15 18:23 UTC</span>
+    <span>Built 2026-05-15 18:24 UTC</span>
   </div>
 
 </div><!-- /page -->
@@ -364,9 +400,9 @@ function ftTheme(t, btn) {
 }
 
 // ── Equity chart ──────────────────────────────────────────────────────────────
-const chartDates  = [];
-const chartEquity = [];
-const chartPL     = [];
+const chartDates  = ["2026-04-15", "2026-04-16", "2026-04-17", "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23", "2026-04-24", "2026-04-27", "2026-04-28", "2026-04-29", "2026-04-30", "2026-05-01", "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07", "2026-05-08", "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14"];
+const chartEquity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100000.0, 100000.0, 100000.0, 100000.0, 99968.24, 100152.99, 99583.55, 98293.19, 98257.96, 98414.6, 98544.68];
+const chartPL     = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -31.76, 184.75, -569.44, -1290.36, -35.23, 156.64, 130.08];
 
 if (chartDates.length > 0) {
   const ctx = document.getElementById('equityChart').getContext('2d');
