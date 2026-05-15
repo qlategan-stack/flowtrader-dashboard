@@ -1,133 +1,133 @@
 {
-  "account_value": 101430.86,
+  "account_value": 100440.18,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 91430.86,
+  "position_value": 90440.18,
   "open_positions": 442,
   "positions": [
     {
       "currency": "BNB",
       "amount": 1.0,
-      "price_usd": 682.03,
-      "value_usd": 682.03
+      "price_usd": 674.43,
+      "value_usd": 674.43
     },
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 80105.47,
-      "value_usd": 80105.47
+      "price_usd": 79295.5,
+      "value_usd": 79295.5
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 2247.35,
-      "value_usd": 2247.35
+      "price_usd": 2226.21,
+      "value_usd": 2226.21
     },
     {
       "currency": "LTC",
       "amount": 8.0,
-      "price_usd": 57.68,
-      "value_usd": 461.44
+      "price_usd": 57.4,
+      "value_usd": 459.2
     },
     {
       "currency": "TRX",
       "amount": 1450.0,
       "price_usd": 0.35,
-      "value_usd": 510.11
+      "value_usd": 509.82
     },
     {
       "currency": "XRP",
       "amount": 351.0,
-      "price_usd": 1.46,
-      "value_usd": 511.3
+      "price_usd": 1.45,
+      "value_usd": 507.3
     },
     {
       "currency": "GAS",
       "amount": 300.0,
-      "price_usd": 1.65,
-      "value_usd": 494.4
+      "price_usd": 1.61,
+      "value_usd": 483.9
     },
     {
       "currency": "KNC",
       "amount": 3374.0,
       "price_usd": 0.14,
-      "value_usd": 488.56
+      "value_usd": 475.4
     },
     {
       "currency": "IOTA",
       "amount": 8485.0,
       "price_usd": 0.06,
-      "value_usd": 507.4
+      "value_usd": 497.22
     },
     {
       "currency": "LINK",
       "amount": 50.0,
-      "price_usd": 10.23,
-      "value_usd": 511.5
+      "price_usd": 10.11,
+      "value_usd": 505.5
     },
     {
       "currency": "ETC",
       "amount": 53.0,
-      "price_usd": 9.27,
-      "value_usd": 491.31
+      "price_usd": 9.11,
+      "value_usd": 482.83
     },
     {
       "currency": "ZEC",
       "amount": 1.0,
-      "price_usd": 531.36,
-      "value_usd": 531.36
+      "price_usd": 522.55,
+      "value_usd": 522.55
     },
     {
       "currency": "DASH",
       "amount": 9.0,
-      "price_usd": 44.57,
-      "value_usd": 401.13
+      "price_usd": 43.74,
+      "value_usd": 393.66
     },
     {
       "currency": "NEO",
       "amount": 171.0,
-      "price_usd": 3.03,
-      "value_usd": 518.81
+      "price_usd": 2.98,
+      "value_usd": 508.9
     },
     {
       "currency": "ADX",
       "amount": 6377.0,
-      "price_usd": 0.08,
-      "value_usd": 479.55
+      "price_usd": 0.07,
+      "value_usd": 466.16
     },
     {
       "currency": "ADA",
       "amount": 1885.0,
       "price_usd": 0.26,
-      "value_usd": 498.58
+      "value_usd": 492.36
     },
     {
       "currency": "XLM",
       "amount": 3079.0,
       "price_usd": 0.16,
-      "value_usd": 487.41
+      "value_usd": 479.71
     },
     {
       "currency": "STEEM",
       "amount": 8508.0,
       "price_usd": 0.06,
-      "value_usd": 495.17
+      "value_usd": 484.79
     },
     {
       "currency": "ONT",
       "amount": 7970.0,
       "price_usd": 0.06,
-      "value_usd": 483.14
+      "value_usd": 470.07
     },
     {
       "currency": "QTUM",
       "amount": 545.0,
-      "price_usd": 0.96,
-      "value_usd": 524.84
+      "price_usd": 0.93,
+      "value_usd": 504.67
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-15T13:18:11.120496+00:00"
+  "fetched_at": "2026-05-15T16:39:28.505250+00:00"
 }
