@@ -1,34 +1,34 @@
 {
-  "account_value": 101823.74,
+  "account_value": 101886.68,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 91823.74,
+  "position_value": 91886.68,
   "open_positions": 442,
   "positions": [
     {
       "currency": "BNB",
       "amount": 1.0,
-      "price_usd": 682.51,
-      "value_usd": 682.51
+      "price_usd": 682.8,
+      "value_usd": 682.8
     },
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 80434.93,
-      "value_usd": 80434.93
+      "price_usd": 80492.96,
+      "value_usd": 80492.96
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 2254.35,
-      "value_usd": 2254.35
+      "price_usd": 2253.75,
+      "value_usd": 2253.75
     },
     {
       "currency": "LTC",
       "amount": 8.0,
-      "price_usd": 58.22,
-      "value_usd": 465.76
+      "price_usd": 58.13,
+      "value_usd": 465.04
     },
     {
       "currency": "TRX",
@@ -40,7 +40,7 @@
       "currency": "XRP",
       "amount": 351.0,
       "price_usd": 1.46,
-      "value_usd": 514.04
+      "value_usd": 514.14
     },
     {
       "currency": "GAS",
@@ -63,8 +63,8 @@
     {
       "currency": "LINK",
       "amount": 50.0,
-      "price_usd": 10.27,
-      "value_usd": 513.5
+      "price_usd": 10.28,
+      "value_usd": 514.0
     },
     {
       "currency": "ETC",
@@ -75,14 +75,14 @@
     {
       "currency": "ZEC",
       "amount": 1.0,
-      "price_usd": 533.52,
-      "value_usd": 533.52
+      "price_usd": 535.47,
+      "value_usd": 535.47
     },
     {
       "currency": "DASH",
       "amount": 9.0,
-      "price_usd": 45.0,
-      "value_usd": 405.0
+      "price_usd": 45.3,
+      "value_usd": 407.7
     },
     {
       "currency": "NEO",
@@ -100,13 +100,13 @@
       "currency": "ADA",
       "amount": 1885.0,
       "price_usd": 0.27,
-      "value_usd": 502.35
+      "value_usd": 502.73
     },
     {
       "currency": "XLM",
       "amount": 3079.0,
       "price_usd": 0.16,
-      "value_usd": 488.64
+      "value_usd": 488.95
     },
     {
       "currency": "STEEM",
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-15T09:48:07.158659+00:00"
+  "fetched_at": "2026-05-15T10:03:07.446068+00:00"
 }
