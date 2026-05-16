@@ -125,7 +125,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
     <span class="pill">Report date: 2026-05-14</span>
-    <span class="pill">Generated: 2026-05-15 06:51 UTC</span>
+    <span class="pill">Generated: 2026-05-16 06:16 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -167,7 +167,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its no-add-to-position rule — the real mistake was entering the earlier 24-share position without a clear exit plan that would free up the slot before a new signal emerged. Next time, set a predefined exit trigger (price target, MA recross, or time stop) on any MSFT position at entry so the bot isn&#x27;t locked out when a fresh setup appears.</div>
+  <div class="lesson-body">The bot executed correctly here — it enforced its no-add-to-existing-position rule and rejected the trade, which is the right behavior, not a flaw. Before the session begins, check your open positions so you&#x27;re not wasting signal capacity on a symbol you&#x27;re already holding; close the MSFT position first if you want a fresh entry when a stronger setup emerges.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -184,7 +184,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s technical read was actually solid — a legitimate mean-reversion signal in a ranging market — but the trade was blocked because you still held 24 shares of MSFT from a prior position that was never closed. Before the bot attempts re-entry on any symbol, check your open positions and close existing holdings first, since this strategy requires a clean slate to execute.</div>
+  <div class="lesson-body">The bot&#x27;s market read was actually solid — a valid mean-reversion signal in a ranging, low-ADX environment — but the trade was dead on arrival because you already held 24 shares of MSFT, triggering the no-add rule before execution even began. Before the next signal fires, check your open positions in that symbol and either close the existing lot if you want to re-enter fresh, or consciously decide to sit it out rather than letting the bot waste a signal cycle on a guaranteed rejection.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -201,7 +201,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade never executed because the bot correctly blocked a duplicate position entry — the real issue here isn&#x27;t signal quality but that you&#x27;re carrying an open 24-share MSFT lot that needs to be resolved before any new setup can be acted on. Before the next session, close or account for that existing position, and consider building a pre-trade checklist that flags open holdings in a symbol so a low-confidence setup (signal score of 2, neutral RSI, price not yet at the lower band) doesn&#x27;t even reach the execution stage until the slate is clean.</div>
+  <div class="lesson-body">The trade never executed because the bot correctly enforced its no-add-to-position rule, catching that you already held 24 shares of MSFT before a new entry could compound your exposure — this was the system working as designed, not a signal failure. Before re-entering MSFT, close the existing 24-share position first, then wait for a stronger setup: ideally RSI below 35 and pct_b under 0.1 to confirm genuine oversold conditions rather than the weak 2.19% dip and neutral RSI 49.82 that drove this low-confidence signal score of 2.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
