@@ -1,233 +1,283 @@
 {
   "market_regime": {
-    "trend_or_range": "Ranging with downside bias",
-    "equity_mean_reversion_active": true,
-    "mean_reversion_notes": "VIX at 18.48 sits in the normal/healthy band \u2014 not elevated enough to force a pause, but the intraday news flow (Nasdaq 100 -1%+, Iran geopolitical uncertainty, oil spiking above $106) introduces episodic volatility. Mean reversion strategies should remain active but with tighter position sizing and wider stop tolerances to absorb news-driven whipsaws. Only XLK data is available this week (+0.42%), limiting sector rotation signals; assume a cautious, selective posture.",
-    "vix_level": 18.48,
-    "vix_interpretation": "NORMAL \u2014 healthy conditions. At 18.48 VIX is below the 20 caution threshold. Standard position sizing applies, but geopolitical tail risk (Iran/US standoff, oil above $106) warrants a 10-15% reduction from maximum allocation until the diplomatic situation clarifies.",
-    "position_size_guidance": "Use 85% of standard max position size. Reduce further to 70% on any intraday VIX spike above 22."
+    "trending_or_ranging": "Ranging with mild upward bias \u2014 Technology (XLK +0.16%) is the only sector with confirmed weekly data, suggesting cautious participation. Broader sector data gaps limit conviction, but VIX at 17.44 confirms no panic regime.",
+    "mean_reversion_active_equities": true,
+    "mean_reversion_notes": "Mean reversion strategies ACTIVE but sized conservatively. Fed Minutes hawkish tilt (rate hike door opened, easing bias removal discussed) introduces rate-sensitive volatility. Avoid aggressive entry sizing until sector breadth data confirms direction.",
+    "vix_interpretation": "VIX 17.44 = NORMAL. Below the 20 threshold \u2014 healthy risk environment. No forced de-risking required. Standard position sizing applies, though the Fed hawkish surprise and geopolitical tail risks (Iran conflict, $2T deficit) warrant keeping individual position sizes at 80% of max allocation.",
+    "vix_level": 17.44,
+    "vix_risk_level": "NORMAL"
   },
   "top_opportunities": [
     {
       "rank": 1,
       "asset_class": "equity",
-      "symbol": "GLD",
+      "symbol": "NVDA",
       "direction": "LONG",
-      "rationale": "Iran-US military standoff delayed but unresolved, oil above $106, and a new Fed Chair (Warsh) being sworn in Friday all point to uncertainty-driven safe-haven flows. Gold is the primary beneficiary. GLD offers liquid, low-volatility exposure. No earnings risk. Fits a risk-off mean-reversion entry if GLD pulls back intraday.",
-      "signal_strength": "HIGH \u2014 macro catalysts strongly aligned",
-      "position_size_adjustment": "Standard (85% of max given VIX)"
+      "rationale": "Semiconductor mania headline ('Semi Mania Resumes Ahead of Nvidia Earnings') confirms near-term catalyst. Samsung supply woes and Hormuz tanker exits create a supply-side narrative favoring US chip leaders. NVDA is a primary beneficiary. Earnings are imminent \u2014 confirm exact date before entry; if earnings are within 5 trading days, REDUCE size to 40% of normal or skip.",
+      "signal_strength": "HIGH \u2014 macro catalyst + sector momentum",
+      "regime_fit": "Trending setup within a ranging market \u2014 momentum justifies a short-term breakout bias",
+      "position_size_adjustment": "40% of max if earnings within 5 days; 80% of max otherwise",
+      "key_risk": "Earnings binary event \u2014 do not hold through print at full size"
     },
     {
       "rank": 2,
       "asset_class": "equity",
-      "symbol": "USO",
+      "symbol": "GLD",
       "direction": "LONG",
-      "rationale": "Oil topped $106 on Iran impasse. Even with Trump delaying military action, the uncertainty premium in crude is unlikely to fully deflate this week. USO is the most direct liquid expression. Caveat: any diplomatic breakthrough could cause a sharp reversal \u2014 use tight stops.",
-      "signal_strength": "MODERATE-HIGH \u2014 geopolitical catalyst strong but binary outcome risk",
-      "position_size_adjustment": "Reduce to 60% of max due to binary geopolitical risk"
+      "rationale": "Fed hawkish minutes + $2T deficit projection + Iran geopolitical risk = triple tailwind for gold. Rate hike risk normally pressures gold, BUT fiscal deterioration and war-risk premium dominate near-term. GLD is a clean hedge against both inflation embedding (Fed concern per minutes) and geopolitical shock.",
+      "signal_strength": "MEDIUM-HIGH \u2014 macro driven, multiple confirming factors",
+      "regime_fit": "Defensive/hedge play fits ranging equity regime with elevated macro uncertainty",
+      "position_size_adjustment": "90% of max \u2014 low binary risk, high diversification value this week",
+      "key_risk": "Any rapid de-escalation in Middle East could remove geopolitical premium quickly"
     },
     {
       "rank": 3,
       "asset_class": "equity",
-      "symbol": "QQQ",
-      "direction": "LONG (mean reversion bounce)",
-      "rationale": "Nasdaq 100 dropped 1%+ on May 18. With VIX still below 20 and no fundamental macro deterioration beyond geopolitical noise, an oversold bounce in QQQ is a viable mean reversion trade. Watch for stabilisation in Iran headlines as a trigger. Tech (XLK +0.42% last week) remains the leading sector.",
-      "signal_strength": "MODERATE \u2014 news-driven dip, regime supports reversion",
-      "position_size_adjustment": "Standard (85% of max). Exit if Nasdaq drops another 1.5%+ without recovery."
+      "symbol": "TLT",
+      "direction": "CAUTIOUS \u2014 mean reversion LONG only if oversold",
+      "rationale": "Fed Minutes hawkish surprise likely pressures long-duration bonds near-term. However, if TLT sells off sharply on the Fed news, it creates a mean reversion LONG opportunity \u2014 deficit spending and eventual policy pivot remain structural tailwinds. Monitor for RSI <35 before entering.",
+      "signal_strength": "MEDIUM \u2014 conditional on further sell-off creating oversold setup",
+      "regime_fit": "Mean reversion candidate in a ranging rate environment",
+      "position_size_adjustment": "60% of max, only on confirmed oversold signal (RSI <35, price at lower Bollinger Band)",
+      "key_risk": "If Fed hike becomes consensus expectation, TLT downtrend could extend \u2014 respect stop loss strictly"
     },
     {
       "rank": 4,
       "asset_class": "crypto",
       "symbol": "BTC/USDT",
-      "direction": "LONG (mean reversion)",
-      "rationale": "Fear & Greed at 28 (Fear zone) is historically mean-reversion friendly for BTC. BTC dominance at 58.21% confirms capital is sheltering in BTC rather than fleeing crypto entirely. A drop below $77,000 (per news) represents a potential oversold dip in a BTC-led regime. However, NO_DATA from scanner means no technical confirmation \u2014 entry must be discretionary/manual only.",
-      "signal_strength": "MODERATE \u2014 macro setup is right, but scanner data absent; manual confirmation required",
-      "position_size_adjustment": "Reduce to 50% of standard crypto allocation until scanner data is restored"
+      "direction": "LONG",
+      "rationale": "BTC dominance at 58.22% confirms BTC-led regime \u2014 capital is flowing INTO BTC not alts. Fear & Greed at 27 (Fear) is historically mean-reversion friendly for BTC specifically. Total market cap $2.66T with +1.03% 24h change suggests nascent stabilization. In a BTC-led regime with fear sentiment, BTC spot longs offer the best asymmetric risk/reward among crypto assets.",
+      "signal_strength": "MEDIUM \u2014 macro crypto conditions supportive but NO live scanner data to confirm technical entry",
+      "regime_fit": "BTC-led regime directly favors BTC over alts",
+      "position_size_adjustment": "50% of normal crypto allocation \u2014 NO scanner data available; entry must be confirmed manually via price action at key support levels",
+      "key_risk": "Scanner data unavailable (NO_DATA for all pairs) \u2014 do not deploy full size without manual technical confirmation"
     },
     {
       "rank": 5,
       "asset_class": "crypto",
       "symbol": "ETH/USDT",
-      "direction": "LONG (mean reversion, secondary)",
-      "rationale": "ETH at 9.64% market dominance is suppressed relative to BTC. Fear conditions at 28 suggest broad crypto is oversold. If BTC stabilises above $77K, ETH typically follows with a delayed bounce. Lower conviction than BTC due to alts underperforming in this regime.",
-      "signal_strength": "LOW-MODERATE \u2014 dependent on BTC stabilising first; scanner data absent",
-      "position_size_adjustment": "Reduce to 35% of standard crypto allocation"
+      "direction": "LONG \u2014 only after BTC stabilizes",
+      "rationale": "ETH at 9.63% dominance is near historically low levels relative to BTC. In a BTC-led regime, ETH underperforms during the fear phase but can snap back sharply once BTC stabilizes. Mean reversion LONG on ETH is a secondary play \u2014 wait for BTC to show 48-hour consolidation above key support before entering ETH.",
+      "signal_strength": "LOW-MEDIUM \u2014 regime is unfavorable now but setup builds for later in the week",
+      "regime_fit": "Counter-regime mean reversion \u2014 only valid if BTC dominance peaks and begins rolling over",
+      "position_size_adjustment": "30% of normal crypto allocation \u2014 secondary play, conditional on BTC stabilization signal",
+      "key_risk": "If BTC continues to absorb flows, ETH could underperform further before reverting"
     },
     {
       "rank": 6,
       "asset_class": "crypto",
-      "symbol": "SOL/USDT",
-      "direction": "LONG (speculative mean reversion)",
-      "rationale": "SOL has been a high-beta alt that often leads recovery bounces when fear conditions unwind from extreme levels. Fear at 28 is near the threshold where mean reversion entries historically perform. Only suitable if BTC and ETH are already showing stabilisation.",
-      "signal_strength": "LOW \u2014 BTC-led regime disfavours alts; only activate if BTC confirms recovery",
-      "position_size_adjustment": "Reduce to 25% of standard crypto allocation; treat as speculative"
+      "symbol": "LTC/USDT",
+      "direction": "LONG \u2014 speculative mean reversion",
+      "rationale": "LTC historically tracks BTC closely and benefits from BTC-led regimes as a beta play. Fear sentiment at 27 has historically preceded LTC bounces. Lower market cap means more volatile mean reversion potential. NOTE: this is a speculative setup only \u2014 no live scanner data available.",
+      "signal_strength": "LOW \u2014 speculative only, no technical confirmation available",
+      "regime_fit": "BTC proxy play fits BTC-led regime",
+      "position_size_adjustment": "20% of normal crypto allocation \u2014 speculative only",
+      "key_risk": "No scanner data; LTC has structural liquidity concerns vs BTC/ETH; keep size minimal"
     }
   ],
   "watchlist_changes": {
-    "equity": {
-      "ADD": [
+    "equities": {
+      "add": [
         {
-          "symbol": "TLT",
-          "reason": "New Fed Chair Warsh sworn in Friday \u2014 rates uncertainty will drive bond volatility. TLT useful for hedging and mean reversion as rate expectations reprice."
+          "symbol": "XLK",
+          "reason": "Only sector with confirmed positive weekly performance (+0.16%); acts as a benchmark proxy for tech momentum this week"
         },
         {
-          "symbol": "XLE",
-          "reason": "Oil above $106 on Iran risk makes energy ETF a direct sector play. Add for monitoring; wait for scanner data before trading."
+          "symbol": "SMH",
+          "reason": "Semiconductor ETF \u2014 direct play on 'Semi Mania' headline and NVDA earnings cycle without single-stock binary risk; captures sector momentum cleanly"
         }
       ],
-      "REMOVE": [],
-      "AVOID_EARNINGS": []
+      "remove": [],
+      "avoid_this_week": [
+        {
+          "symbol": "NVDA",
+          "reason": "POTENTIAL EARNINGS BINARY \u2014 verify earnings date; if within 5 trading days, avoid full-size position or skip entirely per earnings avoidance policy"
+        },
+        {
+          "symbol": "IWM",
+          "reason": "Small caps are most exposed to rate hike fears and deficit concerns. Fed hawkish pivot hurts small-cap financing. Underweight until clarity."
+        }
+      ],
+      "earnings_avoid": []
     },
     "crypto": {
-      "ADD": [
+      "add": [
         {
-          "pair": "DOGE/USDT",
-          "reason": "High liquidity on Bybit, mean-reversion friendly in fear regimes, tends to bounce sharply when sentiment reverses. Suitable addition to watchlist."
+          "pair": "BTC/USDT",
+          "reason": "Already on watchlist \u2014 MAINTAIN as primary focus given BTC-led regime and 58.22% dominance"
         },
         {
-          "pair": "AVAX/USDT",
-          "reason": "Top-10 liquid alt on Bybit with strong mean-reversion history at fear extremes. Better risk/reward than DOT in recovery scenarios."
+          "pair": "DOGE/USDT",
+          "reason": "High liquidity on Bybit, strong retail sentiment proxy during fear-to-greed transitions; mean reversion candidate if Fear & Greed crosses 30+ this week. Add to watchlist for monitoring only."
         }
       ],
-      "REMOVE": [],
-      "AVOID": [
+      "remove": [
         {
-          "pair": "All alts broadly",
-          "reason": "BTC-led regime with alts underperforming. Avoid initiating new alt positions until BTC dominance shows signs of declining (alts gaining share), signalling a rotation."
+          "pair": "NEAR/USDT",
+          "reason": "Low relative liquidity, no scanner data, alt-underperformance regime \u2014 temporarily remove from active trading until BTC-led regime ends"
+        },
+        {
+          "pair": "DOT/USDT",
+          "reason": "Same rationale as NEAR \u2014 low liquidity alt in a BTC-dominant regime; scanner showing NO_DATA adds operational risk"
         }
-      ]
+      ],
+      "avoid_this_week": [
+        "ADA/USDT",
+        "DOT/USDT",
+        "NEAR/USDT",
+        "LINK/USDT"
+      ],
+      "avoid_reason": "All alt pairs showing NO_DATA in scanner + BTC-led regime means alts are absorbing sell pressure. Avoid until regime rotates and scanner data resumes."
     }
   },
   "sector_focus": {
-    "best_mean_reversion_conditions": [
+    "best_mean_reversion_sectors": [
       {
-        "sector": "Technology (XLK)",
+        "sector": "Technology",
         "etf": "XLK",
-        "rationale": "Only sector with confirmed data this week (+0.42%). Nasdaq selloff on May 18 creates a mean reversion setup within an otherwise constructive weekly trend. Tech leads the market in this cycle."
+        "rationale": "Only sector with confirmed positive data (+0.16%). Semi mania catalyst and NVDA earnings cycle provide directional tailwind. Mean reversion works best here when tech briefly dips intraday \u2014 buy the dip structure.",
+        "conviction": "HIGH"
       },
       {
-        "sector": "Energy (XLE)",
-        "etf": "XLE",
-        "rationale": "Oil at $106+ driven by Iran uncertainty. Energy stocks lag the commodity spike initially, creating mean reversion upside if oil holds. Watch for resolution of Iran standoff as potential reversal catalyst."
-      },
-      {
-        "sector": "Materials (XLB)",
+        "sector": "Materials",
         "etf": "XLB",
-        "rationale": "Gold strength and commodity tailwinds from geopolitical risk support Materials. GLD and SLV already on watchlist; XLB provides equity-side exposure."
+        "rationale": "Deficit spending at $2T + Iran conflict risk = commodity input inflation pressure. Materials sector benefits from both fiscal stimulus tail and geopolitical supply disruption. No weekly data available but macro setup is constructive for mean reversion longs on dips.",
+        "conviction": "MEDIUM"
+      },
+      {
+        "sector": "Energy",
+        "etf": "XLE",
+        "rationale": "Hormuz tanker exits headline + Iran war risk + Middle East escalation risk = direct energy price catalyst. XLE is a natural hedge and momentum play. Monitor for breakout confirmation.",
+        "conviction": "MEDIUM-HIGH \u2014 conditional on geopolitical developments"
       }
     ],
     "avoid_or_underweight": [
       {
-        "sector": "Consumer Discretionary (XLY)",
-        "reason": "High oil prices act as a consumer tax. Risk-off environment and potential slowdown sentiment weigh on discretionary spending stocks."
+        "sector": "Utilities",
+        "etf": "XLU",
+        "reason": "Rate hike risk (Fed Minutes hawkish) directly compresses utility valuations \u2014 these are long-duration bond proxies. Avoid until rate path clarifies."
       },
       {
-        "sector": "Real Estate (XLRE)",
-        "reason": "New Fed Chair uncertainty creates rate risk. XLRE is rate-sensitive and vulnerable to any hawkish signals from Warsh in his first public appearances."
+        "sector": "Real Estate",
+        "etf": "XLRE",
+        "reason": "Same rate sensitivity as Utilities. $2T deficit + potential rate hike = dual headwind for REIT valuations. Underweight."
+      },
+      {
+        "sector": "Consumer Discretionary",
+        "etf": "XLY",
+        "reason": "Rate hike fears + elevated energy prices squeeze consumer spending power. Tariff inflation concerns from Fed Minutes compound the consumer pressure. Avoid."
       }
     ]
   },
   "crypto_outlook": {
-    "regime": "BTC-led / Risk-off",
+    "regime": "BTC-led",
     "mean_reversion_active_crypto": true,
-    "sentiment_read": "Fear & Greed Index at 28 (Fear) \u2014 historically a mean-reversion friendly zone where patient LONG entries in BTC have positive expected value over 3-7 day horizons. The 1-point improvement (+1 day-over-day) suggests sentiment has not deteriorated further, which mildly supports a stabilisation thesis.",
-    "dominance_read": "BTC dominance at 58.21% is elevated and rising, confirming a risk-off rotation within crypto where capital concentrates into BTC. Altcoins are structurally underperforming and should be sized down or avoided until dominance peaks and begins declining, which would signal an alt-season rotation.",
+    "sentiment_read": "Fear & Greed at 27 (Fear) with a small +2 day-over-day improvement signals the market is fearful but beginning to stabilize \u2014 this is historically the entry zone for mean reversion LONG setups in BTC. The slight positive momentum (+1.03% total market cap 24h) supports cautious re-engagement rather than full avoidance.",
+    "dominance_read": "BTC dominance at 58.22% is elevated, confirming capital concentration in BTC and active rotation OUT of alts. This is a 'flight to quality' within crypto \u2014 alts (ETH at 9.63%, others lower) are being sold. Strategy implication: focus crypto exposure exclusively on BTC this week; hold alt positions at minimal size until dominance shows a confirmed rollover.",
     "top_crypto_opportunities": [
       {
+        "rank": 1,
         "pair": "BTC/USDT",
         "direction": "LONG",
-        "rationale": "Primary candidate in BTC-led regime. Fear at 28 supports mean reversion entry on dips below $77K. Scanner data unavailable \u2014 require manual price confirmation and at least 1-hour stabilisation candle before entry.",
-        "risk": "Further cascade if $75K support fails; Iran risk driving broader risk-off"
+        "rationale": "Primary beneficiary of BTC-led regime. Fear sentiment at 27 is mean-reversion friendly. Total market cap stabilizing. BTC dominance at 58.22% confirms BTC is where crypto flows are concentrating. IMPORTANT: scanner returned NO_DATA \u2014 manually verify price is holding above key support (check 50-day MA and recent swing low) before executing.",
+        "entry_condition": "Manual confirmation required \u2014 look for price above key support with volume stabilization",
+        "size_recommendation": "50% of crypto allocation maximum until scanner data confirmed operational"
       },
       {
+        "rank": 2,
         "pair": "ETH/USDT",
-        "direction": "LONG",
-        "rationale": "Secondary mean reversion opportunity contingent on BTC stabilisation. ETH dominance suppression at 9.64% may be near a local floor.",
-        "risk": "Alts structurally underperform in BTC-led regimes; do not enter before BTC confirms recovery"
+        "direction": "LONG \u2014 delayed entry",
+        "rationale": "ETH dominance at 9.63% is historically depressed. Once BTC dominance peaks and starts declining (watch for <57%), ETH typically leads the alt recovery. Set up a conditional watchlist alert for BTC dominance rollover. Do NOT enter before BTC stabilizes for 48 hours.",
+        "entry_condition": "BTC must first consolidate 48+ hours; BTC dominance should show signs of peaking",
+        "size_recommendation": "25% of crypto allocation \u2014 secondary position only"
       },
       {
-        "pair": "SOL/USDT",
-        "direction": "LONG",
-        "rationale": "Speculative mean reversion only. High beta to crypto sentiment reversals from fear zones. Smallest allocation; last to enter, first to exit.",
-        "risk": "Highly correlated to BTC downside; can lose 2x BTC's percentage move on continuation"
+        "rank": 3,
+        "pair": "LTC/USDT",
+        "direction": "LONG \u2014 speculative",
+        "rationale": "High-liquidity BTC proxy with mean reversion potential when fear sentiment transitions. Historically moves with BTC in recovery phases. Speculative size only given no scanner data.",
+        "entry_condition": "BTC showing confirmed 24h+ recovery; LTC holding prior swing support",
+        "size_recommendation": "15% of crypto allocation \u2014 speculative only"
       }
     ],
     "crypto_risk_warnings": [
       {
-        "event": "BTC sub-$77K cascade risk",
+        "event": "Scanner Data Failure \u2014 All Pairs NO_DATA",
         "severity": "HIGH",
-        "detail": "Bitcoin dropped below $77,000 per news reports with ETH, XRP, DOGE sliding 4%+. If $75K support does not hold, cascade liquidations in leveraged positions could accelerate downside to $70K range."
+        "detail": "All 9 crypto pairs returned NO_DATA with null indicators. The trading bot cannot execute technical signal-based entries without live scanner data. DO NOT execute automated crypto entries until scanner is confirmed operational. Manual price action confirmation required for any trade this week."
       },
       {
-        "event": "Iran geopolitical risk spilling into crypto",
-        "severity": "MODERATE",
-        "detail": "Escalation in Iran-US tensions (military strike) would trigger broad risk-off across all assets including crypto. Oil at $106 already pricing in tension premium. A strike scenario could temporarily push BTC below $75K."
+        "event": "Fed Rate Hike Risk",
+        "severity": "HIGH",
+        "detail": "Fed Minutes signal majority of participants support rate firming if inflation persists. A rate hike or explicit hawkish communication would be a direct headwind for crypto risk assets. BTC/USD historically drops 5-15% on surprise rate hike announcements. Monitor Fed speaker comments this week closely."
       },
       {
-        "event": "Scanner/data feed outage",
-        "severity": "HIGH \u2014 operational",
-        "detail": "All crypto pairs returning NO_DATA with null indicators. The trading bot cannot execute signal-based crypto orders without live scanner data. Do NOT allow automated crypto entries until the data feed is confirmed restored. Manual oversight required."
+        "event": "Iran-US Military Conflict Escalation",
+        "severity": "HIGH",
+        "detail": "Active military conflict (Iran war) with Defense Department potentially running out of funding by August. Escalation events cause sudden risk-off crypto sell-offs. Middle East escalation could push Fear & Greed to <20 (Extreme Fear). Have stop-loss levels pre-defined \u2014 suggest 5-7% below entry for BTC."
       },
       {
-        "event": "New Fed Chair Warsh inauguration Friday",
-        "severity": "MODERATE",
-        "detail": "Kevin Warsh is viewed as more hawkish than Powell. If his first public statements signal tighter policy, risk assets including crypto could sell off further. Monitor Friday closely."
+        "event": "US Federal Deficit $2 Trillion",
+        "severity": "MEDIUM",
+        "detail": "While long-term bullish for BTC as a store-of-value narrative, near-term this pressures risk assets if it triggers credit rating concerns or forced Treasury supply. Watch for any ratings agency action this week."
       },
       {
-        "event": "Coinbase and MARA Holdings -4% selloff",
-        "severity": "LOW-MODERATE",
-        "detail": "Crypto-adjacent equities dropping sharply. Suggests institutional sentiment toward crypto remains negative this week. Reinforces reduced position sizing in crypto."
+        "event": "Crypto Market Liquidity \u2014 Low Volume",
+        "severity": "MEDIUM",
+        "detail": "All pairs showing 0.0 volume_24h_usdt in scanner data \u2014 likely a data feed issue, but if accurate, reflects very thin liquidity conditions. Thin markets amplify moves in both directions. Reduce position sizes further if volume remains anomalously low."
+      },
+      {
+        "event": "BTC Dominance Trend Continuation",
+        "severity": "MEDIUM",
+        "detail": "If BTC dominance continues rising above 60%, alt positions (ETH, LTC) will underperform significantly. The BTC-led regime could intensify rather than revert. Do not add to alt positions against this trend."
       }
     ]
   },
   "risk_warnings": {
     "macro_events_this_week": [
       {
-        "event": "Iran-US Military Standoff",
+        "event": "Fed Minutes Aftermath & Speaker Commentary",
         "severity": "HIGH",
-        "detail": "Trump delayed Tuesday strike but military remains on standby. Any escalation (strike order) would spike VIX, push oil toward $115-120, and trigger broad risk-off. Monitor Truth Social and CNBC breaking news throughout the week."
+        "detail": "Markets will reprice rate expectations throughout the week as Fed speakers respond to the Minutes. Any explicit 'rate hike is on the table' language could trigger equity sell-off (especially rate-sensitive sectors) and crypto risk-off. Monitor daily."
       },
       {
-        "event": "New Fed Chair Kevin Warsh Sworn In Friday",
-        "severity": "MODERATE",
-        "detail": "Markets will scrutinise Warsh's first public comments for hawkish signals. Rate-sensitive assets (TLT, XLRE, growth equities) at risk. Could reprice rate expectations intraday."
+        "event": "Iran-US Military Conflict",
+        "severity": "HIGH",
+        "detail": "Active military engagement with Middle East conflict potentially escalating. Defense funding runs out ~August per Congressional sources. Any major escalation event (airstrikes, naval incidents, Hormuz closure) would spike oil, VIX, and gold while crushing risk assets including equities and crypto. This is the #1 tail risk this week."
       },
       {
-        "event": "Oil above $106 \u2014 consumer and earnings impact",
-        "severity": "MODERATE",
-        "detail": "Sustained oil above $100 compresses margins for transport, consumer discretionary, and industrial sectors. Watch for forward guidance downgrades if oil remains elevated."
+        "event": "US Fiscal Deficit \u2014 $2 Trillion Projection",
+        "severity": "MEDIUM",
+        "detail": "Largest deficit in US history (excluding COVID). Potential for credit rating downgrade action or bond market indigestion on Treasury supply. Monitors TLT closely \u2014 a sharp yield spike would be disruptive across all asset classes."
       },
       {
-        "event": "Crypto data feed outage (all pairs NO_DATA)",
-        "severity": "HIGH \u2014 operational",
-        "detail": "Bot must NOT execute automated crypto trades while scanner returns null data. Risk of trading on stale or absent signals is unacceptable. Restore and validate feed before re-engaging crypto automation."
+        "event": "NVDA Earnings",
+        "severity": "MEDIUM-HIGH",
+        "detail": "Nvidia earnings are a market-moving event for the entire tech sector. Confirm the exact date immediately. If within this trading week, reduce NVDA exposure to 40% of normal and ensure the broader tech book (QQQ, XLK) is sized conservatively heading into the print."
       },
       {
-        "event": "Nasdaq 100 down 1%+ on May 18",
-        "severity": "MODERATE",
-        "detail": "Broad tech selloff could continue if geopolitical news worsens. Watch QQQ for confirmation of stabilisation before entering mean reversion longs."
+        "event": "Crypto Scanner Data Unavailability",
+        "severity": "HIGH \u2014 OPERATIONAL",
+        "detail": "All crypto pairs returning NO_DATA is an operational risk to the bot. Automated signal-based crypto trading must be HALTED until the scanner feed is restored and validated. This is not a market risk \u2014 it is a system risk that prevents safe execution."
       }
     ],
-    "specific_flags": [
-      "HALT all automated crypto orders until scanner data is restored and validated",
-      "Reduce equity position sizes to 85% of maximum; 60% for binary geopolitical plays (USO)",
-      "Avoid new positions in rate-sensitive sectors (XLRE, TLT short) ahead of Warsh's Friday inauguration",
-      "Monitor $75,000 BTC support level \u2014 breach triggers crypto book risk reduction protocol",
-      "Oil above $110 would be a stop-trading trigger for Consumer Discretionary and Industrials longs",
-      "No earnings avoidances required this week (empty earnings calendar)"
+    "specific_risk_flags": [
+      "Do NOT execute automated crypto trades while scanner returns NO_DATA \u2014 manual override required",
+      "Avoid holding equity positions at full size through any imminent NVDA earnings date",
+      "Rate-sensitive sectors (Utilities, REITs, Bonds/TLT) face elevated downside risk from Fed hawkish pivot",
+      "Geopolitical escalation (Iran) could spike VIX above 25 intraday \u2014 have pre-defined equity stop-losses",
+      "Energy prices embedded inflation risk per Fed Minutes \u2014 watch CPI/PCE data if released this week",
+      "Thin crypto volume (scanner showing 0.0) may indicate exchange or data feed issues \u2014 verify Bybit connectivity"
     ],
-    "recommended_max_position_size": {
-      "equity_standard": "85% of configured maximum",
-      "equity_geopolitical_plays": "60% of configured maximum",
-      "crypto_btc": "50% of configured crypto maximum (scanner data absent)",
-      "crypto_eth": "35% of configured crypto maximum",
-      "crypto_alts": "25% of configured crypto maximum",
-      "overall_note": "Maintain elevated cash buffer of at least 20% across both books until Iran situation resolves and crypto data feed is restored"
+    "max_position_size_recommendation": {
+      "equities": "80% of maximum allocation per position \u2014 VIX 17.44 is healthy but Fed hawkish surprise + geopolitical risk warrants slight reduction from 100%",
+      "crypto": "40% of maximum allocation per position \u2014 NO scanner data + Fear regime + geopolitical risk = significant uncertainty discount required",
+      "overall_portfolio_risk_level": "MODERATE \u2014 not risk-off, but not full risk-on; tilt defensive with selective tech/energy/gold exposure"
     }
   },
   "confidence_score": 4,
-  "confidence_reason": "Confidence is materially constrained by two compounding factors: (1) the crypto scanner is returning NO_DATA for all 9 pairs, disabling automated signal generation for the entire crypto book, and (2) the Iran-US military standoff introduces high-severity binary geopolitical risk that could spike VIX and reverse equity setups intraday \u2014 while VIX at 18.48 is currently benign, the tail risk is asymmetrically large; only Technology sector data is available for equities, further limiting signal breadth.",
-  "generated_at": "2026-05-18T15:45:41.333501-04:00",
-  "valid_until": "2026-05-25T15:45:41.333501-04:00",
-  "raw_analysis": "```json\n{\n  \"market_regime\": {\n    \"trend_or_range\": \"Ranging with downside bias\",\n    \"equity_mean_reversion_active\": true,\n    \"mean_reversion_notes\": \"VIX at 18.48 sits in the normal/healthy band \u2014 not elevated enough to force a pause, but the intraday news flow (Nasdaq 100 -1%+, Iran geopolitical uncertainty, oil spiking above $106) introduces episodic volatility. Mean reversion strategies should remain active but with tighter position sizing and wider stop tolerances to absorb news-driven whipsaws. Only XLK data is available this week (+0.42%), limiting sector rotation signals; assume a cautious, selective posture.\",\n    \"vix_level\": 18.48,\n    \"vix_interpretation\": \"NORMAL \u2014 healthy conditions. At 18.48 VIX is below the 20 caution threshold. Standard position sizing applies, but geopolitical tail risk (Iran/US standoff, oil above $106) warrants a 10-15% reduction from maximum allocation until the diplomatic situation clarifies.\",\n    \"position_size_guidance\": \"Use 85% of standard max position size. Reduce further to 70% on any intraday VIX spike above 22.\"\n  },\n\n  \"top_opportunities\": [\n    {\n      \"rank\": 1,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"GLD\",\n      \"direction\": \"LONG\",\n      \"rationale\": \"Iran-US military standoff delayed but unresolved, oil above $106, and a new Fed Chair (Warsh) being sworn in Friday all point to uncertainty-driven safe-haven flows. Gold is the primary beneficiary. GLD offers liquid, low-volatility exposure. No earnings risk. Fits a risk-off mean-reversion entry if GLD pulls back intraday.\",\n      \"signal_strength\": \"HIGH \u2014 macro catalysts strongly aligned\",\n      \"position_size_adjustment\": \"Standard (85% of max given VIX)\"\n    },\n    {\n      \"rank\": 2,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"USO\",\n      \"direction\": \"LONG\",\n      \"rationale\": \"Oil topped $106 on Iran impasse. Even with Trump delaying military action, the uncertainty premium in crude is unlikely to fully deflate this week. USO is the most direct liquid expression. Caveat: any diplomatic breakthrough could cause a sharp reversal \u2014 use tight stops.\",\n      \"signal_strength\": \"MODERATE-HIGH \u2014 geopolitical catalyst strong but binary outcome risk\",\n      \"position_size_adjustment\": \"Reduce to 60% of max due to binary geopolitical risk\"\n    },\n    {\n      \"rank\": 3,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"QQQ\",\n      \"direction\": \"LONG (mean reversion bounce)\",\n      \"rationale\": \"Nasdaq 100 dropped 1%+ on May 18. With VIX still below 20 and no fundamental macro deterioration beyond geopolitical noise, an oversold bounce in QQQ is a viable mean reversion trade. Watch for stabilisation in Iran headlines as a trigger. Tech (XLK +0.42% last week) remains the leading sector.\",\n      \"signal_strength\": \"MODERATE \u2014 news-driven dip, regime supports reversion\",\n      \"position_size_adjustment\": \"Standard (85% of max). Exit if Nasdaq drops another 1.5%+ without recovery.\"\n    },\n    {\n      \"rank\": 4,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"BTC/USDT\",\n      \"direction\": \"LONG (mean reversion)\",\n      \"rationale\": \"Fear & Greed at 28 (Fear zone) is historically mean-reversion friendly for BTC. BTC dominance at 58.21% confirms capital is sheltering in BTC rather than fleeing crypto entirely. A drop below $77,000 (per news) represents a potential oversold dip in a BTC-led regime. However, NO_DATA from scanner means no technical confirmation \u2014 entry must be discretionary/manual only.\",\n      \"signal_strength\": \"MODERATE \u2014 macro setup is right, but scanner data absent; manual confirmation required\",\n      \"position_size_adjustment\": \"Reduce to 50% of standard crypto allocation until scanner data is restored\"\n    },\n    {\n      \"rank\": 5,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"ETH/USDT\",\n      \"direction\": \"LONG (mean reversion, secondary)\",\n      \"rationale\": \"ETH at 9.64% market dominance is suppressed relative to BTC. Fear conditions at 28 suggest broad crypto is oversold. If BTC stabilises above $77K, ETH typically follows with a delayed bounce. Lower conviction than BTC due to alts underperforming in this regime.\",\n      \"signal_strength\": \"LOW-MODERATE \u2014 dependent on BTC stabilising first; scanner data absent\",\n      \"position_size_adjustment\": \"Reduce to 35% of standard crypto allocation\"\n    },\n    {\n      \"rank\": 6,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"SOL/USDT\",\n      \"direction\": \"LONG (speculative mean reversion)\",\n      \"rationale\": \"SOL has been a high-beta alt that often leads recovery bounces when fear conditions unwind from extreme levels. Fear at 28 is near the threshold where mean reversion entries historically perform. Only suitable if BTC and ETH are already showing stabilisation.\",\n      \"signal_strength\": \"LOW \u2014 BTC-led regime disfavours alts; only activate if BTC confirms recovery\",\n      \"position_size_adjustment\": \"Reduce to 25% of standard crypto allocation; treat as speculative\"\n    }\n  ],\n\n  \"watchlist_changes\": {\n    \"equity\": {\n      \"ADD\": [\n        {\n          \"symbol\": \"TLT\",\n          \"reason\": \"New Fed Chair Warsh sworn in Friday \u2014 rates uncertainty will drive bond volatility. TLT useful for hedging and mean reversion as rate expectations reprice.\"\n        },\n        {\n          \"symbol\": \"XLE\",\n          \"reason\": \"Oil above $106 on Iran risk makes energy ETF a direct sector play. Add for monitoring; wait for scanner data before trading.\"\n        }\n      ],\n      \"REMOVE\": [],\n      \"AVOID_EARNINGS\": []\n    },\n    \"crypto\": {\n      \"ADD\": [\n        {\n          \"pair\": \"DOGE/USDT\",\n          \"reason\": \"High liquidity on Bybit, mean-reversion friendly in fear regimes, tends to bounce sharply when sentiment reverses. Suitable addition to watchlist.\"\n        },\n        {\n          \"pair\": \"AVAX/USDT\",\n          \"reason\": \"Top-10 liquid alt on Bybit with strong mean-reversion history at fear extremes. Better risk/reward than DOT in recovery scenarios.\"\n        }\n      ],\n      \"REMOVE\": [],\n      \"AVOID\": [\n        {\n          \"pair\": \"All alts broadly\",\n          \"reason\": \"BTC-led regime with alts underperforming. Avoid initiating new alt positions until BTC dominance shows signs of declining (alts gaining share), signalling a rotation.\"\n        }\n      ]\n    }\n  },\n\n  \"sector_focus\": {\n    \"best_mean_reversion_conditions\": [\n      {\n        \"sector\": \"Technology (XLK)\",\n        \"etf\": \"XLK\",\n        \"rationale\": \"Only sector with confirmed data this week (+0.42%). Nasdaq selloff on May 18 creates a mean reversion setup within an otherwise constructive weekly trend. Tech leads the market in this cycle.\"\n      },\n      {\n        \"sector\": \"Energy (XLE)\",\n        \"etf\": \"XLE\",\n        \"rationale\": \"Oil at $106+ driven by Iran uncertainty. Energy stocks lag the commodity spike initially, creating mean reversion upside if oil holds. Watch for resolution of Iran standoff as potential reversal catalyst.\"\n      },\n      {\n        \"sector\": \"Materials (XLB)\",\n        \"etf\": \"XLB\",\n        \"rationale\": \"Gold strength and commodity tailwinds from geopolitical risk support Materials. GLD and SLV already on watchlist; XLB provides equity-side exposure.\"\n      }\n    ],\n    \"avoid_or_underweight\": [\n      {\n        \"sector\": \"Consumer Discretionary (XLY)\",\n        \"reason\": \"High oil prices act as a consumer tax. Risk-off environment and potential slowdown sentiment weigh on discretionary spending stocks.\"\n      },\n      {\n        \"sector\": \"Real Estate (XLRE)\",\n        \"reason\": \"New Fed Chair uncertainty creates rate risk. XLRE is rate-sensitive and vulnerable to any hawkish signals from Warsh in his first public appearances.\"\n      }\n    ]\n  },\n\n  \"crypto_outlook\": {\n    \"regime\": \"BTC-led / Risk-off\",\n    \"mean_reversion_active_crypto\": true,\n    \"sentiment_read\": \"Fear & Greed Index at 28 (Fear) \u2014 historically a mean-reversion friendly zone where patient LONG entries in BTC have positive expected value over 3-7 day horizons. The 1-point improvement (+1 day-over-day) suggests sentiment has not deteriorated further, which mildly supports a stabilisation thesis.\",\n    \"dominance_read\": \"BTC dominance at 58.21% is elevated and rising, confirming a risk-off rotation within crypto where capital concentrates into BTC. Altcoins are structurally underperforming and should be sized down or avoided until dominance peaks and begins declining, which would signal an alt-season rotation.\",\n    \"top_crypto_opportunities\": [\n      {\n        \"pair\": \"BTC/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Primary candidate in BTC-led regime. Fear at 28 supports mean reversion entry on dips below $77K. Scanner data unavailable \u2014 require manual price confirmation and at least 1-hour stabilisation candle before entry.\",\n        \"risk\": \"Further cascade if $75K support fails; Iran risk driving broader risk-off\"\n      },\n      {\n        \"pair\": \"ETH/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Secondary mean reversion opportunity contingent on BTC stabilisation. ETH dominance suppression at 9.64% may be near a local floor.\",\n        \"risk\": \"Alts structurally underperform in BTC-led regimes; do not enter before BTC confirms recovery\"\n      },\n      {\n        \"pair\": \"SOL/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Speculative mean reversion only. High beta to crypto sentiment reversals from fear zones. Smallest allocation; last to enter, first to exit.\",\n        \"risk\": \"Highly correlated to BTC downside; can lose 2x BTC's percentage move on continuation\"\n      }\n    ],\n    \"crypto_risk_warnings\": [\n      {\n        \"event\": \"BTC sub-$77K cascade risk\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Bitcoin dropped below $77,000 per news reports with ETH, XRP, DOGE sliding 4%+. If $75K support does not hold, cascade liquidations in leveraged positions could accelerate downside to $70K range.\"\n      },\n      {\n        \"event\": \"Iran geopolitical risk spilling into crypto\",\n        \"severity\": \"MODERATE\",\n        \"detail\": \"Escalation in Iran-US tensions (military strike) would trigger broad risk-off across all assets including crypto. Oil at $106 already pricing in tension premium. A strike scenario could temporarily push BTC below $75K.\"\n      },\n      {\n        \"event\": \"Scanner/data feed outage\",\n        \"severity\": \"HIGH \u2014 operational\",\n        \"detail\": \"All crypto pairs returning NO_DATA with null indicators. The trading bot cannot execute signal-based crypto orders without live scanner data. Do NOT allow automated crypto entries until the data feed is confirmed restored. Manual oversight required.\"\n      },\n      {\n        \"event\": \"New Fed Chair Warsh inauguration Friday\",\n        \"severity\": \"MODERATE\",\n        \"detail\": \"Kevin Warsh is viewed as more hawkish than Powell. If his first public statements signal tighter policy, risk assets including crypto could sell off further. Monitor Friday closely.\"\n      },\n      {\n        \"event\": \"Coinbase and MARA Holdings -4% selloff\",\n        \"severity\": \"LOW-MODERATE\",\n        \"detail\": \"Crypto-adjacent equities dropping sharply. Suggests institutional sentiment toward crypto remains negative this week. Reinforces reduced position sizing in crypto.\"\n      }\n    ]\n  },\n\n  \"risk_warnings\": {\n    \"macro_events_this_week\": [\n      {\n        \"event\": \"Iran-US Military Standoff\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Trump delayed Tuesday strike but military remains on standby. Any escalation (strike order) would spike VIX, push oil toward $115-120, and trigger broad risk-off. Monitor Truth Social and CNBC breaking news throughout the week.\"\n      },\n      {\n        \"event\": \"New Fed Chair Kevin Warsh Sworn In Friday\",\n        \"severity\": \"MODERATE\",\n        \"detail\": \"Markets will scrutinise Warsh's first public comments for hawkish signals. Rate-sensitive assets (TLT, XLRE, growth equities) at risk. Could reprice rate expectations intraday.\"\n      },\n      {\n        \"event\": \"Oil above $106 \u2014 consumer and earnings impact\",\n        \"severity\": \"MODERATE\",\n        \"detail\": \"Sustained oil above $100 compresses margins for transport, consumer discretionary, and industrial sectors. Watch for forward guidance downgrades if oil remains elevated.\"\n      },\n      {\n        \"event\": \"Crypto data feed outage (all pairs NO_DATA)\",\n        \"severity\": \"HIGH \u2014 operational\",\n        \"detail\": \"Bot must NOT execute automated crypto trades while scanner returns null data. Risk of trading on stale or absent signals is unacceptable. Restore and validate feed before re-engaging crypto automation.\"\n      },\n      {\n        \"event\": \"Nasdaq 100 down 1%+ on May 18\",\n        \"severity\": \"MODERATE\",\n        \"detail\": \"Broad tech selloff could continue if geopolitical news worsens. Watch QQQ for confirmation of stabilisation before entering mean reversion longs.\"\n      }\n    ],\n    \"specific_flags\": [\n      \"HALT all automated crypto orders until scanner data is restored and validated\",\n      \"Reduce equity position sizes to 85% of maximum; 60% for binary geopolitical plays (USO)\",\n      \"Avoid new positions in rate-sensitive sectors (XLRE, TLT short) ahead of Warsh's Friday inauguration\",\n      \"Monitor $75,000 BTC support level \u2014 breach triggers crypto book risk reduction protocol\",\n      \"Oil above $110 would be a stop-trading trigger for Consumer Discretionary and Industrials longs\",\n      \"No earnings avoidances required this week (empty earnings calendar)\"\n    ],\n    \"recommended_max_position_size\": {\n      \"equity_standard\": \"85% of configured maximum\",\n      \"equity_geopolitical_plays\": \"60% of configured maximum\",\n      \"crypto_btc\": \"50% of configured crypto maximum (scanner data absent)\",\n      \"crypto_eth\": \"35% of configured crypto maximum\",\n      \"crypto_alts\": \"25% of configured crypto maximum\",\n      \"overall_note\": \"Maintain elevated cash buffer of at least 20% across both books until Iran situation resolves and crypto data feed is restored\"\n    }\n  },\n\n  \"confidence_score\": 4,\n  \"confidence_reason\": \"Confidence is materially constrained by two compounding factors: (1) the crypto scanner is returning NO_DATA for all 9 pairs, disabling automated signal generation for the entire crypto book, and (2) the Iran-US military standoff introduces high-severity binary geopolitical risk that could spike VIX and reverse equity setups intraday \u2014 while VIX at 18.48 is currently benign, the tail risk is asymmetrically large; only Technology sector data is available for equities, further limiting signal breadth.\",\n\n  \"generated_at\": \"2026-05-18T19:15:00Z\",\n  \"valid_until\": \"2026-05-22T21:00:00Z\"\n}\n```"
+  "confidence_reason": "Confidence materially reduced by two compounding factors: (1) ALL crypto scanner pairs returning NO_DATA eliminates the ability to execute signal-driven crypto trades safely \u2014 the bot's crypto arm is effectively blind; (2) Fed Minutes hawkish pivot + active Iran military conflict + $2T deficit creates a high-uncertainty macro backdrop that limits conviction on equity setups. VIX 17.44 and Tech's slight positive performance provide a floor, but insufficient data and elevated geopolitical tail risk cap the score at 4/10 \u2014 trade selectively, size conservatively, and prioritize restoring scanner data feeds before deploying crypto capital.",
+  "generated_at": "2026-05-20T18:53:33.025004-04:00",
+  "valid_until": "2026-05-27T18:53:33.025004-04:00",
+  "raw_analysis": "```json\n{\n  \"market_regime\": {\n    \"trending_or_ranging\": \"Ranging with mild upward bias \u2014 Technology (XLK +0.16%) is the only sector with confirmed weekly data, suggesting cautious participation. Broader sector data gaps limit conviction, but VIX at 17.44 confirms no panic regime.\",\n    \"mean_reversion_active_equities\": true,\n    \"mean_reversion_notes\": \"Mean reversion strategies ACTIVE but sized conservatively. Fed Minutes hawkish tilt (rate hike door opened, easing bias removal discussed) introduces rate-sensitive volatility. Avoid aggressive entry sizing until sector breadth data confirms direction.\",\n    \"vix_interpretation\": \"VIX 17.44 = NORMAL. Below the 20 threshold \u2014 healthy risk environment. No forced de-risking required. Standard position sizing applies, though the Fed hawkish surprise and geopolitical tail risks (Iran conflict, $2T deficit) warrant keeping individual position sizes at 80% of max allocation.\",\n    \"vix_level\": 17.44,\n    \"vix_risk_level\": \"NORMAL\"\n  },\n  \"top_opportunities\": [\n    {\n      \"rank\": 1,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"NVDA\",\n      \"direction\": \"LONG\",\n      \"rationale\": \"Semiconductor mania headline ('Semi Mania Resumes Ahead of Nvidia Earnings') confirms near-term catalyst. Samsung supply woes and Hormuz tanker exits create a supply-side narrative favoring US chip leaders. NVDA is a primary beneficiary. Earnings are imminent \u2014 confirm exact date before entry; if earnings are within 5 trading days, REDUCE size to 40% of normal or skip.\",\n      \"signal_strength\": \"HIGH \u2014 macro catalyst + sector momentum\",\n      \"regime_fit\": \"Trending setup within a ranging market \u2014 momentum justifies a short-term breakout bias\",\n      \"position_size_adjustment\": \"40% of max if earnings within 5 days; 80% of max otherwise\",\n      \"key_risk\": \"Earnings binary event \u2014 do not hold through print at full size\"\n    },\n    {\n      \"rank\": 2,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"GLD\",\n      \"direction\": \"LONG\",\n      \"rationale\": \"Fed hawkish minutes + $2T deficit projection + Iran geopolitical risk = triple tailwind for gold. Rate hike risk normally pressures gold, BUT fiscal deterioration and war-risk premium dominate near-term. GLD is a clean hedge against both inflation embedding (Fed concern per minutes) and geopolitical shock.\",\n      \"signal_strength\": \"MEDIUM-HIGH \u2014 macro driven, multiple confirming factors\",\n      \"regime_fit\": \"Defensive/hedge play fits ranging equity regime with elevated macro uncertainty\",\n      \"position_size_adjustment\": \"90% of max \u2014 low binary risk, high diversification value this week\",\n      \"key_risk\": \"Any rapid de-escalation in Middle East could remove geopolitical premium quickly\"\n    },\n    {\n      \"rank\": 3,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"TLT\",\n      \"direction\": \"CAUTIOUS \u2014 mean reversion LONG only if oversold\",\n      \"rationale\": \"Fed Minutes hawkish surprise likely pressures long-duration bonds near-term. However, if TLT sells off sharply on the Fed news, it creates a mean reversion LONG opportunity \u2014 deficit spending and eventual policy pivot remain structural tailwinds. Monitor for RSI <35 before entering.\",\n      \"signal_strength\": \"MEDIUM \u2014 conditional on further sell-off creating oversold setup\",\n      \"regime_fit\": \"Mean reversion candidate in a ranging rate environment\",\n      \"position_size_adjustment\": \"60% of max, only on confirmed oversold signal (RSI <35, price at lower Bollinger Band)\",\n      \"key_risk\": \"If Fed hike becomes consensus expectation, TLT downtrend could extend \u2014 respect stop loss strictly\"\n    },\n    {\n      \"rank\": 4,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"BTC/USDT\",\n      \"direction\": \"LONG\",\n      \"rationale\": \"BTC dominance at 58.22% confirms BTC-led regime \u2014 capital is flowing INTO BTC not alts. Fear & Greed at 27 (Fear) is historically mean-reversion friendly for BTC specifically. Total market cap $2.66T with +1.03% 24h change suggests nascent stabilization. In a BTC-led regime with fear sentiment, BTC spot longs offer the best asymmetric risk/reward among crypto assets.\",\n      \"signal_strength\": \"MEDIUM \u2014 macro crypto conditions supportive but NO live scanner data to confirm technical entry\",\n      \"regime_fit\": \"BTC-led regime directly favors BTC over alts\",\n      \"position_size_adjustment\": \"50% of normal crypto allocation \u2014 NO scanner data available; entry must be confirmed manually via price action at key support levels\",\n      \"key_risk\": \"Scanner data unavailable (NO_DATA for all pairs) \u2014 do not deploy full size without manual technical confirmation\"\n    },\n    {\n      \"rank\": 5,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"ETH/USDT\",\n      \"direction\": \"LONG \u2014 only after BTC stabilizes\",\n      \"rationale\": \"ETH at 9.63% dominance is near historically low levels relative to BTC. In a BTC-led regime, ETH underperforms during the fear phase but can snap back sharply once BTC stabilizes. Mean reversion LONG on ETH is a secondary play \u2014 wait for BTC to show 48-hour consolidation above key support before entering ETH.\",\n      \"signal_strength\": \"LOW-MEDIUM \u2014 regime is unfavorable now but setup builds for later in the week\",\n      \"regime_fit\": \"Counter-regime mean reversion \u2014 only valid if BTC dominance peaks and begins rolling over\",\n      \"position_size_adjustment\": \"30% of normal crypto allocation \u2014 secondary play, conditional on BTC stabilization signal\",\n      \"key_risk\": \"If BTC continues to absorb flows, ETH could underperform further before reverting\"\n    },\n    {\n      \"rank\": 6,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"LTC/USDT\",\n      \"direction\": \"LONG \u2014 speculative mean reversion\",\n      \"rationale\": \"LTC historically tracks BTC closely and benefits from BTC-led regimes as a beta play. Fear sentiment at 27 has historically preceded LTC bounces. Lower market cap means more volatile mean reversion potential. NOTE: this is a speculative setup only \u2014 no live scanner data available.\",\n      \"signal_strength\": \"LOW \u2014 speculative only, no technical confirmation available\",\n      \"regime_fit\": \"BTC proxy play fits BTC-led regime\",\n      \"position_size_adjustment\": \"20% of normal crypto allocation \u2014 speculative only\",\n      \"key_risk\": \"No scanner data; LTC has structural liquidity concerns vs BTC/ETH; keep size minimal\"\n    }\n  ],\n  \"watchlist_changes\": {\n    \"equities\": {\n      \"add\": [\n        {\n          \"symbol\": \"XLK\",\n          \"reason\": \"Only sector with confirmed positive weekly performance (+0.16%); acts as a benchmark proxy for tech momentum this week\"\n        },\n        {\n          \"symbol\": \"SMH\",\n          \"reason\": \"Semiconductor ETF \u2014 direct play on 'Semi Mania' headline and NVDA earnings cycle without single-stock binary risk; captures sector momentum cleanly\"\n        }\n      ],\n      \"remove\": [],\n      \"avoid_this_week\": [\n        {\n          \"symbol\": \"NVDA\",\n          \"reason\": \"POTENTIAL EARNINGS BINARY \u2014 verify earnings date; if within 5 trading days, avoid full-size position or skip entirely per earnings avoidance policy\"\n        },\n        {\n          \"symbol\": \"IWM\",\n          \"reason\": \"Small caps are most exposed to rate hike fears and deficit concerns. Fed hawkish pivot hurts small-cap financing. Underweight until clarity.\"\n        }\n      ],\n      \"earnings_avoid\": []\n    },\n    \"crypto\": {\n      \"add\": [\n        {\n          \"pair\": \"BTC/USDT\",\n          \"reason\": \"Already on watchlist \u2014 MAINTAIN as primary focus given BTC-led regime and 58.22% dominance\"\n        },\n        {\n          \"pair\": \"DOGE/USDT\",\n          \"reason\": \"High liquidity on Bybit, strong retail sentiment proxy during fear-to-greed transitions; mean reversion candidate if Fear & Greed crosses 30+ this week. Add to watchlist for monitoring only.\"\n        }\n      ],\n      \"remove\": [\n        {\n          \"pair\": \"NEAR/USDT\",\n          \"reason\": \"Low relative liquidity, no scanner data, alt-underperformance regime \u2014 temporarily remove from active trading until BTC-led regime ends\"\n        },\n        {\n          \"pair\": \"DOT/USDT\",\n          \"reason\": \"Same rationale as NEAR \u2014 low liquidity alt in a BTC-dominant regime; scanner showing NO_DATA adds operational risk\"\n        }\n      ],\n      \"avoid_this_week\": [\n        \"ADA/USDT\",\n        \"DOT/USDT\",\n        \"NEAR/USDT\",\n        \"LINK/USDT\"\n      ],\n      \"avoid_reason\": \"All alt pairs showing NO_DATA in scanner + BTC-led regime means alts are absorbing sell pressure. Avoid until regime rotates and scanner data resumes.\"\n    }\n  },\n  \"sector_focus\": {\n    \"best_mean_reversion_sectors\": [\n      {\n        \"sector\": \"Technology\",\n        \"etf\": \"XLK\",\n        \"rationale\": \"Only sector with confirmed positive data (+0.16%). Semi mania catalyst and NVDA earnings cycle provide directional tailwind. Mean reversion works best here when tech briefly dips intraday \u2014 buy the dip structure.\",\n        \"conviction\": \"HIGH\"\n      },\n      {\n        \"sector\": \"Materials\",\n        \"etf\": \"XLB\",\n        \"rationale\": \"Deficit spending at $2T + Iran conflict risk = commodity input inflation pressure. Materials sector benefits from both fiscal stimulus tail and geopolitical supply disruption. No weekly data available but macro setup is constructive for mean reversion longs on dips.\",\n        \"conviction\": \"MEDIUM\"\n      },\n      {\n        \"sector\": \"Energy\",\n        \"etf\": \"XLE\",\n        \"rationale\": \"Hormuz tanker exits headline + Iran war risk + Middle East escalation risk = direct energy price catalyst. XLE is a natural hedge and momentum play. Monitor for breakout confirmation.\",\n        \"conviction\": \"MEDIUM-HIGH \u2014 conditional on geopolitical developments\"\n      }\n    ],\n    \"avoid_or_underweight\": [\n      {\n        \"sector\": \"Utilities\",\n        \"etf\": \"XLU\",\n        \"reason\": \"Rate hike risk (Fed Minutes hawkish) directly compresses utility valuations \u2014 these are long-duration bond proxies. Avoid until rate path clarifies.\"\n      },\n      {\n        \"sector\": \"Real Estate\",\n        \"etf\": \"XLRE\",\n        \"reason\": \"Same rate sensitivity as Utilities. $2T deficit + potential rate hike = dual headwind for REIT valuations. Underweight.\"\n      },\n      {\n        \"sector\": \"Consumer Discretionary\",\n        \"etf\": \"XLY\",\n        \"reason\": \"Rate hike fears + elevated energy prices squeeze consumer spending power. Tariff inflation concerns from Fed Minutes compound the consumer pressure. Avoid.\"\n      }\n    ]\n  },\n  \"crypto_outlook\": {\n    \"regime\": \"BTC-led\",\n    \"mean_reversion_active_crypto\": true,\n    \"sentiment_read\": \"Fear & Greed at 27 (Fear) with a small +2 day-over-day improvement signals the market is fearful but beginning to stabilize \u2014 this is historically the entry zone for mean reversion LONG setups in BTC. The slight positive momentum (+1.03% total market cap 24h) supports cautious re-engagement rather than full avoidance.\",\n    \"dominance_read\": \"BTC dominance at 58.22% is elevated, confirming capital concentration in BTC and active rotation OUT of alts. This is a 'flight to quality' within crypto \u2014 alts (ETH at 9.63%, others lower) are being sold. Strategy implication: focus crypto exposure exclusively on BTC this week; hold alt positions at minimal size until dominance shows a confirmed rollover.\",\n    \"top_crypto_opportunities\": [\n      {\n        \"rank\": 1,\n        \"pair\": \"BTC/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Primary beneficiary of BTC-led regime. Fear sentiment at 27 is mean-reversion friendly. Total market cap stabilizing. BTC dominance at 58.22% confirms BTC is where crypto flows are concentrating. IMPORTANT: scanner returned NO_DATA \u2014 manually verify price is holding above key support (check 50-day MA and recent swing low) before executing.\",\n        \"entry_condition\": \"Manual confirmation required \u2014 look for price above key support with volume stabilization\",\n        \"size_recommendation\": \"50% of crypto allocation maximum until scanner data confirmed operational\"\n      },\n      {\n        \"rank\": 2,\n        \"pair\": \"ETH/USDT\",\n        \"direction\": \"LONG \u2014 delayed entry\",\n        \"rationale\": \"ETH dominance at 9.63% is historically depressed. Once BTC dominance peaks and starts declining (watch for <57%), ETH typically leads the alt recovery. Set up a conditional watchlist alert for BTC dominance rollover. Do NOT enter before BTC stabilizes for 48 hours.\",\n        \"entry_condition\": \"BTC must first consolidate 48+ hours; BTC dominance should show signs of peaking\",\n        \"size_recommendation\": \"25% of crypto allocation \u2014 secondary position only\"\n      },\n      {\n        \"rank\": 3,\n        \"pair\": \"LTC/USDT\",\n        \"direction\": \"LONG \u2014 speculative\",\n        \"rationale\": \"High-liquidity BTC proxy with mean reversion potential when fear sentiment transitions. Historically moves with BTC in recovery phases. Speculative size only given no scanner data.\",\n        \"entry_condition\": \"BTC showing confirmed 24h+ recovery; LTC holding prior swing support\",\n        \"size_recommendation\": \"15% of crypto allocation \u2014 speculative only\"\n      }\n    ],\n    \"crypto_risk_warnings\": [\n      {\n        \"event\": \"Scanner Data Failure \u2014 All Pairs NO_DATA\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"All 9 crypto pairs returned NO_DATA with null indicators. The trading bot cannot execute technical signal-based entries without live scanner data. DO NOT execute automated crypto entries until scanner is confirmed operational. Manual price action confirmation required for any trade this week.\"\n      },\n      {\n        \"event\": \"Fed Rate Hike Risk\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Fed Minutes signal majority of participants support rate firming if inflation persists. A rate hike or explicit hawkish communication would be a direct headwind for crypto risk assets. BTC/USD historically drops 5-15% on surprise rate hike announcements. Monitor Fed speaker comments this week closely.\"\n      },\n      {\n        \"event\": \"Iran-US Military Conflict Escalation\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Active military conflict (Iran war) with Defense Department potentially running out of funding by August. Escalation events cause sudden risk-off crypto sell-offs. Middle East escalation could push Fear & Greed to <20 (Extreme Fear). Have stop-loss levels pre-defined \u2014 suggest 5-7% below entry for BTC.\"\n      },\n      {\n        \"event\": \"US Federal Deficit $2 Trillion\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"While long-term bullish for BTC as a store-of-value narrative, near-term this pressures risk assets if it triggers credit rating concerns or forced Treasury supply. Watch for any ratings agency action this week.\"\n      },\n      {\n        \"event\": \"Crypto Market Liquidity \u2014 Low Volume\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"All pairs showing 0.0 volume_24h_usdt in scanner data \u2014 likely a data feed issue, but if accurate, reflects very thin liquidity conditions. Thin markets amplify moves in both directions. Reduce position sizes further if volume remains anomalously low.\"\n      },\n      {\n        \"event\": \"BTC Dominance Trend Continuation\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"If BTC dominance continues rising above 60%, alt positions (ETH, LTC) will underperform significantly. The BTC-led regime could intensify rather than revert. Do not add to alt positions against this trend.\"\n      }\n    ]\n  },\n  \"risk_warnings\": {\n    \"macro_events_this_week\": [\n      {\n        \"event\": \"Fed Minutes Aftermath & Speaker Commentary\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Markets will reprice rate expectations throughout the week as Fed speakers respond to the Minutes. Any explicit 'rate hike is on the table' language could trigger equity sell-off (especially rate-sensitive sectors) and crypto risk-off. Monitor daily.\"\n      },\n      {\n        \"event\": \"Iran-US Military Conflict\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Active military engagement with Middle East conflict potentially escalating. Defense funding runs out ~August per Congressional sources. Any major escalation event (airstrikes, naval incidents, Hormuz closure) would spike oil, VIX, and gold while crushing risk assets including equities and crypto. This is the #1 tail risk this week.\"\n      },\n      {\n        \"event\": \"US Fiscal Deficit \u2014 $2 Trillion Projection\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"Largest deficit in US history (excluding COVID). Potential for credit rating downgrade action or bond market indigestion on Treasury supply. Monitors TLT closely \u2014 a sharp yield spike would be disruptive across all asset classes.\"\n      },\n      {\n        \"event\": \"NVDA Earnings\",\n        \"severity\": \"MEDIUM-HIGH\",\n        \"detail\": \"Nvidia earnings are a market-moving event for the entire tech sector. Confirm the exact date immediately. If within this trading week, reduce NVDA exposure to 40% of normal and ensure the broader tech book (QQQ, XLK) is sized conservatively heading into the print.\"\n      },\n      {\n        \"event\": \"Crypto Scanner Data Unavailability\",\n        \"severity\": \"HIGH \u2014 OPERATIONAL\",\n        \"detail\": \"All crypto pairs returning NO_DATA is an operational risk to the bot. Automated signal-based crypto trading must be HALTED until the scanner feed is restored and validated. This is not a market risk \u2014 it is a system risk that prevents safe execution.\"\n      }\n    ],\n    \"specific_risk_flags\": [\n      \"Do NOT execute automated crypto trades while scanner returns NO_DATA \u2014 manual override required\",\n      \"Avoid holding equity positions at full size through any imminent NVDA earnings date\",\n      \"Rate-sensitive sectors (Utilities, REITs, Bonds/TLT) face elevated downside risk from Fed hawkish pivot\",\n      \"Geopolitical escalation (Iran) could spike VIX above 25 intraday \u2014 have pre-defined equity stop-losses\",\n      \"Energy prices embedded inflation risk per Fed Minutes \u2014 watch CPI/PCE data if released this week\",\n      \"Thin crypto volume (scanner showing 0.0) may indicate exchange or data feed issues \u2014 verify Bybit connectivity\"\n    ],\n    \"max_position_size_recommendation\": {\n      \"equities\": \"80% of maximum allocation per position \u2014 VIX 17.44 is healthy but Fed hawkish surprise + geopolitical risk warrants slight reduction from 100%\",\n      \"crypto\": \"40% of maximum allocation per position \u2014 NO scanner data + Fear regime + geopolitical risk = significant uncertainty discount required\",\n      \"overall_portfolio_risk_level\": \"MODERATE \u2014 not risk-off, but not full risk-on; tilt defensive with selective tech/energy/gold exposure\"\n    }\n  },\n  \"confidence_score\": 4,\n  \"confidence_reason\": \"Confidence materially reduced by two compounding factors: (1) ALL crypto scanner pairs returning NO_DATA eliminates the ability to execute signal-driven crypto trades safely \u2014 the bot's crypto arm is effectively blind; (2) Fed Minutes hawkish pivot + active Iran military conflict + $2T deficit creates a high-uncertainty macro backdrop that limits conviction on equity setups. VIX 17.44 and Tech's slight positive performance provide a floor, but insufficient data and elevated geopolitical tail risk cap the score at 4/10 \u2014 trade selectively, size conservatively, and prioritize restoring scanner data feeds before deploying crypto capital.\",\n  \"generated_at\": \"2026-05-20T21:00:00Z\",\n  \"valid_until\": \"2026-05-27T21:00:00Z\"\n}\n```"
 }
