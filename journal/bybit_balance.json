@@ -1,28 +1,28 @@
 {
-  "account_value": 98465.61,
+  "account_value": 98404.04,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 88465.61,
+  "position_value": 88404.04,
   "open_positions": 442,
   "positions": [
     {
       "currency": "BNB",
       "amount": 1.0,
-      "price_usd": 649.28,
-      "value_usd": 649.28
+      "price_usd": 648.6,
+      "value_usd": 648.6
     },
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 77474.59,
-      "value_usd": 77474.59
+      "price_usd": 77421.75,
+      "value_usd": 77421.75
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 2134.41,
-      "value_usd": 2134.41
+      "price_usd": 2132.08,
+      "value_usd": 2132.08
     },
     {
       "currency": "LTC",
@@ -40,7 +40,7 @@
       "currency": "XRP",
       "amount": 351.0,
       "price_usd": 1.37,
-      "value_usd": 480.91
+      "value_usd": 480.52
     },
     {
       "currency": "GAS",
@@ -63,20 +63,20 @@
     {
       "currency": "LINK",
       "amount": 50.0,
-      "price_usd": 9.61,
-      "value_usd": 480.5
+      "price_usd": 9.6,
+      "value_usd": 480.0
     },
     {
       "currency": "ETC",
       "amount": 53.0,
-      "price_usd": 9.01,
-      "value_usd": 477.53
+      "price_usd": 9.0,
+      "value_usd": 477.0
     },
     {
       "currency": "ZEC",
       "amount": 1.0,
-      "price_usd": 653.18,
-      "value_usd": 653.18
+      "price_usd": 650.74,
+      "value_usd": 650.74
     },
     {
       "currency": "DASH",
@@ -100,13 +100,13 @@
       "currency": "ADA",
       "amount": 1885.0,
       "price_usd": 0.25,
-      "value_usd": 470.68
+      "value_usd": 469.74
     },
     {
       "currency": "XLM",
       "amount": 3079.0,
       "price_usd": 0.14,
-      "value_usd": 442.45
+      "value_usd": 441.53
     },
     {
       "currency": "STEEM",
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-20T18:45:48.188162+00:00"
+  "fetched_at": "2026-05-20T18:48:30.631168+00:00"
 }
