@@ -21,6 +21,23 @@ OUT_HTML     = REPO_ROOT / "positions.html"
 sys.path.insert(0, str(REPO_ROOT))
 os.chdir(REPO_ROOT)
 
+# Norton Antivirus TLS fix — must run before any HTTPS call (Alpaca, Binance).
+import ssl as _ssl
+import requests as _requests
+from requests.adapters import HTTPAdapter as _HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context as _create_ctx
+
+class _NortonAdapter(_HTTPAdapter):
+    def init_poolmanager(self, *a, **kw):
+        ctx = _create_ctx(); ctx.load_default_certs()
+        ctx.verify_flags &= ~_ssl.VERIFY_X509_STRICT
+        kw["ssl_context"] = ctx; super().init_poolmanager(*a, **kw)
+
+_orig = _requests.Session.__init__
+def _patched(self, *a, **kw):
+    _orig(self, *a, **kw); self.mount("https://", _NortonAdapter())
+_requests.Session.__init__ = _patched
+
 from dotenv import load_dotenv
 load_dotenv(REPO_ROOT / ".env")
 
@@ -414,11 +431,11 @@ def build_html(
     # Build crypto rows HTML
     cx_rows_html = ""
     if cx_positions:
-        for p in sorted(cx_positions, key=lambda x: float(x.get("value_usd", 0)), reverse=True):
+        for p in sorted(cx_positions, key=lambda x: float(x.get("value_usd") or 0), reverse=True):
             currency  = p.get("currency", "")
             amount    = float(p.get("amount", 0))
-            price     = float(p.get("price_usd", 0))
-            value     = float(p.get("value_usd", 0))
+            price     = float(p.get("price_usd") or 0)
+            value     = float(p.get("value_usd") or 0)
             cx_rows_html += f"""
       <tr>
         <td><span class="sym">{currency}</span></td>
@@ -978,7 +995,7 @@ def main() -> int:
     _ensure_gh_user()
     # Pull remote changes first so a fast-forward push always succeeds.
     # (e.g. push_journal.py may have pushed in the same bat session)
-    _git("pull", "--rebase", "--autostash")
+    _git("pull", "--no-rebase")
     push = _git("push")
     if push.returncode != 0:
         print(f"[positions-dash] push failed: {push.stderr.strip()}")
