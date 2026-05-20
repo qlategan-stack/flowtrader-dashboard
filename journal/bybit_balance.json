@@ -1,10 +1,10 @@
 {
-  "account_value": 134443.64,
-  "total_usdt": 134443.64,
-  "free_usdt": 134443.64,
+  "account_value": 370174.51,
+  "total_usdt": 370174.51,
+  "free_usdt": 370174.51,
   "funding_usdt": 0.0,
   "position_value": 0,
-  "open_positions": 375,
+  "open_positions": 30,
   "positions": [
     {
       "currency": "HOT",
@@ -37,97 +37,97 @@
       "value_usd": null
     },
     {
-      "currency": "COMP",
-      "amount": 21.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "SC",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "SNX",
-      "amount": 1531.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
       "currency": "VTHO",
       "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "DGB",
+      "currency": "BRL",
+      "amount": 97.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "SHIB",
       "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "RUNE",
-      "amount": 898.0,
+      "currency": "XEC",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "DCR",
-      "amount": 24.0,
+      "currency": "SPELL",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "STORJ",
-      "amount": 4114.0,
+      "currency": "BTTC",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "AVA",
-      "amount": 1772.0,
+      "currency": "LUNC",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "MANA",
-      "amount": 5413.0,
+      "currency": "PLN",
+      "amount": 18466.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "YFI",
-      "amount": 1.0,
+      "currency": "ARS",
+      "amount": 18466.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "JST",
-      "amount": 5942.0,
+      "currency": "PEPE",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "CRV",
-      "amount": 2027.0,
+      "currency": "FLOKI",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "SAND",
-      "amount": 6507.0,
+      "currency": "MEME",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     },
     {
-      "currency": "NMR",
-      "amount": 56.0,
+      "currency": "AEUR",
+      "amount": 429.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "1000SATS",
+      "amount": 18446.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "BONK",
+      "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-20T19:18:22.557872+00:00"
+  "fetched_at": "2026-05-20T19:33:05.930692+00:00"
 }
