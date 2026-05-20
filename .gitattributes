@@ -2,6 +2,11 @@
 # Prevents CRLF churn on Windows checkouts from dirtying the working tree.
 * text=auto eol=lf
 
+# Append-only JSONL files — always union-merge (keep all lines from both sides)
+journal/trades.jsonl merge=union
+journal/suggestions_in.jsonl merge=union
+journal/suggestions_out.jsonl merge=union
+
 # Explicitly binary — never mangle
 *.png  binary
 *.jpg  binary
