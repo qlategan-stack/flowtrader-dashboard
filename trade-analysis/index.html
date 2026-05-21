@@ -124,8 +124,8 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <header class="hdr">
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
-    <span class="pill">Report date: 2026-05-19</span>
-    <span class="pill">Generated: 2026-05-20 07:37 UTC</span>
+    <span class="pill">Report date: 2026-05-20</span>
+    <span class="pill">Generated: 2026-05-21 07:43 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,95 +135,113 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-05-13 → 2026-05-19</div>
+    <div class="summary-range">2026-05-14 → 2026-05-20</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
-<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">13</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">12</div></div>
 <div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
 </section>
 
 <section class="failures">
   <div class="failures-head">
-    <h2>Failures — 2026-05-19</h2>
-    <div class="failures-count">4 total</div>
+    <h2>Failures — 2026-05-20</h2>
+    <div class="failures-count">5 total</div>
   </div>
   <div class="tabs-wrap">
     <nav class="tabs-list" role="tablist">
-<button class="tab active" data-target="f-0" data-kind="exec_error">META · 12:39 · ERR</button>
-<button class="tab" data-target="f-1" data-kind="exec_error">META · 12:52 · ERR</button>
-<button class="tab" data-target="f-2" data-kind="exec_error">META · 13:40 · ERR</button>
-<button class="tab" data-target="f-3" data-kind="exec_error">META · 13:55 · ERR</button>
+<button class="tab active" data-target="f-0" data-kind="exec_error">AAPL · 12:38 · ERR</button>
+<button class="tab" data-target="f-1" data-kind="exec_error">ETH/USDT · 15:38 · ERR</button>
+<button class="tab" data-target="f-2" data-kind="exec_error">ETH/USDT · 15:50 · ERR</button>
+<button class="tab" data-target="f-3" data-kind="exec_error">ETH/USDT · 15:53 · ERR</button>
+<button class="tab" data-target="f-4" data-kind="exec_error">ETH/USDT · 15:58 · ERR</button>
     </nav>
     <div class="tab-panels">
 <article class="panel active" id="f-0">
 <div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-19 · 12:39:21 EST</div>
+  <div class="panel-symbol">AAPL</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 12:38:15 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot actually identified a genuinely strong mean-reversion setup — ranging regime, price extended below the moving average, mild oversold RSI, and a signal score well above threshold — but the trade was blocked entirely because you were already holding 16 shares of META, triggering the no-add-to-position rule. Before the session opens, audit your existing holdings against your watchlist so you can either close lingering positions you intend to re-enter or consciously exclude those symbols from consideration until they&#x27;re flat.</div>
+  <div class="lesson-body">The bot&#x27;s logic was actually sound — it correctly identified a strong momentum setup with solid confirmations across RSI, price extension, and ADX — but the trade was blocked entirely because an existing 33-share AAPL position was never closed, leaving the bot unable to act on an otherwise valid signal. Before the next session, build in a pre-scan routine to audit any open positions in your universe so you can decide whether to close, hold, or consciously skip re-entry before a new signal fires.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>META is the strongest qualifying setup this session. Strategy mode is MEAN_REVERSION with a score of 4 — well above the minimum threshold of 2. The regime is RANGING (ADX 18.81 &lt; 25), price is 4.39% below MA20, RSI is 41 (mild oversold), and news sentiment is modestly positive (0.241). The weekly research brief confirms Mean Reversion is ACTIVE for equities in a &#x27;ranging with downside bias&#x27; regime, which is exactly the context this strategy is designed for. R:R check: reward = 628.31 - 600.75 = 27.56; risk = 600.75 - 592.55 = 8.20; R:R = 3.36:1 — comfortably exceeds the 1.5:1 minimum gate. Pos</pre>
+  <pre>AAPL is the top MOMENTUM setup this session. Strategy mode is MOMENTUM (ADX 33.95 &gt; 25 confirms trending regime, not a veto). Momentum score is 4/4: RSI at 74.65 (strong momentum), price is 4.96% above MA20, ADX confirms trend strength. Using momentum bracket: stop at $294.92 (1x ATR below entry), target at $311.715 (2x ATR above entry). R:R check: reward = 311.715 - 299.915 = $11.80, risk = 299.915 - 294.92 = $4.995, ratio = 2.36:1 — passes 1.5:1 minimum. Position sizing: 1.5% of $98,505.31 = $1,477.58 risk budget. Risk per share = $4.995. Max shares by risk = 295 — but capped at 10% of accou</pre>
 </details>
 </article>
 <article class="panel" id="f-1" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-19 · 12:52:10 EST</div>
+  <div class="panel-symbol">ETH/USDT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:38:48 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Max positions reached (20/5)</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup on META — solid signal score, price well below the MA20, mildly oversold RSI, and a ranging ADX — but the trade was blocked because you already held 16 shares and the bot&#x27;s rules prevent adding to open positions. Before the session, check your existing holdings against your watchlist so you can either close the current META position intentionally or consciously decide to skip re-entry until it&#x27;s cleared.</div>
+  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup with a clean 6/6 signal score in a confirmed ranging regime, but the trade never had a chance because the portfolio was already holding 20 open positions against a hard limit of 5 — a position management failure that had nothing to do with signal quality. Before your next session, audit why so many positions accumulated beyond the configured limit and add a pre-signal check that surfaces current position count early in the reasoning pipeline, so high-quality setups like this aren&#x27;t wasted on a full book.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>META is the strongest qualifying setup this session under MEAN_REVERSION strategy mode. Signal score of 4 clears the medium_safety threshold of 2. The stock is trading at $602.49, which is 4.12% below MA20 ($628.40), RSI at 41.66 is mildly oversold, and ADX at 18.81 confirms a ranging regime — all consistent with mean reversion eligibility. R:R check: reward = 628.40 - 602.49 = $25.91; risk = 602.49 - 594.29 = $8.20; ratio = 25.91 / 8.20 = 3.16 — well above the 1.5:1 minimum. Position sizing: 1.5% of $98,364.21 = ~$1,475 risk capital. Per-share risk = $8.20. Max shares by risk = 1,475 / 8.20 =</pre>
+  <pre>ETH/USDT is the strongest qualifying setup this session with a mean-reversion score of 6/6. Strategy mode is MEAN_REVERSION, regime is RANGING (ADX=21.74, well below the 25/30 veto thresholds). Classical oversold triggers are present: RSI=37.26 (&lt;45, +1), price is -5.77% below MA20 (+1), and price is above lower BB but pct_b=0.107 puts it in deep lower territory. Math signals reinforce: Hurst=0.488 confirms anti-persistent (mean-reverting) price dynamics (+1), Levy jump regime is CALM (+1), Wavelet is TREND_DOMINANT (+1). R:R check: (2268.12 - 2137.31) / (2137.31 - 2099.295) = 130.81 / 38.015 </pre>
 </details>
 </article>
 <article class="panel" id="f-2" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-19 · 13:40:31 EST</div>
+  <div class="panel-symbol">ETH/USDT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:50:01 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Position too large (10.0% of account, max 10% — profile cap)</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup with a solid signal score, but the trade was blocked because you still held 16 shares of META from a prior position — a position management rule prevented adding to an existing trade. Before the bot attempts re-entry on any symbol, verify your current holdings and close any open positions in that name first so a valid signal doesn&#x27;t go to waste.</div>
+  <div class="lesson-body">The bot identified a genuinely strong mean-reversion setup — a perfect 6/6 signal score with RSI oversold, price below the lower Bollinger Band, and a confirmed ranging regime — but the trade was blocked because the intended position size hit exactly the 10% profile cap, leaving zero margin for error and triggering an automatic rejection. Next time, size your highest-conviction entries at 8–9% of account so the cap never becomes the ceiling, and you actually get filled instead of watching the setup expire without a position.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>META is the clearest qualifying setup this session. Strategy mode is MEAN_REVERSION with a score of 4/6 — well above the 2-point threshold. All classical mean reversion criteria are met: RSI at 41.85 is mildly oversold, price is 4.04% below MA20 (above the 1% threshold), ADX at 18.81 confirms a ranging regime (not trending), and news sentiment is positive. R:R check: (628.42 - 603.015) / (603.015 - 594.81) = 25.405 / 8.205 = 3.09:1 — comfortably above the 1.5:1 minimum. Stop distance is tight at $8.21 (0.5x ATR = 0.5 * 16.4 = 8.2 ✓). Position sizing: 1.5% of $98,407.60 = $1,476.11 risk budget.</pre>
+  <pre>ETH/USDT is the strongest setup this session with a mean-reversion score of 6/6. Price is at $2,140.95, sitting below the lower Bollinger Band (lower=$2,102.57, pct_b=0.116), RSI is 37.77 (oversold), price is -5.61% below MA20, and ADX=21.74 confirms a ranging regime. Math signals reinforce: Hurst=0.488 (anti-persistent, mean-reversion confirmed), Levy jump regime is CALM (clean drift conditions), and wavelet shows trend-dominant structure. The R:R is strong: target=$2,268.30, stop=$2,102.935, entry=$2,140.95 → reward=$127.35, risk=$38.015 → R:R=3.35:1, well above the 1.5:1 minimum. Portfolio </pre>
 </details>
 </article>
 <article class="panel" id="f-3" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">META</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-19 · 13:55:43 EST</div>
+  <div class="panel-symbol">ETH/USDT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:53:10 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 16 shares of META; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Position too large (10.0% of account, max 10% — profile cap)</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s analysis was actually solid — META showed a legitimate mean-reversion setup with a valid signal score, mild oversold conditions, and a ranging regime — but the trade was blocked because you still held 16 shares from a prior entry that was never closed. Before the bot can act on a fresh signal for any symbol, check your open positions and close any existing stake in that name first, or the opportunity will keep getting rejected no matter how strong the setup looks.</div>
+  <div class="lesson-body">The bot identified a genuinely strong mean-reversion setup — a clean 6/6 score with RSI, MA20 deviation, and ADX all confirming — but the position sizing hit exactly the 10% profile cap, causing the order to be rejected before the trade could be entered. Next time, size your positions to a maximum of 9% or build in a small buffer below hard caps so a valid signal doesn&#x27;t get killed by a rounding-level breach at the execution stage.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>META is the standout candidate this session under MEAN_REVERSION mode. Signal score of 4 clears the minimum threshold of 2. RSI at 41.59 is mildly oversold, price is 4.16% below MA20, ADX at 18.81 confirms a ranging regime (well under the 25 veto threshold), and news sentiment is positive. R:R check: take_profit - entry = 628.39 - 602.27 = 26.12; entry - stop_loss = 602.27 - 594.07 = 8.20; ratio = 26.12 / 8.20 = 3.19 — well above the 1.5:1 minimum. Stop is 0.5x ATR (ATR=16.4, half=8.20) below entry, exactly matching the hard stop rule. Position sizing: risk per trade = 1.5% of $98,349.10 = $1,</pre>
+  <pre>ETH/USDT is the strongest qualifying setup this session. Strategy mode is MEAN_REVERSION with a score of 6/6 — the highest on the watchlist. Classical oversold triggers are present: RSI at 37.54 (below 45), price is 5.68% below MA20, and ADX at 21.74 confirms a ranging regime. Math signals are strongly confirmatory: Hurst=0.488 (anti-persistent, classic mean-reversion environment), Levy regime is CALM (no jump risk), and entropy is normal. The price is near the lower Bollinger Band (pct_b=0.112), providing further confluence. R:R check: (2268.22 - 2139.3) / (2139.3 - 2101.285) = 128.92 / 38.01</pre>
+</details>
+</article>
+<article class="panel" id="f-4" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">ETH/USDT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:58:51 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Position too large (10.0% of account, max 10% — profile cap)</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot identified a genuinely strong setup — a clean 6/6 mean-reversion signal in a confirmed ranging regime with multiple oversold triggers — but the trade was blocked because the intended position size hit exactly the 10% account cap, leaving zero margin for the limit to be met without rejection. Next time, size your positions to a maximum of 9% (or whatever buffer keeps you comfortably inside the cap) so that a high-conviction signal like this actually executes rather than dying at the order stage.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>ETH/USDT is the strongest setup this session with a mean reversion score of 6/6. Strategy mode is MEAN_REVERSION with regime = RANGING (ADX 21.74, well below 25 veto). Classical oversold triggers are present: RSI at 37.53 (&lt;45), price is -5.69% below MA20 (&gt;1% threshold), and price is near the lower Bollinger Band (pct_b = 0.111). Math signals reinforce: Hurst=0.488 (anti-persistent, confirms mean reversion), Levy regime = CALM (clean drift conditions), wavelet trend-dominant but denoised gap only -0.8% so noise is minimal. R:R check: (2268.21 - 2139.2) / (2139.2 - 2101.185) = 129.01 / 38.015 </pre>
 </details>
 </article>
     </div>
