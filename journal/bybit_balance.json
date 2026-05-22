@@ -1,7 +1,7 @@
 {
-  "account_value": 10296.61,
-  "total_usdt": 10296.61,
-  "free_usdt": 10296.61,
+  "account_value": 9267.03,
+  "total_usdt": 9267.03,
+  "free_usdt": 9267.03,
   "funding_usdt": 0.0,
   "position_value": 0,
   "open_positions": 32,
@@ -14,7 +14,7 @@
     },
     {
       "currency": "XRP",
-      "amount": 836.0,
+      "amount": 1587.9,
       "price_usd": null,
       "value_usd": null
     },
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-22T01:03:05.532285+00:00"
+  "fetched_at": "2026-05-22T01:33:06.956634+00:00"
 }
