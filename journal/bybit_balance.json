@@ -1,14 +1,20 @@
 {
-  "account_value": 11440.59,
-  "total_usdt": 11440.59,
-  "free_usdt": 11440.59,
+  "account_value": 10296.61,
+  "total_usdt": 10296.61,
+  "free_usdt": 10296.61,
   "funding_usdt": 0.0,
   "position_value": 0,
-  "open_positions": 31,
+  "open_positions": 32,
   "positions": [
     {
       "currency": "ETH",
       "amount": 168.0556,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "XRP",
+      "amount": 836.0,
       "price_usd": null,
       "value_usd": null
     },
@@ -119,15 +125,9 @@
       "amount": 429.0,
       "price_usd": null,
       "value_usd": null
-    },
-    {
-      "currency": "1000SATS",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-22T00:33:06.079912+00:00"
+  "fetched_at": "2026-05-22T01:03:05.532285+00:00"
 }
