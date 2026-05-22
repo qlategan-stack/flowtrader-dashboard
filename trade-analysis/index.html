@@ -124,8 +124,8 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <header class="hdr">
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
-    <span class="pill">Report date: 2026-05-20</span>
-    <span class="pill">Generated: 2026-05-21 07:43 UTC</span>
+    <span class="pill">Report date: 2026-05-21</span>
+    <span class="pill">Generated: 2026-05-22 07:37 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,113 +135,149 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-05-14 → 2026-05-20</div>
+    <div class="summary-range">2026-05-15 → 2026-05-21</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
-<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">12</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">16</div></div>
 <div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
 </section>
 
 <section class="failures">
   <div class="failures-head">
-    <h2>Failures — 2026-05-20</h2>
-    <div class="failures-count">5 total</div>
+    <h2>Failures — 2026-05-21</h2>
+    <div class="failures-count">7 total</div>
   </div>
   <div class="tabs-wrap">
     <nav class="tabs-list" role="tablist">
-<button class="tab active" data-target="f-0" data-kind="exec_error">AAPL · 12:38 · ERR</button>
-<button class="tab" data-target="f-1" data-kind="exec_error">ETH/USDT · 15:38 · ERR</button>
-<button class="tab" data-target="f-2" data-kind="exec_error">ETH/USDT · 15:50 · ERR</button>
-<button class="tab" data-target="f-3" data-kind="exec_error">ETH/USDT · 15:53 · ERR</button>
-<button class="tab" data-target="f-4" data-kind="exec_error">ETH/USDT · 15:58 · ERR</button>
+<button class="tab active" data-target="f-0" data-kind="exec_error">TLT · 11:19 · ERR</button>
+<button class="tab" data-target="f-1" data-kind="exec_error">TLT · 12:23 · ERR</button>
+<button class="tab" data-target="f-2" data-kind="exec_error">TLT · 12:53 · ERR</button>
+<button class="tab" data-target="f-3" data-kind="exec_error">TLT · 13:21 · ERR</button>
+<button class="tab" data-target="f-4" data-kind="exec_error">TLT · 13:50 · ERR</button>
+<button class="tab" data-target="f-5" data-kind="exec_error">TLT · 14:19 · ERR</button>
+<button class="tab" data-target="f-6" data-kind="exec_error">XRP/USDT · 22:19 · ERR</button>
     </nav>
     <div class="tab-panels">
 <article class="panel active" id="f-0">
 <div class="panel-head">
-  <div class="panel-symbol">AAPL</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 12:38:15 EST</div>
+  <div class="panel-symbol">TLT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 11:19:21 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s logic was actually sound — it correctly identified a strong momentum setup with solid confirmations across RSI, price extension, and ADX — but the trade was blocked entirely because an existing 33-share AAPL position was never closed, leaving the bot unable to act on an otherwise valid signal. Before the next session, build in a pre-scan routine to audit any open positions in your universe so you can decide whether to close, hold, or consciously skip re-entry before a new signal fires.</div>
+  <div class="lesson-body">The bot&#x27;s signal logic was sound — a score of 5/6 with clean oversold conditions is exactly what the strategy is designed to catch — but the trade was blocked because you were already holding 117 shares of TLT, triggering the no-add rule. Before the bot attempts re-entry on any existing position, manually close or confirm the prior position is fully cleared, and consider setting a position-status check as the first filter in your pre-trade workflow so a strong signal doesn&#x27;t get wasted on a rejected order.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>AAPL is the top MOMENTUM setup this session. Strategy mode is MOMENTUM (ADX 33.95 &gt; 25 confirms trending regime, not a veto). Momentum score is 4/4: RSI at 74.65 (strong momentum), price is 4.96% above MA20, ADX confirms trend strength. Using momentum bracket: stop at $294.92 (1x ATR below entry), target at $311.715 (2x ATR above entry). R:R check: reward = 311.715 - 299.915 = $11.80, risk = 299.915 - 294.92 = $4.995, ratio = 2.36:1 — passes 1.5:1 minimum. Position sizing: 1.5% of $98,505.31 = $1,477.58 risk budget. Risk per share = $4.995. Max shares by risk = 295 — but capped at 10% of accou</pre>
+  <pre>TLT is the cleanest qualifying setup this session. Strategy mode is MEAN_REVERSION with a score of 5/6, satisfying the medium_safety threshold of 2+. Classical oversold triggers are present: RSI at 35.74 (below 45), price is 1.8% below MA20 (meets BelowMA20&gt;1% criterion), and price is near the lower Bollinger Band (pct_b = 0.131). Math signals reinforce the case: Hurst=0.486 confirms anti-persistent/mean-reverting behavior, Levy CALM regime indicates clean drift conditions. ADX=28.66 is above 25 but the regime router classified this as RANGING and mean_reversion_eligible=true, so we honor the </pre>
 </details>
 </article>
 <article class="panel" id="f-1" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">ETH/USDT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:38:48 EST</div>
+  <div class="panel-symbol">TLT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 12:23:07 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Max positions reached (20/5)</div>
+  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong mean-reversion setup with a clean 6/6 signal score in a confirmed ranging regime, but the trade never had a chance because the portfolio was already holding 20 open positions against a hard limit of 5 — a position management failure that had nothing to do with signal quality. Before your next session, audit why so many positions accumulated beyond the configured limit and add a pre-signal check that surfaces current position count early in the reasoning pipeline, so high-quality setups like this aren&#x27;t wasted on a full book.</div>
+  <div class="lesson-body">The bot&#x27;s signal was actually sound — TLT showed genuine mean-reversion setup with a solid MR score and confirmed oversold conditions — but the execution was blocked entirely because you were already holding 117 shares, a position that should have been closed or sized around before this signal was even evaluated. Next time, make it a pre-session habit to audit all open positions against your watchlist so you can either close stale holdings in advance or consciously decide to let the signal pass rather than arriving at execution with a preventable conflict.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>ETH/USDT is the strongest qualifying setup this session with a mean-reversion score of 6/6. Strategy mode is MEAN_REVERSION, regime is RANGING (ADX=21.74, well below the 25/30 veto thresholds). Classical oversold triggers are present: RSI=37.26 (&lt;45, +1), price is -5.77% below MA20 (+1), and price is above lower BB but pct_b=0.107 puts it in deep lower territory. Math signals reinforce: Hurst=0.488 confirms anti-persistent (mean-reverting) price dynamics (+1), Levy jump regime is CALM (+1), Wavelet is TREND_DOMINANT (+1). R:R check: (2268.12 - 2137.31) / (2137.31 - 2099.295) = 130.81 / 38.015 </pre>
+  <pre>TLT is the strongest qualifying trade this session. Strategy mode is MEAN_REVERSION with MR score 5/6, regime RANGING, and two classical oversold triggers (RSI 36.6 &lt; 45 and price -1.64% below MA20), satisfying the requirement for at least one classical oversold trigger. The Hurst exponent of 0.486 confirms anti-persistence (mean reversion conditions), Levy jump regime is CALM (clean drift), and ADX at 28.66 is above 25 but the regime router has already designated this MEAN_REVERSION and the regime field shows RANGING — the ADX&gt;25 veto applies to our independent filter but the system&#x27;s regime </pre>
 </details>
 </article>
 <article class="panel" id="f-2" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">ETH/USDT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:50:01 EST</div>
+  <div class="panel-symbol">TLT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 12:53:35 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Position too large (10.0% of account, max 10% — profile cap)</div>
+  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot identified a genuinely strong mean-reversion setup — a perfect 6/6 signal score with RSI oversold, price below the lower Bollinger Band, and a confirmed ranging regime — but the trade was blocked because the intended position size hit exactly the 10% profile cap, leaving zero margin for error and triggering an automatic rejection. Next time, size your highest-conviction entries at 8–9% of account so the cap never becomes the ceiling, and you actually get filled instead of watching the setup expire without a position.</div>
+  <div class="lesson-body">The bot actually identified a genuinely strong mean-reversion setup — score of 5 with both RSI and BelowMA20 triggers firing — but the order was correctly blocked because you were already holding 117 shares of TLT, a position management rule the bot enforced properly. Before the next session, check your open positions in TLT and decide whether to close or hold that existing lot, because until you do, even the cleanest qualifying signal on this symbol will be dead on arrival.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>ETH/USDT is the strongest setup this session with a mean-reversion score of 6/6. Price is at $2,140.95, sitting below the lower Bollinger Band (lower=$2,102.57, pct_b=0.116), RSI is 37.77 (oversold), price is -5.61% below MA20, and ADX=21.74 confirms a ranging regime. Math signals reinforce: Hurst=0.488 (anti-persistent, mean-reversion confirmed), Levy jump regime is CALM (clean drift conditions), and wavelet shows trend-dominant structure. The R:R is strong: target=$2,268.30, stop=$2,102.935, entry=$2,140.95 → reward=$127.35, risk=$38.015 → R:R=3.35:1, well above the 1.5:1 minimum. Portfolio </pre>
+  <pre>TLT is the strongest qualifying setup this session under MEAN_REVERSION mode. Score of 5 on mean reversion path, with two classical oversold triggers required by strategy rules (RSI&lt;45 and BelowMA20&gt;1% both firing), confirming eligibility. Regime is RANGING (ADX 28.66, just above 25 but mean_reversion_eligible=true per router). Hurst at 0.486 is anti-persistent — textbook mean reversion confirmation. Levy jump regime is CALM with zero recent jumps, low adjusted vol (0.0884), ideal drift conditions. Wavelet denoised price is 83.88 vs live 83.79 — negligible noise, clean signal. R:R check: (85.1</pre>
 </details>
 </article>
 <article class="panel" id="f-3" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">ETH/USDT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:53:10 EST</div>
+  <div class="panel-symbol">TLT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 13:21:08 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Position too large (10.0% of account, max 10% — profile cap)</div>
+  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot identified a genuinely strong mean-reversion setup — a clean 6/6 score with RSI, MA20 deviation, and ADX all confirming — but the position sizing hit exactly the 10% profile cap, causing the order to be rejected before the trade could be entered. Next time, size your positions to a maximum of 9% or build in a small buffer below hard caps so a valid signal doesn&#x27;t get killed by a rounding-level breach at the execution stage.</div>
+  <div class="lesson-body">The bot&#x27;s signal was actually strong and legitimate — a score of 5/6 with genuine oversold conditions — but the execution was blocked because you were already holding 117 shares of TLT, a position the bot correctly refused to add to. Before the session opens, audit your existing holdings against the bot&#x27;s watchlist so you can either close lingering positions you&#x27;ve forgotten about or consciously decide to hold them, keeping the bot&#x27;s entry logic clean.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>ETH/USDT is the strongest qualifying setup this session. Strategy mode is MEAN_REVERSION with a score of 6/6 — the highest on the watchlist. Classical oversold triggers are present: RSI at 37.54 (below 45), price is 5.68% below MA20, and ADX at 21.74 confirms a ranging regime. Math signals are strongly confirmatory: Hurst=0.488 (anti-persistent, classic mean-reversion environment), Levy regime is CALM (no jump risk), and entropy is normal. The price is near the lower Bollinger Band (pct_b=0.112), providing further confluence. R:R check: (2268.22 - 2139.3) / (2139.3 - 2101.285) = 128.92 / 38.01</pre>
+  <pre>TLT is the clear best trade this session. Strategy mode = MEAN_REVERSION with a score of 5/6 — the highest active score among all three detailed setups and well above the 2-point threshold. Key qualifications: (1) RSI at 37.93 is genuinely oversold (RSI&lt;45 trigger), (2) price is 1.43% below MA20, triggering BelowMA20&gt;1%, (3) Hurst exponent of 0.486 = ANTI_PERSISTENT, which is the gold standard confirmation for mean reversion — price is statistically more likely to revert, (4) Levy calm regime means no jump-risk disruption, (5) regime classified as RANGING with ADX 28.66 — note ADX is slightly </pre>
 </details>
 </article>
 <article class="panel" id="f-4" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">ETH/USDT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-20 · 15:58:51 EST</div>
+  <div class="panel-symbol">TLT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 13:50:21 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Position too large (10.0% of account, max 10% — profile cap)</div>
+  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot identified a genuinely strong setup — a clean 6/6 mean-reversion signal in a confirmed ranging regime with multiple oversold triggers — but the trade was blocked because the intended position size hit exactly the 10% account cap, leaving zero margin for the limit to be met without rejection. Next time, size your positions to a maximum of 9% (or whatever buffer keeps you comfortably inside the cap) so that a high-conviction signal like this actually executes rather than dying at the order stage.</div>
+  <div class="lesson-body">The bot&#x27;s signal logic was sound — TLT genuinely qualified on all mean-reversion criteria — but the execution was blocked because you still held 117 shares from a prior entry, violating the no-add rule that prevents pyramiding into existing positions. Before the bot scans for new entries, make it a habit to audit your open positions first, and if TLT is already in your book, either close it to reset or consciously wait for the exit signal before treating it as a fresh setup.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>ETH/USDT is the strongest setup this session with a mean reversion score of 6/6. Strategy mode is MEAN_REVERSION with regime = RANGING (ADX 21.74, well below 25 veto). Classical oversold triggers are present: RSI at 37.53 (&lt;45), price is -5.69% below MA20 (&gt;1% threshold), and price is near the lower Bollinger Band (pct_b = 0.111). Math signals reinforce: Hurst=0.488 (anti-persistent, confirms mean reversion), Levy regime = CALM (clean drift conditions), wavelet trend-dominant but denoised gap only -0.8% so noise is minimal. R:R check: (2268.21 - 2139.2) / (2139.2 - 2101.185) = 129.01 / 38.015 </pre>
+  <pre>TLT is the only setup that fully qualifies under all guardrails this session. Strategy mode is MEAN_REVERSION with a score of 5/6 — well above the threshold of 2. Classical oversold triggers are present: RSI at 40.26 (below 45) and price below MA20 by 1.19%, satisfying the requirement for at least one classical oversold signal. Regime is RANGING (ADX 28.38 — note this is technically above 25 but the regime router has flagged it RANGING and mean_reversion_eligible=true, so I honor the router&#x27;s determination). Hurst exponent of 0.486 is anti-persistent, confirming mean reversion tendency. Levy c</pre>
+</details>
+</article>
+<article class="panel" id="f-5" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">TLT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 14:19:34 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot&#x27;s signal analysis was sound — a clean mean-reversion setup with all gates cleared — but the trade was blocked because you still hold 117 shares of TLT from a prior entry, and the bot correctly refused to stack positions rather than silently overexpose you. Before acting on any new TLT signal, check your open positions first and decide whether to close the existing lot, then let the bot re-evaluate entry from a clean slate.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>TLT is the cleanest qualifying setup this session. Strategy mode is MEAN_REVERSION with mr_score=5, regime=RANGING, mean_reversion_eligible=true, and directional_oversold=true — all gates cleared. Signals: RSI at 40.26 (&lt;45, mild oversold +1), price at 84.14 vs MA20 85.15 (-1.19%, BelowMA20&gt;1% +1), Hurst=0.49 anti-persistent confirming mean-reversion edge (+1), Levy calm regime (+1), Wavelet trend-dominant (+1). Score=5, well above the 2-point minimum. R:R check: entry 84.14, stop 83.78 (risk=$0.36/share), target 85.15 (reward=$1.01/share) → R:R = 2.81:1, clears the 1.5:1 gate. Time gate: 14:1</pre>
+</details>
+</article>
+<article class="panel" id="f-6" hidden>
+<div class="panel-head">
+  <div class="panel-symbol">XRP/USDT</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 22:19:15 EST</div>
+</div>
+<div class="error-block">
+  <div class="error-reason">R:R ratio too low (1.45:1, minimum 1.5:1)</div>
+</div>
+<div class="lesson">
+  <div class="lesson-label">Lesson</div>
+  <div class="lesson-body">The bot actually got the signal analysis right — XRP showed a legitimate oversold setup with a strong score of 5/6 — but the trade was correctly blocked because the reward-to-risk ratio of 1.45:1 fell just short of the 1.5:1 minimum, meaning the potential gain didn&#x27;t justify the risk by the strategy&#x27;s own rules. Next time, before committing to a setup, verify that your take-profit and stop-loss levels are calibrated to clear the R:R threshold, even if that means widening the target or tightening the stop slightly to hit that 1.5:1 floor.</div>
+</div>
+<details class="reasoning">
+  <summary>Bot reasoning at the time</summary>
+  <pre>XRP/USDT is the best setup this session. Strategy mode: MEAN_REVERSION. Signal score: 5/6, which is the highest among the three detailed setups and clears the medium_safety threshold of 2. Classical oversold triggers are present (RSI&lt;45 at 43.79, BelowMA20&gt;1% at -2.58%), satisfying the requirement for at least one classical oversold trigger. ADX=15.16 confirms a ranging market, not a trend — mean reversion is valid. Regime is RANGING. Levy calm (+1) supports clean mean reversion conditions. Hurst=0.549 (near-random, score_delta=0) signals no strong edge but does not veto the trade. R:R check: </pre>
 </details>
 </article>
     </div>

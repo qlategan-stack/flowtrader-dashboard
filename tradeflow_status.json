@@ -1,51 +1,51 @@
 {
-  "report_date": "2026-05-20",
+  "report_date": "2026-05-21",
   "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
-  "generated_at": "2026-05-21T07:43:14Z",
-  "failure_count": 5,
+  "generated_at": "2026-05-22T07:37:38Z",
+  "failure_count": 7,
   "loss_count": 0,
-  "error_count": 5,
+  "error_count": 7,
   "summary_7day": {
-    "start_date": "2026-05-14",
-    "end_date": "2026-05-20",
+    "start_date": "2026-05-15",
+    "end_date": "2026-05-21",
     "closed_trades": 0,
     "wins": 0,
     "losses": 0,
     "win_rate_pct": null,
-    "exec_errors": 12,
+    "exec_errors": 16,
     "total_realized": 0,
     "total_loss": 0
   },
   "top_failures": [
     {
-      "symbol": "AAPL",
-      "time_est": "12:38:15",
+      "symbol": "TLT",
+      "time_est": "11:19:21",
       "kind": "exec_error",
-      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
+      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "ETH/USDT",
-      "time_est": "15:38:48",
+      "symbol": "TLT",
+      "time_est": "12:23:07",
       "kind": "exec_error",
-      "headline": "Max positions reached (20/5)"
+      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "ETH/USDT",
-      "time_est": "15:50:01",
+      "symbol": "TLT",
+      "time_est": "12:53:35",
       "kind": "exec_error",
-      "headline": "Position too large (10.0% of account, max 10% \u2014 profile cap)"
+      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "ETH/USDT",
-      "time_est": "15:53:10",
+      "symbol": "TLT",
+      "time_est": "13:21:08",
       "kind": "exec_error",
-      "headline": "Position too large (10.0% of account, max 10% \u2014 profile cap)"
+      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "ETH/USDT",
-      "time_est": "15:58:51",
+      "symbol": "TLT",
+      "time_est": "13:50:21",
       "kind": "exec_error",
-      "headline": "Position too large (10.0% of account, max 10% \u2014 profile cap)"
+      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
     }
   ]
 }
