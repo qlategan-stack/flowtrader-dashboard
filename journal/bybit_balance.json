@@ -1,14 +1,14 @@
 {
-  "account_value": 262065.79,
-  "total_usdt": 262065.79,
-  "free_usdt": 262065.79,
+  "account_value": 235859.29,
+  "total_usdt": 235859.29,
+  "free_usdt": 235859.29,
   "funding_usdt": 0.0,
   "position_value": 0,
   "open_positions": 28,
   "positions": [
     {
       "currency": "ETH",
-      "amount": 47.9818,
+      "amount": 60.8006,
       "price_usd": null,
       "value_usd": null
     },
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-23T13:03:06.222272+00:00"
+  "fetched_at": "2026-05-23T14:03:05.133239+00:00"
 }
