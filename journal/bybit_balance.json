@@ -1,11 +1,17 @@
 {
-  "account_value": 359486.24,
-  "total_usdt": 359486.24,
-  "free_usdt": 359486.24,
+  "account_value": 323537.71,
+  "total_usdt": 323537.71,
+  "free_usdt": 323537.71,
   "funding_usdt": 0.0,
   "position_value": 0,
-  "open_positions": 27,
+  "open_positions": 28,
   "positions": [
+    {
+      "currency": "ETH",
+      "amount": 17.7192,
+      "price_usd": null,
+      "value_usd": null
+    },
     {
       "currency": "HOT",
       "amount": 18446.0,
@@ -119,15 +125,9 @@
       "amount": 18466.0,
       "price_usd": null,
       "value_usd": null
-    },
-    {
-      "currency": "MXN",
-      "amount": 18466.0,
-      "price_usd": null,
-      "value_usd": null
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-23T07:49:00.558103+00:00"
+  "fetched_at": "2026-05-23T10:03:05.887307+00:00"
 }
