@@ -1,23 +1,11 @@
 {
-  "account_value": 91067.0,
-  "total_usdt": 91067.0,
-  "free_usdt": 91067.0,
+  "account_value": 359486.24,
+  "total_usdt": 359486.24,
+  "free_usdt": 359486.24,
   "funding_usdt": 0.0,
   "position_value": 0,
-  "open_positions": 32,
+  "open_positions": 27,
   "positions": [
-    {
-      "currency": "ETH",
-      "amount": 121.9681,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "XRP",
-      "amount": 12961.0,
-      "price_usd": null,
-      "value_usd": null
-    },
     {
       "currency": "HOT",
       "amount": 18446.0,
@@ -27,12 +15,6 @@
     {
       "currency": "WIN",
       "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "TRY",
-      "amount": 18466.0,
       "price_usd": null,
       "value_usd": null
     },
@@ -51,12 +33,6 @@
     {
       "currency": "VTHO",
       "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "BRL",
-      "amount": 97.0,
       "price_usd": null,
       "value_usd": null
     },
@@ -125,9 +101,33 @@
       "amount": 429.0,
       "price_usd": null,
       "value_usd": null
+    },
+    {
+      "currency": "1000SATS",
+      "amount": 18446.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "BONK",
+      "amount": 18446.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "JPY",
+      "amount": 18466.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "MXN",
+      "amount": 18466.0,
+      "price_usd": null,
+      "value_usd": null
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-23T06:03:05.126169+00:00"
+  "fetched_at": "2026-05-23T07:49:00.558103+00:00"
 }
