@@ -1,51 +1,51 @@
 {
-  "report_date": "2026-05-21",
+  "report_date": "2026-05-22",
   "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
-  "generated_at": "2026-05-22T07:37:38Z",
-  "failure_count": 7,
+  "generated_at": "2026-05-23T06:29:13Z",
+  "failure_count": 5,
   "loss_count": 0,
-  "error_count": 7,
+  "error_count": 5,
   "summary_7day": {
-    "start_date": "2026-05-15",
-    "end_date": "2026-05-21",
+    "start_date": "2026-05-16",
+    "end_date": "2026-05-22",
     "closed_trades": 0,
     "wins": 0,
     "losses": 0,
     "win_rate_pct": null,
-    "exec_errors": 16,
+    "exec_errors": 21,
     "total_realized": 0,
     "total_loss": 0
   },
   "top_failures": [
     {
-      "symbol": "TLT",
-      "time_est": "11:19:21",
+      "symbol": "AAPL",
+      "time_est": "12:03:32",
       "kind": "exec_error",
-      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
+      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "TLT",
-      "time_est": "12:23:07",
+      "symbol": "AAPL",
+      "time_est": "12:29:45",
       "kind": "exec_error",
-      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
+      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "TLT",
-      "time_est": "12:53:35",
+      "symbol": "AAPL",
+      "time_est": "12:45:19",
       "kind": "exec_error",
-      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
+      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "TLT",
-      "time_est": "13:21:08",
+      "symbol": "AAPL",
+      "time_est": "13:11:12",
       "kind": "exec_error",
-      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
+      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
     },
     {
-      "symbol": "TLT",
-      "time_est": "13:50:21",
+      "symbol": "AAPL",
+      "time_est": "13:26:05",
       "kind": "exec_error",
-      "headline": "Already hold 117 shares of TLT; bot does not add to existing positions. Close be"
+      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
     }
   ]
 }

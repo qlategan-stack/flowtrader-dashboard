@@ -124,8 +124,8 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <header class="hdr">
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
-    <span class="pill">Report date: 2026-05-21</span>
-    <span class="pill">Generated: 2026-05-22 07:37 UTC</span>
+    <span class="pill">Report date: 2026-05-22</span>
+    <span class="pill">Generated: 2026-05-23 06:29 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,149 +135,113 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-05-15 → 2026-05-21</div>
+    <div class="summary-range">2026-05-16 → 2026-05-22</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
-<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">16</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">21</div></div>
 <div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
 </section>
 
 <section class="failures">
   <div class="failures-head">
-    <h2>Failures — 2026-05-21</h2>
-    <div class="failures-count">7 total</div>
+    <h2>Failures — 2026-05-22</h2>
+    <div class="failures-count">5 total</div>
   </div>
   <div class="tabs-wrap">
     <nav class="tabs-list" role="tablist">
-<button class="tab active" data-target="f-0" data-kind="exec_error">TLT · 11:19 · ERR</button>
-<button class="tab" data-target="f-1" data-kind="exec_error">TLT · 12:23 · ERR</button>
-<button class="tab" data-target="f-2" data-kind="exec_error">TLT · 12:53 · ERR</button>
-<button class="tab" data-target="f-3" data-kind="exec_error">TLT · 13:21 · ERR</button>
-<button class="tab" data-target="f-4" data-kind="exec_error">TLT · 13:50 · ERR</button>
-<button class="tab" data-target="f-5" data-kind="exec_error">TLT · 14:19 · ERR</button>
-<button class="tab" data-target="f-6" data-kind="exec_error">XRP/USDT · 22:19 · ERR</button>
+<button class="tab active" data-target="f-0" data-kind="exec_error">AAPL · 12:03 · ERR</button>
+<button class="tab" data-target="f-1" data-kind="exec_error">AAPL · 12:29 · ERR</button>
+<button class="tab" data-target="f-2" data-kind="exec_error">AAPL · 12:45 · ERR</button>
+<button class="tab" data-target="f-3" data-kind="exec_error">AAPL · 13:11 · ERR</button>
+<button class="tab" data-target="f-4" data-kind="exec_error">AAPL · 13:26 · ERR</button>
     </nav>
     <div class="tab-panels">
 <article class="panel active" id="f-0">
 <div class="panel-head">
-  <div class="panel-symbol">TLT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 11:19:21 EST</div>
+  <div class="panel-symbol">AAPL</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 12:03:32 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal logic was sound — a score of 5/6 with clean oversold conditions is exactly what the strategy is designed to catch — but the trade was blocked because you were already holding 117 shares of TLT, triggering the no-add rule. Before the bot attempts re-entry on any existing position, manually close or confirm the prior position is fully cleared, and consider setting a position-status check as the first filter in your pre-trade workflow so a strong signal doesn&#x27;t get wasted on a rejected order.</div>
+  <div class="lesson-body">The bot&#x27;s logic was sound and the momentum signal was genuinely strong, but the trade was dead on arrival because an existing 33-share AAPL position was still open, triggering the no-add rule before execution could even begin. Before the bot scouts re-entry on AAPL, make sure you&#x27;ve fully closed that prior position and confirmed a flat status in the account, or the same rejection will repeat regardless of how clean the setup looks.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>TLT is the cleanest qualifying setup this session. Strategy mode is MEAN_REVERSION with a score of 5/6, satisfying the medium_safety threshold of 2+. Classical oversold triggers are present: RSI at 35.74 (below 45), price is 1.8% below MA20 (meets BelowMA20&gt;1% criterion), and price is near the lower Bollinger Band (pct_b = 0.131). Math signals reinforce the case: Hurst=0.486 confirms anti-persistent/mean-reverting behavior, Levy CALM regime indicates clean drift conditions. ADX=28.66 is above 25 but the regime router classified this as RANGING and mean_reversion_eligible=true, so we honor the </pre>
+  <pre>AAPL is the best available setup this session under the MOMENTUM strategy path. Momentum score is 4/4 with RSI at 80.54 (strong momentum), price 7.08% above MA20, and ADX at 37.4 confirming a trending regime — all three momentum triggers firing cleanly. The R:R check passes: (321.72 - 309.88) / (309.88 - 303.96) = 11.84 / 5.92 = 2.0, which clears the 1.5:1 minimum. Position sizing: risking 1.5% of $99,162 = ~$1,487 max risk. Per-share risk = 309.88 - 303.96 = $5.92. Max shares by risk = 1,487 / 5.92 ≈ 251 — well above 3 shares. Position size by 10% account cap: 10% of $99,162 = $9,916 / $309.8</pre>
 </details>
 </article>
 <article class="panel" id="f-1" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">TLT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 12:23:07 EST</div>
+  <div class="panel-symbol">AAPL</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 12:29:45 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal was actually sound — TLT showed genuine mean-reversion setup with a solid MR score and confirmed oversold conditions — but the execution was blocked entirely because you were already holding 117 shares, a position that should have been closed or sized around before this signal was even evaluated. Next time, make it a pre-session habit to audit all open positions against your watchlist so you can either close stale holdings in advance or consciously decide to let the signal pass rather than arriving at execution with a preventable conflict.</div>
+  <div class="lesson-body">The bot&#x27;s reasoning was actually sound — a momentum signal with ADX above 30 and a score of 4 is a legitimate setup — but the trade never executed because you already held 33 shares of AAPL, triggering the position overlap rejection. Before the bot scouts for new entries, check your open positions and close or flatten any existing AAPL holdings if you want to re-enter fresh on a new signal.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>TLT is the strongest qualifying trade this session. Strategy mode is MEAN_REVERSION with MR score 5/6, regime RANGING, and two classical oversold triggers (RSI 36.6 &lt; 45 and price -1.64% below MA20), satisfying the requirement for at least one classical oversold trigger. The Hurst exponent of 0.486 confirms anti-persistence (mean reversion conditions), Levy jump regime is CALM (clean drift), and ADX at 28.66 is above 25 but the regime router has already designated this MEAN_REVERSION and the regime field shows RANGING — the ADX&gt;25 veto applies to our independent filter but the system&#x27;s regime </pre>
+  <pre>AAPL is the best available setup this session under the MOMENTUM strategy path. Momentum score of 4 clears the minimum threshold of 2. RSI at 80.56 is strong but in a confirmed trending regime (ADX=37.4), which under the MOMENTUM path is a positive signal, not a veto. Price is 7.09% above MA20, confirming sustained trend strength. Momentum stop at $303.99 (1x ATR / 5-day low), momentum target at $321.75 (2x ATR), implying an R:R of approximately 1.97:1 — clears the 1.5:1 minimum gate. News sentiment is neutral but the AI/tech sector tailwind is broad and multi-catalyst today (Dow record highs,</pre>
 </details>
 </article>
 <article class="panel" id="f-2" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">TLT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 12:53:35 EST</div>
+  <div class="panel-symbol">AAPL</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 12:45:19 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot actually identified a genuinely strong mean-reversion setup — score of 5 with both RSI and BelowMA20 triggers firing — but the order was correctly blocked because you were already holding 117 shares of TLT, a position management rule the bot enforced properly. Before the next session, check your open positions in TLT and decide whether to close or hold that existing lot, because until you do, even the cleanest qualifying signal on this symbol will be dead on arrival.</div>
+  <div class="lesson-body">The bot correctly flagged strong momentum signals but was blocked from executing because you still held an open position of 33 shares, and notably the bot was operating in MOMENTUM mode while the system itself is designed for mean-reversion — an internal conflict that should have been caught earlier. Before the next session, close any lingering AAPL position if you want a fresh entry, and verify that the active strategy mode matches your intended approach, since momentum signals like RSI at 80 and price stretched 7% above MA20 run counter to mean-reversion logic and could lead to poorly timed trades even if execution succeeds.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>TLT is the strongest qualifying setup this session under MEAN_REVERSION mode. Score of 5 on mean reversion path, with two classical oversold triggers required by strategy rules (RSI&lt;45 and BelowMA20&gt;1% both firing), confirming eligibility. Regime is RANGING (ADX 28.66, just above 25 but mean_reversion_eligible=true per router). Hurst at 0.486 is anti-persistent — textbook mean reversion confirmation. Levy jump regime is CALM with zero recent jumps, low adjusted vol (0.0884), ideal drift conditions. Wavelet denoised price is 83.88 vs live 83.79 — negligible noise, clean signal. R:R check: (85.1</pre>
+  <pre>AAPL is the top pick this session under MOMENTUM strategy mode. Momentum score = 4, clearing the minimum threshold of 2. RSI at 80.34 confirms strong buying pressure, price is 6.95% above MA20, and ADX at 37.4 confirms a genuine trending regime. Momentum stop is 303.54 (1x ATR / 5-day low) and momentum take profit is 321.30 (2x ATR), giving an R:R of approximately 1.97:1 — above the 1.5:1 minimum gate. AAPL is an A_GRADE setup, the highest quality available. News flow is AI/tech-macro tailwind (AI hardware broadening), and the new Fed Chair (Warsh) swearing in today with Trump boasting about r</pre>
 </details>
 </article>
 <article class="panel" id="f-3" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">TLT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 13:21:08 EST</div>
+  <div class="panel-symbol">AAPL</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 13:11:12 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal was actually strong and legitimate — a score of 5/6 with genuine oversold conditions — but the execution was blocked because you were already holding 117 shares of TLT, a position the bot correctly refused to add to. Before the session opens, audit your existing holdings against the bot&#x27;s watchlist so you can either close lingering positions you&#x27;ve forgotten about or consciously decide to hold them, keeping the bot&#x27;s entry logic clean.</div>
+  <div class="lesson-body">The bot correctly identified a strong momentum setup with solid technical confirmation, but the trade was blocked entirely because you still held an open position in AAPL — a portfolio management conflict, not a signal failure. Before the bot scans for new entries, make it a habit to audit your existing holdings and close or log any open positions in the same symbol so a valid signal doesn&#x27;t get wasted on a preventable execution error.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>TLT is the clear best trade this session. Strategy mode = MEAN_REVERSION with a score of 5/6 — the highest active score among all three detailed setups and well above the 2-point threshold. Key qualifications: (1) RSI at 37.93 is genuinely oversold (RSI&lt;45 trigger), (2) price is 1.43% below MA20, triggering BelowMA20&gt;1%, (3) Hurst exponent of 0.486 = ANTI_PERSISTENT, which is the gold standard confirmation for mean reversion — price is statistically more likely to revert, (4) Levy calm regime means no jump-risk disruption, (5) regime classified as RANGING with ADX 28.66 — note ADX is slightly </pre>
+  <pre>AAPL is the top MOMENTUM setup this session with a momentum_score of 4 and A_GRADE quality. RSI at 80.25 is strong but overbought — however under the MOMENTUM path this is a continuation signal, not a reversal warning. Price is 6.88% above MA20, confirming trend extension. ADX at 37.4 is a POSITIVE signal under the momentum framework (trend strength confirmed). Stop at 303.35 (momentum_stop_loss, ~1x ATR below entry), target 321.11 (momentum_take_profit, 2x ATR). R:R = (321.11 - 309.27) / (309.27 - 303.35) = 11.84 / 5.92 = 2.0 — comfortably clears the 1.5:1 minimum gate. Position sizing: 1.5% </pre>
 </details>
 </article>
 <article class="panel" id="f-4" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">TLT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 13:50:21 EST</div>
+  <div class="panel-symbol">AAPL</div>
+  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 13:26:05 EST</div>
 </div>
 <div class="error-block">
-  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
+  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal logic was sound — TLT genuinely qualified on all mean-reversion criteria — but the execution was blocked because you still held 117 shares from a prior entry, violating the no-add rule that prevents pyramiding into existing positions. Before the bot scans for new entries, make it a habit to audit your open positions first, and if TLT is already in your book, either close it to reset or consciously wait for the exit signal before treating it as a fresh setup.</div>
+  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its single-position rule — you already held 33 shares of AAPL, so the new entry was blocked before it could stack risk. Before the bot scans for setups next session, check your open positions first and close or log any existing AAPL holdings if you want the bot to be eligible to re-enter on a fresh signal.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>TLT is the only setup that fully qualifies under all guardrails this session. Strategy mode is MEAN_REVERSION with a score of 5/6 — well above the threshold of 2. Classical oversold triggers are present: RSI at 40.26 (below 45) and price below MA20 by 1.19%, satisfying the requirement for at least one classical oversold signal. Regime is RANGING (ADX 28.38 — note this is technically above 25 but the regime router has flagged it RANGING and mean_reversion_eligible=true, so I honor the router&#x27;s determination). Hurst exponent of 0.486 is anti-persistent, confirming mean reversion tendency. Levy c</pre>
-</details>
-</article>
-<article class="panel" id="f-5" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">TLT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 14:19:34 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 117 shares of TLT; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal analysis was sound — a clean mean-reversion setup with all gates cleared — but the trade was blocked because you still hold 117 shares of TLT from a prior entry, and the bot correctly refused to stack positions rather than silently overexpose you. Before acting on any new TLT signal, check your open positions first and decide whether to close the existing lot, then let the bot re-evaluate entry from a clean slate.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>TLT is the cleanest qualifying setup this session. Strategy mode is MEAN_REVERSION with mr_score=5, regime=RANGING, mean_reversion_eligible=true, and directional_oversold=true — all gates cleared. Signals: RSI at 40.26 (&lt;45, mild oversold +1), price at 84.14 vs MA20 85.15 (-1.19%, BelowMA20&gt;1% +1), Hurst=0.49 anti-persistent confirming mean-reversion edge (+1), Levy calm regime (+1), Wavelet trend-dominant (+1). Score=5, well above the 2-point minimum. R:R check: entry 84.14, stop 83.78 (risk=$0.36/share), target 85.15 (reward=$1.01/share) → R:R = 2.81:1, clears the 1.5:1 gate. Time gate: 14:1</pre>
-</details>
-</article>
-<article class="panel" id="f-6" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">XRP/USDT</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-21 · 22:19:15 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">R:R ratio too low (1.45:1, minimum 1.5:1)</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot actually got the signal analysis right — XRP showed a legitimate oversold setup with a strong score of 5/6 — but the trade was correctly blocked because the reward-to-risk ratio of 1.45:1 fell just short of the 1.5:1 minimum, meaning the potential gain didn&#x27;t justify the risk by the strategy&#x27;s own rules. Next time, before committing to a setup, verify that your take-profit and stop-loss levels are calibrated to clear the R:R threshold, even if that means widening the target or tightening the stop slightly to hit that 1.5:1 floor.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>XRP/USDT is the best setup this session. Strategy mode: MEAN_REVERSION. Signal score: 5/6, which is the highest among the three detailed setups and clears the medium_safety threshold of 2. Classical oversold triggers are present (RSI&lt;45 at 43.79, BelowMA20&gt;1% at -2.58%), satisfying the requirement for at least one classical oversold trigger. ADX=15.16 confirms a ranging market, not a trend — mean reversion is valid. Regime is RANGING. Levy calm (+1) supports clean mean reversion conditions. Hurst=0.549 (near-random, score_delta=0) signals no strong edge but does not veto the trade. R:R check: </pre>
+  <pre>AAPL is the best qualifying setup this session under the MOMENTUM strategy path. Momentum score of 4 clears the minimum threshold of 2. RSI at 80.37 confirms strong directional momentum, price is 6.96% above MA20, and ADX at 37.4 confirms a trending regime — all three are positive signals under the MOMENTUM ruleset. The regime router correctly tagged this MOMENTUM, meaning the ADX&gt;25 veto does not apply here; it is instead a confirming signal. R:R check: (321.36 - 309.52) / (309.52 - 303.60) = 11.84 / 5.92 = 2.0, which exceeds the 1.5:1 minimum. Stop distance is tightest among the three top se</pre>
 </details>
 </article>
     </div>
