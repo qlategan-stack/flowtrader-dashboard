@@ -1,10 +1,10 @@
 {
-  "account_value": 16902.6,
-  "total_usdt": 16902.6,
-  "free_usdt": 16902.6,
+  "account_value": 15212.48,
+  "total_usdt": 15212.48,
+  "free_usdt": 15212.48,
   "funding_usdt": 0.0,
   "position_value": 0,
-  "open_positions": 29,
+  "open_positions": 30,
   "positions": [
     {
       "currency": "ETH",
@@ -45,6 +45,12 @@
     {
       "currency": "VTHO",
       "amount": 18446.0,
+      "price_usd": null,
+      "value_usd": null
+    },
+    {
+      "currency": "NEAR",
+      "amount": 609.5,
       "price_usd": null,
       "value_usd": null
     },
@@ -119,15 +125,9 @@
       "amount": 18446.0,
       "price_usd": null,
       "value_usd": null
-    },
-    {
-      "currency": "BONK",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-25T12:33:05.833282+00:00"
+  "fetched_at": "2026-05-25T17:33:05.869582+00:00"
 }
