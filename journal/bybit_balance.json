@@ -1,7 +1,7 @@
 {
-  "account_value": 35338.72,
-  "total_usdt": 35338.72,
-  "free_usdt": 35338.72,
+  "account_value": 31804.89,
+  "total_usdt": 31804.89,
+  "free_usdt": 31804.89,
   "funding_usdt": 0.0,
   "position_value": 0,
   "open_positions": 29,
@@ -14,7 +14,7 @@
     },
     {
       "currency": "LTC",
-      "amount": 2322.758,
+      "amount": 2389.434,
       "price_usd": null,
       "value_usd": null
     },
@@ -129,5 +129,5 @@
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-25T08:33:05.035427+00:00"
+  "fetched_at": "2026-05-25T09:03:05.167795+00:00"
 }
