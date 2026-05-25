@@ -125,7 +125,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
     <span class="pill">Report date: 2026-05-22</span>
-    <span class="pill">Generated: 2026-05-23 06:29 UTC</span>
+    <span class="pill">Generated: 2026-05-25 16:42 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -167,10 +167,6 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <div class="error-block">
   <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s logic was sound and the momentum signal was genuinely strong, but the trade was dead on arrival because an existing 33-share AAPL position was still open, triggering the no-add rule before execution could even begin. Before the bot scouts re-entry on AAPL, make sure you&#x27;ve fully closed that prior position and confirmed a flat status in the account, or the same rejection will repeat regardless of how clean the setup looks.</div>
-</div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
   <pre>AAPL is the best available setup this session under the MOMENTUM strategy path. Momentum score is 4/4 with RSI at 80.54 (strong momentum), price 7.08% above MA20, and ADX at 37.4 confirming a trending regime — all three momentum triggers firing cleanly. The R:R check passes: (321.72 - 309.88) / (309.88 - 303.96) = 11.84 / 5.92 = 2.0, which clears the 1.5:1 minimum. Position sizing: risking 1.5% of $99,162 = ~$1,487 max risk. Per-share risk = 309.88 - 303.96 = $5.92. Max shares by risk = 1,487 / 5.92 ≈ 251 — well above 3 shares. Position size by 10% account cap: 10% of $99,162 = $9,916 / $309.8</pre>
@@ -183,10 +179,6 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="error-block">
   <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s reasoning was actually sound — a momentum signal with ADX above 30 and a score of 4 is a legitimate setup — but the trade never executed because you already held 33 shares of AAPL, triggering the position overlap rejection. Before the bot scouts for new entries, check your open positions and close or flatten any existing AAPL holdings if you want to re-enter fresh on a new signal.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -201,10 +193,6 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <div class="error-block">
   <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly flagged strong momentum signals but was blocked from executing because you still held an open position of 33 shares, and notably the bot was operating in MOMENTUM mode while the system itself is designed for mean-reversion — an internal conflict that should have been caught earlier. Before the next session, close any lingering AAPL position if you want a fresh entry, and verify that the active strategy mode matches your intended approach, since momentum signals like RSI at 80 and price stretched 7% above MA20 run counter to mean-reversion logic and could lead to poorly timed trades even if execution succeeds.</div>
-</div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
   <pre>AAPL is the top pick this session under MOMENTUM strategy mode. Momentum score = 4, clearing the minimum threshold of 2. RSI at 80.34 confirms strong buying pressure, price is 6.95% above MA20, and ADX at 37.4 confirms a genuine trending regime. Momentum stop is 303.54 (1x ATR / 5-day low) and momentum take profit is 321.30 (2x ATR), giving an R:R of approximately 1.97:1 — above the 1.5:1 minimum gate. AAPL is an A_GRADE setup, the highest quality available. News flow is AI/tech-macro tailwind (AI hardware broadening), and the new Fed Chair (Warsh) swearing in today with Trump boasting about r</pre>
@@ -218,10 +206,6 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <div class="error-block">
   <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
 </div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong momentum setup with solid technical confirmation, but the trade was blocked entirely because you still held an open position in AAPL — a portfolio management conflict, not a signal failure. Before the bot scans for new entries, make it a habit to audit your existing holdings and close or log any open positions in the same symbol so a valid signal doesn&#x27;t get wasted on a preventable execution error.</div>
-</div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
   <pre>AAPL is the top MOMENTUM setup this session with a momentum_score of 4 and A_GRADE quality. RSI at 80.25 is strong but overbought — however under the MOMENTUM path this is a continuation signal, not a reversal warning. Price is 6.88% above MA20, confirming trend extension. ADX at 37.4 is a POSITIVE signal under the momentum framework (trend strength confirmed). Stop at 303.35 (momentum_stop_loss, ~1x ATR below entry), target 321.11 (momentum_take_profit, 2x ATR). R:R = (321.11 - 309.27) / (309.27 - 303.35) = 11.84 / 5.92 = 2.0 — comfortably clears the 1.5:1 minimum gate. Position sizing: 1.5% </pre>
@@ -234,10 +218,6 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="error-block">
   <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its single-position rule — you already held 33 shares of AAPL, so the new entry was blocked before it could stack risk. Before the bot scans for setups next session, check your open positions first and close or log any existing AAPL holdings if you want the bot to be eligible to re-enter on a fresh signal.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
