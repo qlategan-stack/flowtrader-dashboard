@@ -2,7 +2,12 @@
 Local scheduled task — fetch crypto exchange balance and commit it to the
 dashboard repo so Streamlit Cloud can read journal/bybit_balance.json.
 
-Uses Binance when BINANCE_API_KEY is set in .env; falls back to Bybit.
+NAMING NOTE (L-1 audit 2026-05-26): the "bybit" in this script's name and
+in the BALANCE_FILE path is legacy. The bot uses BinanceFetcher when
+BINANCE_API_KEY is set in .env (current state) and falls back to Bybit
+otherwise. The internal `exchange` field of the JSON reflects the actual
+venue. The filenames are kept as-is to avoid breaking the Windows Task
+Scheduler entry and the Streamlit Cloud dashboard's file reference.
 
 Why local: Bybit/Binance testnet endpoints may be geo-blocked from US cloud
 datacenters. A residential IP avoids this, so we run from here and push.
