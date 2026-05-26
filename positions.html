@@ -208,6 +208,13 @@ tr:hover td{background:rgba(255,255,255,0.03)}
   display:block;font-size:11px;color:var(--color-text-tertiary);margin-top:2px;
 }
 .danger-cell{color:#E86060 !important;font-weight:600}
+.stale-cell{color:var(--color-text-tertiary)}
+.stale-chip{
+  display:inline-block;font-family:var(--font-ui);font-weight:700;font-size:9px;
+  letter-spacing:0.10em;background:rgba(245,196,0,0.12);color:var(--_y400);
+  border:1px solid rgba(245,196,0,0.30);padding:1px 6px;border-radius:50px;
+  margin-top:2px;
+}
 .score-badge{
   font-family:var(--font-ui);font-weight:700;font-size:13px;
   background:rgba(245,196,0,0.12);color:var(--_y400);
@@ -268,9 +275,9 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <div class="hdr">
   <div class="hdr-brand">⚡ FlowTrader</div>
   <span class="badge-paper">PAPER</span>
-  <div class="hdr-pv">$100,070.33</div>
-  <div class="hdr-pl pos">▲ $1,008.15 (+1.01%)</div>
-  <div class="hdr-ts">Built 2026-05-26 19:19 UTC · auto-refreshes every 30 min</div>
+  <div class="hdr-pv">$100,078.70</div>
+  <div class="hdr-pl pos">▲ $1,016.52 (+1.02%)</div>
+  <div class="hdr-ts">Built 2026-05-26 19:49 UTC · auto-refreshes every 30 min</div>
 </div>
 
 <!-- ── THEME TOGGLE ────────────────────────────────────────────────────────── -->
@@ -283,7 +290,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <div class="page">
 
   <!-- ── ACTIVE POSITIONS ──────────────────────────────────────────────────── -->
-  <div class="section-title">Active Positions (9)</div>
+  <div class="section-title">Active Positions (5)</div>
   <div class="tbl-wrap">
     <table>
       <thead>
@@ -306,11 +313,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">AAPL</span><span class="sym-name">Apple</span></td>
         <td>33</td>
         <td>$295.94</td>
-        <td>$308.48</td>
-        <td class="pos">▲ $413.9700</td>
-        <td class="pos">+4.24%</td>
-        <td>$292.67<span class="cell-sub">+5.13%</span></td>
-        <td>$308.11<span class="cell-sub">-0.12%</span></td>
+        <td>$308.26</td>
+        <td class="pos">▲ $406.7100</td>
+        <td class="pos">+4.17%</td>
+        <td>$292.67<span class="cell-sub">+5.06%</span></td>
+        <td>$308.11<span class="cell-sub">-0.05%</span></td>
         <td><span class="score-badge">4/6</span></td>
         <td>8d</td>
       </tr>
@@ -318,11 +325,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">AMD</span><span class="sym-name">AMD</span></td>
         <td>22</td>
         <td>$444.10</td>
-        <td>$505.19</td>
-        <td class="pos">▲ $1,343.9800</td>
-        <td class="pos">+13.76%</td>
-        <td>$418.83<span class="cell-sub">+17.09%</span></td>
-        <td>$493.35<span class="cell-sub">-2.34%</span></td>
+        <td>$503.97</td>
+        <td class="pos">▲ $1,317.1400</td>
+        <td class="pos">+13.48%</td>
+        <td>$418.83<span class="cell-sub">+16.89%</span></td>
+        <td>$493.35<span class="cell-sub">-2.11%</span></td>
         <td><span class="score-badge">4/6</span></td>
         <td>6d</td>
       </tr>
@@ -330,9 +337,9 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">IWM</span><span class="sym-name">Russell 2000 ETF</span></td>
         <td>34</td>
         <td>$289.96</td>
-        <td>$289.92</td>
-        <td class="neg">▼ $1.7000</td>
-        <td class="neg">-0.02%</td>
+        <td>$290.43</td>
+        <td class="pos">▲ $15.6400</td>
+        <td class="pos">+0.16%</td>
         <td>—<span class="cell-sub">—</span></td>
         <td>—<span class="cell-sub">—</span></td>
         <td><span class="score-badge">—/6</span></td>
@@ -342,11 +349,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">QQQ</span><span class="sym-name">Nasdaq-100 ETF</span></td>
         <td>13</td>
         <td>$721.65</td>
-        <td>$729.65</td>
-        <td class="pos">▲ $103.9400</td>
-        <td class="pos">+1.11%</td>
-        <td>$710.96<span class="cell-sub">+2.56%</span></td>
-        <td>$742.73<span class="cell-sub">+1.79%</span></td>
+        <td>$730.63</td>
+        <td class="pos">▲ $116.7450</td>
+        <td class="pos">+1.24%</td>
+        <td>$710.96<span class="cell-sub">+2.69%</span></td>
+        <td>$742.73<span class="cell-sub">+1.66%</span></td>
         <td><span class="score-badge">5/6</span></td>
         <td>4d</td>
       </tr>
@@ -354,61 +361,13 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">SPY</span><span class="sym-name">S&P 500 ETF</span></td>
         <td>13</td>
         <td>$751.79</td>
-        <td>$749.42</td>
-        <td class="neg">▼ $30.8425</td>
-        <td class="neg">-0.32%</td>
-        <td>$519.65<span class="cell-sub">+30.66%</span></td>
-        <td>$530.80<span class="cell-sub">-29.17%</span></td>
+        <td>$750.57</td>
+        <td class="neg">▼ $15.9250</td>
+        <td class="neg">-0.16%</td>
+        <td class="stale-cell">$519.65<span class="cell-sub"><span class="stale-chip">STALE</span></span></td>
+        <td>$530.80<span class="cell-sub">-29.28%</span></td>
         <td><span class="score-badge">3/6</span></td>
         <td>25d</td>
-      </tr>
-      <tr>
-        <td><span class="sym">ETH/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
-        <td>0</td>
-        <td>—</td>
-        <td>$2,067.73</td>
-        <td class="pos">▲ $0.0000</td>
-        <td class="pos">+0.00%</td>
-        <td class="danger-cell">$2,030.18<span class="cell-sub">+1.82%</span></td>
-        <td>$2,222.95<span class="cell-sub">+7.51%</span></td>
-        <td><span class="score-badge">—/6</span></td>
-        <td>0d</td>
-      </tr>
-      <tr>
-        <td><span class="sym">XRP/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
-        <td>0</td>
-        <td>—</td>
-        <td>$1.3293</td>
-        <td class="pos">▲ $0.0000</td>
-        <td class="pos">+0.00%</td>
-        <td class="danger-cell">$1.3147<span class="cell-sub">+1.10%</span></td>
-        <td>$1.4100<span class="cell-sub">+6.07%</span></td>
-        <td><span class="score-badge">—/6</span></td>
-        <td>0d</td>
-      </tr>
-      <tr>
-        <td><span class="sym">LTC/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
-        <td>0</td>
-        <td>—</td>
-        <td>$51.75</td>
-        <td class="pos">▲ $0.0000</td>
-        <td class="pos">+0.00%</td>
-        <td class="danger-cell">$51.89<span class="cell-sub">-0.27%</span></td>
-        <td>$55.93<span class="cell-sub">+8.08%</span></td>
-        <td><span class="score-badge">—/6</span></td>
-        <td>0d</td>
-      </tr>
-      <tr>
-        <td><span class="sym">NEAR/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
-        <td>0</td>
-        <td>—</td>
-        <td>$2.6210</td>
-        <td class="pos">▲ $0.0000</td>
-        <td class="pos">+0.00%</td>
-        <td class="danger-cell">$2.5930<span class="cell-sub">+1.07%</span></td>
-        <td>$3.1330<span class="cell-sub">+19.53%</span></td>
-        <td><span class="score-badge">—/6</span></td>
-        <td>0d</td>
       </tr>
       </tbody>
     </table>
@@ -427,12 +386,12 @@ tr:hover td{background:rgba(255,255,255,0.03)}
   <div class="cards">
     <div class="card">
       <div class="card-label">Portfolio</div>
-      <div class="card-value">$100,070</div>
+      <div class="card-value">$100,079</div>
     </div>
     <div class="card">
       <div class="card-label">Day P&amp;L</div>
-      <div class="card-value pos">▲ $1,008.15</div>
-      <div class="card-sub">+1.01%</div>
+      <div class="card-value pos">▲ $1,016.52</div>
+      <div class="card-sub">+1.02%</div>
     </div>
     <div class="card">
       <div class="card-label">Cash</div>
@@ -440,25 +399,25 @@ tr:hover td{background:rgba(255,255,255,0.03)}
     </div>
     <div class="card">
       <div class="card-label">Buying Power</div>
-      <div class="card-value">$149,762</div>
+      <div class="card-value">$149,770</div>
     </div>
     <div class="card">
       <div class="card-label">Open Positions</div>
-      <div class="card-value">9</div>
-      <div class="card-sub">of 3 max</div>
+      <div class="card-value">5</div>
+      <div class="card-sub">of 5 max</div>
     </div>
   </div>
 
   <div class="gauges">
     <div class="gauge">
-      <div class="gauge-label">🔴 Position Capacity — 9 / 3</div>
+      <div class="gauge-label">🔴 Position Capacity — 5 / 5</div>
       <div class="gauge-track">
         <div class="gauge-fill" style="width:100%;background:#E86060"></div>
       </div>
-      <div class="gauge-sub">300% capacity used</div>
+      <div class="gauge-sub">100% capacity used</div>
     </div>
     <div class="gauge">
-      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $2,001.41</div>
+      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $2,001.57</div>
       <div class="gauge-track">
         <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
       </div>
@@ -481,13 +440,13 @@ tr:hover td{background:rgba(255,255,255,0.03)}
     </div>
     <div class="card">
       <div class="card-label">Position Value</div>
-      <div class="card-value">$0.00</div>
+      <div class="card-value">$253,029.20</div>
       <div class="card-sub">in holdings</div>
     </div>
     <div class="card">
       <div class="card-label">Holdings</div>
       <div class="card-value">2</div>
-      <div class="card-sub">as of 2026-05-26 19:18 UTC</div>
+      <div class="card-sub">as of 2026-05-26 19:48 UTC</div>
     </div>
   </div>
   <div class="tbl-wrap">
@@ -505,22 +464,22 @@ tr:hover td{background:rgba(255,255,255,0.03)}
       <tr>
         <td><span class="sym">ETH</span></td>
         <td>86.4993</td>
-        <td>$0.0000</td>
-        <td>$0.00</td>
+        <td>$2,075.3700</td>
+        <td>$179,518.05</td>
       </tr>
       <tr>
         <td><span class="sym">LTC</span></td>
         <td>1405.59</td>
-        <td>$0.0000</td>
-        <td>$0.00</td>
+        <td>$51.9200</td>
+        <td>$72,978.18</td>
       </tr>
       </tbody>
     </table>
   </div>
 
   <div class="footer">
-    <span>⚡ FlowTrader · PAPER mode · 2026-05-15 · positions-dashboard-v1</span>
-    <span>Built 2026-05-26 19:19 UTC</span>
+    <span>⚡ FlowTrader · PAPER mode · profile: medium_safety · 2026-05-15 · positions-dashboard-v1</span>
+    <span>Built 2026-05-26 19:49 UTC</span>
   </div>
 
 </div><!-- /page -->
