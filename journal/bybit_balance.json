@@ -1,10 +1,10 @@
 {
-  "account_value": 38318.21,
-  "total_usdt": 38318.21,
-  "free_usdt": 38318.21,
+  "account_value": 48283.98,
+  "total_usdt": 48283.98,
+  "free_usdt": 48283.98,
   "funding_usdt": 0.0,
   "position_value": 0,
-  "open_positions": 30,
+  "open_positions": 3,
   "positions": [
     {
       "currency": "ETH",
@@ -14,37 +14,7 @@
     },
     {
       "currency": "LTC",
-      "amount": 2671.146,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "HOT",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "WIN",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "ZAR",
-      "amount": 18466.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "UAH",
-      "amount": 18466.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "VTHO",
-      "amount": 18446.0,
+      "amount": 2478.905,
       "price_usd": null,
       "value_usd": null
     },
@@ -53,81 +23,9 @@
       "amount": 609.5,
       "price_usd": null,
       "value_usd": null
-    },
-    {
-      "currency": "SHIB",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "XEC",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "SPELL",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "BTTC",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "LUNC",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "PLN",
-      "amount": 18466.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "ARS",
-      "amount": 18466.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "PEPE",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "FLOKI",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "MEME",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "AEUR",
-      "amount": 429.0,
-      "price_usd": null,
-      "value_usd": null
-    },
-    {
-      "currency": "1000SATS",
-      "amount": 18446.0,
-      "price_usd": null,
-      "value_usd": null
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-26T17:33:06.882435+00:00"
+  "fetched_at": "2026-05-26T17:48:05.071754+00:00"
 }
