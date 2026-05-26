@@ -476,24 +476,40 @@ def build_html(
 <title>FlowTrader — Positions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>var t=localStorage.getItem('ft-theme');if(t)document.documentElement.className=t;</script>
 <style>
+/* ── BRAND TOKENS (Forflowmatic) ────────────────────────────────────────────
+   Source of truth: 2.Areas/Flomatic/brand-design-system.md. The raw --_X
+   tokens below are kept for layout compatibility with the existing rules,
+   but every new component should consume --flo-* directly. */
+:root {{
+  --flo-teal:#2A8C8C; --flo-teal-light:#7EC8C8; --flo-teal-lighter:#C0E4E4;
+  --flo-teal-lightest:#E8F5F5; --flo-teal-dark:#1E6868; --flo-teal-darker:#134545;
+  --flo-navy:#1A2530; --flo-steel:#3D5A72; --flo-steel-light:#8BAAB8;
+  --flo-white:#FFFFFF; --flo-bg:#F4F6F8;
+  --flo-success:#27AE8C; --flo-warning:#E67E22; --flo-danger:#C0392B; --flo-info:#2980B9;
+  --flo-n-100:#F4F6F8; --flo-n-200:#E2E8ED; --flo-n-300:#C0CDD8;
+  --flo-n-400:#94A3B0; --flo-n-500:#5A7080; --flo-n-700:#2A3F52; --flo-n-900:#1A2530;
+  --flo-radius-sm:4px; --flo-radius-md:8px; --flo-radius-lg:12px; --flo-radius-xl:16px;
+}}
+
 /* ── RAW TOKENS ────────────────────────────────────────────────────────────── */
 :root {{
   --_y50:#FEF9E0;--_y100:#FDF0A0;--_y200:#FAE04D;
   --_y400:#F5C400;--_y600:#D4A800;--_y800:#A88000;--_y900:#6A5000;
   --_n50:#E8EFF8;--_n100:#B8CCE8;--_n300:#6B9ED0;
-  --_n500:#2D6BA8;--_n700:#1A3D6E;--_n900:#0D2040;--_n950:#071022;
-  --_g0:#FFFFFF;--_g50:#F7F6F3;--_g100:#E8E7E2;--_g200:#C8C7C0;
-  --_g400:#949390;--_g600:#5C5B58;--_g800:#2E2E2C;
+  --_n500:var(--flo-steel);--_n700:var(--flo-n-700);--_n900:var(--flo-n-900);--_n950:#071022;
+  --_g0:var(--flo-white);--_g50:var(--flo-n-100);--_g100:var(--flo-n-200);--_g200:var(--flo-n-300);
+  --_g400:var(--flo-n-400);--_g600:var(--flo-n-500);--_g800:#2E2E2C;
   --_g900:#1A1A18;--_g950:#0D0D0B;
-  --_teal:#2D8C7A;--_teal-light:#C8EDE7;--_teal-dark:#1a5c50;
-  --_coral:#E86060;--_coral-light:#FDDCDC;
-  --font-display:'Barlow Condensed',sans-serif;
-  --font-body:'Barlow',sans-serif;
-  --r-sm:4px;--r-md:8px;--r-lg:12px;--r-xl:16px;
+  --_teal:var(--flo-teal);--_teal-light:var(--flo-teal-lighter);--_teal-dark:var(--flo-teal-dark);
+  --_coral:var(--flo-danger);--_coral-light:#FDDCDC;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-ui:'Space Grotesk',sans-serif;
+  --r-sm:var(--flo-radius-sm);--r-md:var(--flo-radius-md);--r-lg:var(--flo-radius-lg);--r-xl:var(--flo-radius-xl);
 }}
 .theme-dark {{
   color-scheme:dark;
@@ -558,13 +574,13 @@ html,body{{height:100%;background:var(--color-surface-page);color:var(--color-te
 .badge-paper{{
   background:rgba(245,196,0,0.15);color:var(--_y400);
   border:1px solid rgba(245,196,0,0.35);
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:700;font-size:11px;
   letter-spacing:0.12em;padding:2px 10px;border-radius:50px;
 }}
 .badge-live{{
   background:rgba(232,96,96,0.15);color:var(--_coral);
   border:1px solid rgba(232,96,96,0.35);
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:700;font-size:11px;
   letter-spacing:0.12em;padding:2px 10px;border-radius:50px;
 }}
 .hdr-pv{{
@@ -584,7 +600,7 @@ html,body{{height:100%;background:var(--color-surface-page);color:var(--color-te
   border-bottom:1px solid var(--color-border-subtle);
 }}
 .theme-bar button{{
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:600;font-size:11px;
   letter-spacing:0.08em;text-transform:uppercase;
   padding:4px 14px;border-radius:50px;border:1px solid var(--color-border-default);
   background:transparent;color:var(--color-text-secondary);cursor:pointer;
@@ -599,7 +615,7 @@ html,body{{height:100%;background:var(--color-surface-page);color:var(--color-te
 /* ── LAYOUT ────────────────────────────────────────────────────────────────── */
 .page{{max-width:1400px;margin:0 auto;padding:24px}}
 .section-title{{
-  font-family:var(--font-display);font-weight:800;font-size:13px;
+  font-family:var(--font-ui);font-weight:700;font-size:13px;
   letter-spacing:0.12em;text-transform:uppercase;
   color:var(--color-text-tertiary);margin-bottom:12px;margin-top:28px;
 }}
@@ -611,7 +627,7 @@ html,body{{height:100%;background:var(--color-surface-page);color:var(--color-te
   border-radius:var(--r-lg);padding:16px 20px;box-shadow:var(--shadow-md);
 }}
 .card-label{{
-  font-family:var(--font-body);font-weight:500;font-size:11px;
+  font-family:var(--font-ui);font-weight:500;font-size:11px;
   letter-spacing:0.08em;text-transform:uppercase;
   color:var(--color-text-tertiary);margin-bottom:4px;
 }}
@@ -637,7 +653,7 @@ thead tr{{
   border-bottom:1px solid var(--color-border-default);
 }}
 th{{
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:600;font-size:11px;
   letter-spacing:0.08em;text-transform:uppercase;
   color:var(--color-text-tertiary);padding:12px 16px;
   text-align:left;white-space:nowrap;
@@ -662,14 +678,14 @@ tr:hover td{{background:rgba(255,255,255,0.03)}}
 }}
 .danger-cell{{color:#E86060 !important;font-weight:600}}
 .score-badge{{
-  font-family:var(--font-display);font-weight:700;font-size:13px;
+  font-family:var(--font-ui);font-weight:700;font-size:13px;
   background:rgba(245,196,0,0.12);color:var(--_y400);
   border:1px solid rgba(245,196,0,0.25);
   padding:2px 10px;border-radius:50px;
 }}
 .venue-crypto{{
   display:inline-block;margin-left:6px;
-  font-family:var(--font-display);font-weight:700;font-size:10px;
+  font-family:var(--font-ui);font-weight:600;font-size:10px;
   letter-spacing:0.1em;
   background:rgba(45,140,122,0.15);color:var(--_teal-light);
   border:1px solid rgba(45,140,122,0.30);
@@ -911,12 +927,12 @@ if (chartDates.length > 0) {{
       scales: {{
         x: {{
           grid: {{ color: 'rgba(255,255,255,0.05)' }},
-          ticks: {{ color: '#5C5B58', font: {{ family: 'Barlow', size: 11 }}, maxTicksLimit: 10 }}
+          ticks: {{ color: '#5C5B58', font: {{ family: 'DM Sans', size: 11 }}, maxTicksLimit: 10 }}
         }},
         y: {{
           grid: {{ color: 'rgba(255,255,255,0.05)' }},
           ticks: {{
-            color: '#5C5B58', font: {{ family: 'Barlow', size: 11 }},
+            color: '#5C5B58', font: {{ family: 'DM Sans', size: 11 }},
             callback: v => '$' + v.toLocaleString()
           }}
         }}
