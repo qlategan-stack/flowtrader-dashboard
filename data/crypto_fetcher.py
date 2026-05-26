@@ -801,9 +801,15 @@ class BinanceFetcher:
             usdt_free  = float((raw.get("USDT") or {}).get("free",  0) or 0)
             usdt_total = float((raw.get("USDT") or {}).get("total", 0) or 0)
 
+            # Fiat / stable coins that Binance doesn't pair against USDT (so
+            # fetch_tickers raises "no market symbol X/USDT"). TRY in particular
+            # is a residual fiat balance on the testnet account.
+            _FIAT_SKIP = {"TRY", "EUR", "GBP", "AUD", "BRL", "RUB", "USD",
+                          "BUSD", "USDC", "TUSD", "FDUSD", "DAI"}
+
             coin_amounts: dict = {}
             for coin, data in (raw.get("total") or {}).items():
-                if coin == "USDT":
+                if coin == "USDT" or coin in _FIAT_SKIP:
                     continue
                 amount = float(data or 0)
                 # Filter dust, fake testnet tokens (non-ASCII names, digit-only names)

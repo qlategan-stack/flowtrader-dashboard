@@ -10,12 +10,30 @@ datacenters. A residential IP avoids this, so we run from here and push.
 Designed to run every 15 minutes via Windows Task Scheduler. Skips the
 commit when balance fields are unchanged so we don't spam the git log.
 """
+import builtins
 import json
 import os
 import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+
+def _ts() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+# Monkey-patch print so every log line carries a UTC timestamp. The L-4 audit
+# finding (2026-05-23) flagged this log as un-timestamped, making it impossible
+# to tell from the log alone when each push happened.
+_orig_print = builtins.print
+
+
+def print(*args, **kwargs):  # noqa: A001 — intentional shadow of builtin
+    _orig_print(f"[{_ts()}]", *args, **kwargs)
+
+
+builtins.print = print
 
 REPO_ROOT    = Path(__file__).resolve().parent.parent
 BALANCE_FILE = REPO_ROOT / "journal" / "bybit_balance.json"
