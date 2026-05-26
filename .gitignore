@@ -13,9 +13,13 @@ venv/
 env/
 .venv/
 
-# Journal data — tracked here (synced by GitHub Actions from trading-bot artifacts)
-# journal/trades.jsonl  ← committed by sync-journal workflow
-# journal/bot.log       ← committed by sync-journal workflow
+# Journal data — trades.jsonl + suggestions_*.jsonl are tracked here
+# (Streamlit dashboard reads them directly, pushed by trading-bot/scripts/push_journal.py).
+# bot.log is a debug log; the dashboard does not read it and it can carry
+# operational detail (Anthropic org ids in 429 messages, etc.) — M-6 audit
+# 2026-05-26. Keep it local-only.
+journal/bot.log
+journal/bot.log.*
 
 # OS
 .DS_Store

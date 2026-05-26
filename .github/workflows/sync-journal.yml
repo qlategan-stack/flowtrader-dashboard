@@ -65,9 +65,11 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
+          # bot.log intentionally NOT synced — M-6 audit 2026-05-26: keep
+          # debug log local-only; Streamlit doesn't read it and it leaks
+          # operational detail (Anthropic org ids, error stacks, etc.).
           for f in \
             journal/trades.jsonl \
-            journal/bot.log \
             journal/weekly_summary.md \
             journal/weekly_research_memo.md \
             journal/weekly_research_memo.json \
