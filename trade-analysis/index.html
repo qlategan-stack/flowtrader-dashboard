@@ -125,7 +125,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
     <span class="pill">Report date: 2026-05-22</span>
-    <span class="pill">Generated: 2026-05-26 07:38 UTC</span>
+    <span class="pill">Generated: 2026-05-26 21:51 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,13 +135,13 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-05-16 → 2026-05-22</div>
+    <div class="summary-range">2026-05-20 → 2026-05-26</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
-<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">21</div></div>
+<div class="kpi warning"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">17</div></div>
 <div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
 </section>
 
@@ -169,7 +169,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong momentum setup but was blocked from executing because you already held 33 shares of AAPL — the position management rule prevented adding to an existing trade, not a flaw in the signal itself. Before the bot scans for new entries, confirm your open positions are flat in any symbol you want to re-enter, or set a manual alert to close existing AAPL shares if you intend to act on fresh signals during the session.</div>
+  <div class="lesson-body">The bot correctly identified a strong momentum setup but was blocked from executing because you already held 33 shares of AAPL — the position management rule prevented adding to an open trade, not a flaw in the signal itself. Before the bot scans for new entries, make sure any existing position in that ticker is fully closed, or build a pre-scan check that filters out symbols you currently hold so clean signals don&#x27;t get wasted on blocked orders.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -186,7 +186,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of a bad signal — the momentum setup was actually sound with a score of 4, a trending ADX, and a confirmed regime — but because the bot correctly enforced its own rule against adding to an existing 33-share AAPL position, preventing unintended overexposure. Before the bot generates a new signal on a symbol, check your open positions dashboard and close or fully exit any existing holding in that name so a valid setup doesn&#x27;t get wasted on a procedural block.</div>
+  <div class="lesson-body">The bot&#x27;s signal logic was actually sound—a momentum score of 4 with ADX above 30 and a rising RSI is a legitimate setup—but the trade never executed because you still held 33 shares from a prior position, triggering the single-position rule. Before the next session, check your open positions in AAPL and close that existing lot if you want the bot to re-enter cleanly on a fresh signal.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -203,7 +203,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong momentum setup but was blocked from execution because you already held 33 shares of AAPL, and critically, the bot was running in MOMENTUM mode while the trade review system flagged it as a mean-reversion context — meaning the signal itself was working against the strategy&#x27;s core logic by chasing an overbought RSI of 80.34 that a mean-reversion approach would treat as a sell signal, not an entry. Before your next session, reconcile your open positions and ensure the active strategy mode matches your intent — if you&#x27;re running mean-reversion, an RSI above 80 and price nearly 7% above MA20 are exhaustion warnings, not green lights, and you should either close the existing AAPL position deliberately or switch strategy modes consciously rather than letting a mismatch silently corrupt your trade logic.</div>
+  <div class="lesson-body">The bot actually got the signal logic right for a momentum setup, but the trade was dead on arrival because you still held 33 shares of AAPL from a prior position, triggering the no-add rule before the order even reached the market. Before the next session, check your open positions against your watchlist and close or book any existing AAPL stake if you want the bot to act on a fresh entry signal.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -220,7 +220,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s logic was actually sound for a momentum setup, but the trade never executed because you were already holding 33 shares of AAPL, triggering the position overlap rule that prevents pyramiding into existing trades. Before the bot hunts for new entries, make sure your open positions are cleared or accounted for — a quick pre-session check of existing holdings against the bot&#x27;s watchlist will prevent these rejections from burning valid signals.</div>
+  <div class="lesson-body">The trade was rejected not because of bad signal logic, but because the bot correctly enforced its no-add-to-position rule — the real mistake was having an open AAPL position while a new entry signal fired, creating a conflict the bot was designed to block. Before acting on any new signal, verify your current holdings first and close or manage the existing AAPL position if you want to re-enter cleanly on the next momentum setup.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -237,7 +237,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of faulty analysis, but because the bot correctly enforced its single-position rule — the real problem is that you still held 33 shares of AAPL from a prior entry while the bot identified what it scored as a valid new setup. Before the next session, clear any open AAPL position if you want the bot to act on fresh signals, and note that an RSI of 80.37 with price stretched 6.97% above MA20 is deep in overbought territory, so consider whether re-entering a momentum trade at those levels aligns with your risk tolerance anyway.</div>
+  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its single-position rule — the real mistake was allowing an open 33-share AAPL position to persist while the bot was still scanning for new entries in the same symbol. Before the bot&#x27;s next session scan, verify that all prior positions in active watchlist symbols are either closed or intentionally held, so a strong signal like this one doesn&#x27;t get wasted on a rule violation rather than a genuine trade decision.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
