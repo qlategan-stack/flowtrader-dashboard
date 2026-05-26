@@ -7,7 +7,7 @@
 <title>FlowTrader — Positions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>var t=localStorage.getItem('ft-theme');if(t)document.documentElement.className=t;</script>
 <style>
@@ -37,8 +37,9 @@
   --_g900:#1A1A18;--_g950:#0D0D0B;
   --_teal:var(--flo-teal);--_teal-light:var(--flo-teal-lighter);--_teal-dark:var(--flo-teal-dark);
   --_coral:var(--flo-danger);--_coral-light:#FDDCDC;
-  --font-display:'Barlow Condensed',sans-serif;
-  --font-body:'Barlow',sans-serif;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-ui:'Space Grotesk',sans-serif;
   --r-sm:var(--flo-radius-sm);--r-md:var(--flo-radius-md);--r-lg:var(--flo-radius-lg);--r-xl:var(--flo-radius-xl);
 }
 .theme-dark {
@@ -104,13 +105,13 @@ html,body{height:100%;background:var(--color-surface-page);color:var(--color-tex
 .badge-paper{
   background:rgba(245,196,0,0.15);color:var(--_y400);
   border:1px solid rgba(245,196,0,0.35);
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:700;font-size:11px;
   letter-spacing:0.12em;padding:2px 10px;border-radius:50px;
 }
 .badge-live{
   background:rgba(232,96,96,0.15);color:var(--_coral);
   border:1px solid rgba(232,96,96,0.35);
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:700;font-size:11px;
   letter-spacing:0.12em;padding:2px 10px;border-radius:50px;
 }
 .hdr-pv{
@@ -130,7 +131,7 @@ html,body{height:100%;background:var(--color-surface-page);color:var(--color-tex
   border-bottom:1px solid var(--color-border-subtle);
 }
 .theme-bar button{
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:600;font-size:11px;
   letter-spacing:0.08em;text-transform:uppercase;
   padding:4px 14px;border-radius:50px;border:1px solid var(--color-border-default);
   background:transparent;color:var(--color-text-secondary);cursor:pointer;
@@ -145,7 +146,7 @@ html,body{height:100%;background:var(--color-surface-page);color:var(--color-tex
 /* ── LAYOUT ────────────────────────────────────────────────────────────────── */
 .page{max-width:1400px;margin:0 auto;padding:24px}
 .section-title{
-  font-family:var(--font-display);font-weight:800;font-size:13px;
+  font-family:var(--font-ui);font-weight:700;font-size:13px;
   letter-spacing:0.12em;text-transform:uppercase;
   color:var(--color-text-tertiary);margin-bottom:12px;margin-top:28px;
 }
@@ -157,7 +158,7 @@ html,body{height:100%;background:var(--color-surface-page);color:var(--color-tex
   border-radius:var(--r-lg);padding:16px 20px;box-shadow:var(--shadow-md);
 }
 .card-label{
-  font-family:var(--font-body);font-weight:500;font-size:11px;
+  font-family:var(--font-ui);font-weight:500;font-size:11px;
   letter-spacing:0.08em;text-transform:uppercase;
   color:var(--color-text-tertiary);margin-bottom:4px;
 }
@@ -183,7 +184,7 @@ thead tr{
   border-bottom:1px solid var(--color-border-default);
 }
 th{
-  font-family:var(--font-display);font-weight:700;font-size:11px;
+  font-family:var(--font-ui);font-weight:600;font-size:11px;
   letter-spacing:0.08em;text-transform:uppercase;
   color:var(--color-text-tertiary);padding:12px 16px;
   text-align:left;white-space:nowrap;
@@ -208,14 +209,14 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 }
 .danger-cell{color:#E86060 !important;font-weight:600}
 .score-badge{
-  font-family:var(--font-display);font-weight:700;font-size:13px;
+  font-family:var(--font-ui);font-weight:700;font-size:13px;
   background:rgba(245,196,0,0.12);color:var(--_y400);
   border:1px solid rgba(245,196,0,0.25);
   padding:2px 10px;border-radius:50px;
 }
 .venue-crypto{
   display:inline-block;margin-left:6px;
-  font-family:var(--font-display);font-weight:700;font-size:10px;
+  font-family:var(--font-ui);font-weight:600;font-size:10px;
   letter-spacing:0.1em;
   background:rgba(45,140,122,0.15);color:var(--_teal-light);
   border:1px solid rgba(45,140,122,0.30);
@@ -267,9 +268,9 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <div class="hdr">
   <div class="hdr-brand">⚡ FlowTrader</div>
   <span class="badge-paper">PAPER</span>
-  <div class="hdr-pv">$99,808.73</div>
-  <div class="hdr-pl pos">▲ $746.55 (+0.75%)</div>
-  <div class="hdr-ts">Built 2026-05-26 13:49 UTC · auto-refreshes every 30 min</div>
+  <div class="hdr-pv">$99,884.92</div>
+  <div class="hdr-pl pos">▲ $822.74 (+0.82%)</div>
+  <div class="hdr-ts">Built 2026-05-26 14:20 UTC · auto-refreshes every 30 min</div>
 </div>
 
 <!-- ── THEME TOGGLE ────────────────────────────────────────────────────────── -->
@@ -305,11 +306,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">AAPL</span><span class="sym-name">Apple</span></td>
         <td>33</td>
         <td>$295.94</td>
-        <td>$310.04</td>
-        <td class="pos">▲ $465.4500</td>
-        <td class="pos">+4.77%</td>
-        <td>$292.67<span class="cell-sub">+5.60%</span></td>
-        <td>$308.11<span class="cell-sub">-0.62%</span></td>
+        <td>$310.98</td>
+        <td class="pos">▲ $496.4700</td>
+        <td class="pos">+5.08%</td>
+        <td>$292.67<span class="cell-sub">+5.89%</span></td>
+        <td>$308.11<span class="cell-sub">-0.92%</span></td>
         <td><span class="score-badge">4/6</span></td>
         <td>8d</td>
       </tr>
@@ -317,11 +318,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">AMD</span><span class="sym-name">AMD</span></td>
         <td>22</td>
         <td>$444.10</td>
-        <td>$490.50</td>
-        <td class="pos">▲ $1,020.8000</td>
-        <td class="pos">+10.45%</td>
-        <td>$418.83<span class="cell-sub">+14.61%</span></td>
-        <td>$493.35<span class="cell-sub">+0.58%</span></td>
+        <td>$491.64</td>
+        <td class="pos">▲ $1,045.8800</td>
+        <td class="pos">+10.71%</td>
+        <td>$418.83<span class="cell-sub">+14.81%</span></td>
+        <td>$493.35<span class="cell-sub">+0.35%</span></td>
         <td><span class="score-badge">4/6</span></td>
         <td>6d</td>
       </tr>
@@ -329,11 +330,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">QQQ</span><span class="sym-name">Nasdaq-100 ETF</span></td>
         <td>13</td>
         <td>$721.65</td>
-        <td>$727.86</td>
-        <td class="pos">▲ $80.6700</td>
-        <td class="pos">+0.86%</td>
-        <td>$710.96<span class="cell-sub">+2.32%</span></td>
-        <td>$742.73<span class="cell-sub">+2.04%</span></td>
+        <td>$729.49</td>
+        <td class="pos">▲ $101.8600</td>
+        <td class="pos">+1.09%</td>
+        <td>$710.96<span class="cell-sub">+2.54%</span></td>
+        <td>$742.73<span class="cell-sub">+1.81%</span></td>
         <td><span class="score-badge">5/6</span></td>
         <td>4d</td>
       </tr>
@@ -341,11 +342,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">ETH/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
         <td>0.072</td>
         <td>$2,069.63</td>
-        <td>$2,127.42</td>
-        <td class="pos">▲ $4.1609</td>
-        <td class="pos">+2.79%</td>
-        <td>$2,030.18<span class="cell-sub">+4.57%</span></td>
-        <td>$2,222.95<span class="cell-sub">+4.49%</span></td>
+        <td>$2,132.73</td>
+        <td class="pos">▲ $4.5432</td>
+        <td class="pos">+3.05%</td>
+        <td>$2,030.18<span class="cell-sub">+4.81%</span></td>
+        <td>$2,222.95<span class="cell-sub">+4.23%</span></td>
         <td><span class="score-badge">5/6</span></td>
         <td>2d</td>
       </tr>
@@ -353,11 +354,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">XRP/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
         <td>1099</td>
         <td>$1.3397</td>
-        <td>$1.3580</td>
-        <td class="pos">▲ $20.1117</td>
-        <td class="pos">+1.37%</td>
-        <td>$1.3147<span class="cell-sub">+3.19%</span></td>
-        <td>$1.4100<span class="cell-sub">+3.83%</span></td>
+        <td>$1.3593</td>
+        <td class="pos">▲ $21.5404</td>
+        <td class="pos">+1.46%</td>
+        <td>$1.3147<span class="cell-sub">+3.28%</span></td>
+        <td>$1.4100<span class="cell-sub">+3.73%</span></td>
         <td><span class="score-badge">6/6</span></td>
         <td>4d</td>
       </tr>
@@ -365,11 +366,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">LTC/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
         <td>27</td>
         <td>$52.79</td>
-        <td>$52.76</td>
-        <td class="neg">▼ $0.8100</td>
-        <td class="neg">-0.06%</td>
-        <td class="danger-cell">$51.89<span class="cell-sub">+1.65%</span></td>
-        <td>$55.93<span class="cell-sub">+6.01%</span></td>
+        <td>$52.88</td>
+        <td class="pos">▲ $2.4300</td>
+        <td class="pos">+0.17%</td>
+        <td class="danger-cell">$51.89<span class="cell-sub">+1.87%</span></td>
+        <td>$55.93<span class="cell-sub">+5.77%</span></td>
         <td><span class="score-badge">4/6</span></td>
         <td>1d</td>
       </tr>
@@ -377,11 +378,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
         <td><span class="sym">NEAR/USDT</span><span class="sym-name">Bybit<span class="venue-crypto">CRYPTO</span></span></td>
         <td>534</td>
         <td>$2.7730</td>
-        <td>$2.8410</td>
-        <td class="pos">▲ $36.3120</td>
-        <td class="pos">+2.45%</td>
-        <td>$2.5930<span class="cell-sub">+8.73%</span></td>
-        <td>$3.1330<span class="cell-sub">+10.28%</span></td>
+        <td>$2.8580</td>
+        <td class="pos">▲ $45.3900</td>
+        <td class="pos">+3.07%</td>
+        <td>$2.5930<span class="cell-sub">+9.27%</span></td>
+        <td>$3.1330<span class="cell-sub">+9.62%</span></td>
         <td><span class="score-badge">6/6</span></td>
         <td>1d</td>
       </tr>
@@ -402,12 +403,12 @@ tr:hover td{background:rgba(255,255,255,0.03)}
   <div class="cards">
     <div class="card">
       <div class="card-label">Portfolio</div>
-      <div class="card-value">$99,809</div>
+      <div class="card-value">$99,885</div>
     </div>
     <div class="card">
       <div class="card-label">Day P&amp;L</div>
-      <div class="card-value pos">▲ $746.55</div>
-      <div class="card-sub">+0.75%</div>
+      <div class="card-value pos">▲ $822.74</div>
+      <div class="card-sub">+0.82%</div>
     </div>
     <div class="card">
       <div class="card-label">Cash</div>
@@ -415,7 +416,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
     </div>
     <div class="card">
       <div class="card-label">Buying Power</div>
-      <div class="card-value">$169,132</div>
+      <div class="card-value">$169,208</div>
     </div>
     <div class="card">
       <div class="card-label">Open Positions</div>
@@ -433,7 +434,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
       <div class="gauge-sub">233% capacity used</div>
     </div>
     <div class="gauge">
-      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $1,996.17</div>
+      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $1,997.70</div>
       <div class="gauge-track">
         <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
       </div>
@@ -603,7 +604,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 
   <div class="footer">
     <span>⚡ FlowTrader · PAPER mode · 2026-05-15 · positions-dashboard-v1</span>
-    <span>Built 2026-05-26 13:49 UTC</span>
+    <span>Built 2026-05-26 14:20 UTC</span>
   </div>
 
 </div><!-- /page -->
@@ -661,12 +662,12 @@ if (chartDates.length > 0) {
       scales: {
         x: {
           grid: { color: 'rgba(255,255,255,0.05)' },
-          ticks: { color: '#5C5B58', font: { family: 'Barlow', size: 11 }, maxTicksLimit: 10 }
+          ticks: { color: '#5C5B58', font: { family: 'DM Sans', size: 11 }, maxTicksLimit: 10 }
         },
         y: {
           grid: { color: 'rgba(255,255,255,0.05)' },
           ticks: {
-            color: '#5C5B58', font: { family: 'Barlow', size: 11 },
+            color: '#5C5B58', font: { family: 'DM Sans', size: 11 },
             callback: v => '$' + v.toLocaleString()
           }
         }
