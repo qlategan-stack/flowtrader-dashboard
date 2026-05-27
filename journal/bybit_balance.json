@@ -1,25 +1,25 @@
 {
-  "account_value": 359175.06,
+  "account_value": 359071.03,
   "total_usdt": 105637.19,
   "free_usdt": 105637.19,
   "funding_usdt": 0.0,
-  "position_value": 253537.87,
+  "position_value": 253433.84,
   "open_positions": 2,
   "positions": [
     {
       "currency": "ETH",
       "amount": 86.4993,
-      "price_usd": 2077.19,
-      "value_usd": 179675.48
+      "price_usd": 2076.15,
+      "value_usd": 179585.52
     },
     {
       "currency": "LTC",
       "amount": 1405.589,
-      "price_usd": 52.17,
-      "value_usd": 73329.58
+      "price_usd": 52.16,
+      "value_usd": 73315.52
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-05-27T03:03:12.734174+00:00"
+  "fetched_at": "2026-05-27T03:18:13.109300+00:00"
 }
