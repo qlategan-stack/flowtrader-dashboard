@@ -113,7 +113,12 @@ with open("config.yaml") as f:
 WATCHLIST     = CFG.get("watchlist", {}).get("equities", ["SPY", "QQQ"])
 CRYPTO_LIST   = CFG.get("watchlist", {}).get("crypto", [])
 RISK_PROFILES = CFG.get("risk_profiles", {})
-REFRESH_SEC   = 60
+REFRESH_SEC   = 300   # 5 min — was 60s, but 60s was too aggressive: data only
+                      # meaningfully changes on bot cycles (~5-30 min) and the
+                      # flicker / re-render is irritating to watch. Manual
+                      # "⟳ Refresh All" in the sidebar still forces an instant
+                      # reload. Cache TTLs below inherit this value, so Alpaca
+                      # / Bybit / Binance API call volume drops ~5×.
 PAPER_MODE    = os.getenv("PAPER_TRADING", "true").lower() == "true"
 
 MEMO_JSON            = Path("journal/weekly_research_memo.json")
@@ -441,10 +446,10 @@ def fetch_alpaca_order_history(days: int = 90) -> dict:
         logger.warning(f"Alpaca order history fetch failed: {e}")
         return {}
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=600)
 def load_research_memo() -> dict:
-    """Load the weekly research memo.  TTL kept short so a fresh memo
-    appears within ~1 minute of the sync workflow committing it."""
+    """Load the weekly research memo. Memo is rewritten weekly so a 10-min
+    TTL is fine — sidebar "⟳ Refresh All" still forces an immediate reload."""
     if not MEMO_JSON.exists():
         return {}
     try:

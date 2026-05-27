@@ -803,9 +803,11 @@ class BinanceFetcher:
 
             # Fiat / stable coins that Binance doesn't pair against USDT (so
             # fetch_tickers raises "no market symbol X/USDT"). TRY in particular
-            # is a residual fiat balance on the testnet account.
+            # is a residual fiat balance on the testnet account; ZAR appeared
+            # on the testnet account 2026-05-26 and broke the whole batch.
             _FIAT_SKIP = {"TRY", "EUR", "GBP", "AUD", "BRL", "RUB", "USD",
-                          "BUSD", "USDC", "TUSD", "FDUSD", "DAI"}
+                          "ZAR", "UAH", "PLN", "RON", "CZK", "JPY", "ARS",
+                          "BUSD", "USDC", "TUSD", "FDUSD", "DAI", "USDP"}
 
             coin_amounts: dict = {}
             for coin, data in (raw.get("total") or {}).items():
@@ -825,7 +827,20 @@ class BinanceFetcher:
                         coin = sym.split("/")[0]
                         prices[coin] = float(ticker.get("last", 0) or 0)
                 except Exception as te:
-                    logger.warning(f"Binance batch ticker fetch failed: {te}")
+                    # ccxt's fetch_tickers raises on the FIRST invalid symbol
+                    # and returns nothing for the rest — so a single bad coin
+                    # (e.g. a new fiat residue from testnet faucet) wipes out
+                    # the prices for every real holding. Fall back to a per-
+                    # symbol fetch so the rest still get priced.
+                    logger.warning(f"Binance batch ticker fetch failed ({te}); "
+                                   f"falling back to per-symbol")
+                    for sym in symbols:
+                        coin = sym.split("/")[0]
+                        try:
+                            t = self.exchange.fetch_ticker(sym)
+                            prices[coin] = float(t.get("last", 0) or 0)
+                        except Exception as pe:
+                            logger.warning(f"  skip {sym}: {pe}")
 
             positions = []
             for coin, amount in list(coin_amounts.items())[:20]:

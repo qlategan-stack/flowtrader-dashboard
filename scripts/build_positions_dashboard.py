@@ -16,6 +16,8 @@ from pathlib import Path
 REPO_ROOT    = Path(__file__).resolve().parent.parent
 JOURNAL_FILE = REPO_ROOT / "journal" / "trades.jsonl"
 BALANCE_JSON = REPO_ROOT / "journal" / "bybit_balance.json"
+RISK_PROFILE = REPO_ROOT / "journal" / "risk_profile.json"
+CONFIG_YAML  = REPO_ROOT / "config.yaml"
 OUT_HTML     = REPO_ROOT / "positions.html"
 
 sys.path.insert(0, str(REPO_ROOT))
@@ -304,6 +306,26 @@ def _infer_crypto_positions(journal: list[dict]) -> list[dict]:
     return positions
 
 
+def _active_max_positions() -> tuple[int, str]:
+    """Read journal/risk_profile.json + config.yaml to resolve the live max
+    open-positions cap. Falls back to (5, 'medium_safety') if anything is
+    missing — that matches the hard rule the bot currently enforces."""
+    profile_name = "medium_safety"
+    try:
+        profile_name = json.loads(RISK_PROFILE.read_text(encoding="utf-8")).get(
+            "active_profile", "medium_safety"
+        )
+    except Exception:
+        pass
+    try:
+        import yaml
+        cfg = yaml.safe_load(CONFIG_YAML.read_text(encoding="utf-8")) or {}
+        prof = (cfg.get("risk_profiles") or {}).get(profile_name) or {}
+        return int(prof.get("max_open_positions", 5)), profile_name
+    except Exception:
+        return 5, profile_name
+
+
 def _load_crypto_balance() -> dict:
     if BALANCE_JSON.exists():
         try:
@@ -372,13 +394,34 @@ def _pos_row(p: dict) -> str:
     pl_cls  = "pos" if pl_usd >= 0 else "neg"
     pl_sign = "▲" if pl_usd >= 0 else "▼"
 
+    # Stale-stop heuristic: a position held > 14 days with a stop > 20% away
+    # almost certainly has a stop the bot never resynced (entry from a much
+    # lower price, market drifted up, journal still holds the original).
+    # Surface this so the operator knows to re-evaluate — green/red distance
+    # alone is misleading when the stop hasn't moved with price.
+    days_int = days if isinstance(days, int) else (int(days) if isinstance(days, str) and days.isdigit() else None)
+    stop_stale = (
+        stop > 0
+        and to_stop is not None
+        and to_stop > 20
+        and days_int is not None
+        and days_int > 14
+    )
+
     stop_cls = ""
     if to_stop is not None and to_stop < 2:
         stop_cls = ' class="danger-cell"'
+    elif stop_stale:
+        stop_cls = ' class="stale-cell"'
 
     stop_str  = _price_str(stop) if stop else "—"
     tgt_str   = _price_str(tgt)  if tgt  else "—"
-    to_stop_s = _fmt_pct(to_stop) if to_stop is not None else "—"
+    if stop_stale:
+        # Replace the % distance with a STALE chip — distance reading is
+        # not actionable if the stop itself is wrong.
+        to_stop_s = '<span class="stale-chip">STALE</span>'
+    else:
+        to_stop_s = _fmt_pct(to_stop) if to_stop is not None else "—"
     to_tgt_s  = _fmt_pct(to_tgt, show_plus=True) if to_tgt is not None else "—"
     venue_badge = '<span class="venue-crypto">CRYPTO</span>' if is_crypto else ""
 
@@ -403,6 +446,8 @@ def build_html(
     crypto: dict,
     history: list[dict],
     built_at: datetime,
+    max_positions: int = 5,
+    profile_name: str = "medium_safety",
 ) -> str:
     paper_mode   = os.getenv("PAPER_TRADING", "true").lower() == "true"
     mode_label   = "PAPER" if paper_mode else "LIVE"
@@ -463,8 +508,7 @@ def build_html(
     loss_frac    = min(loss_used / max_loss, 1.0) if max_loss else 0
     loss_icon    = "🔴" if loss_frac >= 0.8 else "🟡" if loss_frac >= 0.5 else "🟢"
 
-    max_positions = 3
-    cap_frac     = open_pos / max_positions
+    cap_frac     = open_pos / max_positions if max_positions else 0
     cap_icon     = "🔴" if cap_frac >= 1.0 else "🟡" if cap_frac >= 0.67 else "🟢"
 
     return f"""<!DOCTYPE html>
@@ -677,6 +721,13 @@ tr:hover td{{background:rgba(255,255,255,0.03)}}
   display:block;font-size:11px;color:var(--color-text-tertiary);margin-top:2px;
 }}
 .danger-cell{{color:#E86060 !important;font-weight:600}}
+.stale-cell{{color:var(--color-text-tertiary)}}
+.stale-chip{{
+  display:inline-block;font-family:var(--font-ui);font-weight:700;font-size:9px;
+  letter-spacing:0.10em;background:rgba(245,196,0,0.12);color:var(--_y400);
+  border:1px solid rgba(245,196,0,0.30);padding:1px 6px;border-radius:50px;
+  margin-top:2px;
+}}
 .score-badge{{
   font-family:var(--font-ui);font-weight:700;font-size:13px;
   background:rgba(245,196,0,0.12);color:var(--_y400);
@@ -868,7 +919,7 @@ tr:hover td{{background:rgba(255,255,255,0.03)}}
   </div>
 
   <div class="footer">
-    <span>⚡ FlowTrader · {mode_label} mode · {APP_BUILD}</span>
+    <span>⚡ FlowTrader · {mode_label} mode · profile: {profile_name} · {APP_BUILD}</span>
     <span>Built {built_str}</span>
   </div>
 
@@ -979,10 +1030,16 @@ def main() -> int:
     raw_pos       = account.get("positions", [])
     equity_pos    = _enrich_positions(raw_pos, journal)
     crypto_pos    = _infer_crypto_positions(journal)
+    # Drop phantom rows: journal BUYs that never filled (quantity = 0) were
+    # being rendered as "open positions" with stop/target prices but qty 0.
+    # An open position requires a non-zero qty.
+    phantom_n     = sum(1 for p in crypto_pos if float(p.get("qty", 0) or 0) <= 0)
+    crypto_pos    = [p for p in crypto_pos if float(p.get("qty", 0) or 0) > 0]
     enriched      = equity_pos + crypto_pos   # single unified list
     crypto        = _load_crypto_balance()
 
-    print(f"[positions-dash] {len(equity_pos)} equity + {len(crypto_pos)} crypto bot positions")
+    print(f"[positions-dash] {len(equity_pos)} equity + {len(crypto_pos)} crypto bot positions"
+          + (f" (dropped {phantom_n} qty=0 phantoms)" if phantom_n else ""))
 
     history = []
     if fetcher and getattr(fetcher, "trading_client", None):
@@ -990,8 +1047,11 @@ def main() -> int:
     if not history:
         history = _alpaca_history_direct()
 
-    built_at = datetime.now(timezone.utc)
-    html     = build_html(account, enriched, crypto, history, built_at)
+    built_at         = datetime.now(timezone.utc)
+    max_positions, profile_name = _active_max_positions()
+    print(f"[positions-dash] active risk profile: {profile_name} (max_positions={max_positions})")
+    html     = build_html(account, enriched, crypto, history, built_at,
+                          max_positions=max_positions, profile_name=profile_name)
 
     OUT_HTML.write_text(html, encoding="utf-8")
     print(f"[positions-dash] wrote {OUT_HTML.name} ({len(html):,} bytes)")
