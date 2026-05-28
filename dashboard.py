@@ -598,7 +598,14 @@ def _chart_layout(height=260, title="", yprefix="", **kwargs):
     )
 
 
-def _signal_dots(score: int, max_score: int = 6) -> str:
+def _signal_dots(score, max_score: int = 6) -> str:
+    # Journal rows for SKIP-ALL sessions can have `signal_score: null`; coerce
+    # null / non-numeric to 0 so the renderer never crashes mid-page.
+    try:
+        score = int(score) if score is not None else 0
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(score, max_score))
     filled = "●" * score
     empty  = "○" * (max_score - score)
     return f'<span class="dots"><span class="dg">{filled}</span><span class="de">{empty}</span></span>'
@@ -735,7 +742,7 @@ if page == "Overview":
     ov_trades  = sum(1 for e in ov_entries if e.get("action") in ("BUY", "SELL")
                      and e.get("execution_status") in ("FILLED", "SIMULATED", "SUBMITTED"))
     ov_skips   = sum(1 for e in ov_entries if e.get("action") == "SKIP")
-    ov_avgsc   = (sum(e.get("signal_score", 0) for e in ov_entries) / len(ov_entries)) if ov_entries else 0
+    ov_avgsc   = (sum((e.get("signal_score") or 0) for e in ov_entries) / len(ov_entries)) if ov_entries else 0
 
     # Risk profile
     ov_prof_name = _read_active_profile()
@@ -1558,7 +1565,7 @@ elif page == "Account":
             filled_trades = [e for e in week_entries if e.get("action") in ["BUY","SELL"]
                              and e.get("execution_status") in ["FILLED","SIMULATED","SUBMITTED"]]
             skips         = [e for e in week_entries if e.get("action") == "SKIP"]
-            scores        = [e.get("signal_score", 0) for e in week_entries]
+            scores        = [(e.get("signal_score") or 0) for e in week_entries]
 
             p1, p2, p3, p4 = st.columns(4)
             p1.metric("Total Cycles",   len(week_entries))
@@ -1591,7 +1598,7 @@ elif page == "Journal":
         trades    = [e for e in filtered if e.get("action") in ["BUY", "SELL"]]
         skips     = [e for e in filtered if e.get("action") == "SKIP"]
         filled    = [e for e in trades   if e.get("execution_status") in ["FILLED","SIMULATED","SUBMITTED"]]
-        avg_score = sum(e.get("signal_score", 0) for e in filtered) / len(filtered)
+        avg_score = sum((e.get("signal_score") or 0) for e in filtered) / len(filtered)
         skip_rate = len(skips) / len(filtered) * 100 if filtered else 0
 
         m1, m2, m3, m4, m5 = st.columns(5)
@@ -1688,7 +1695,7 @@ elif page == "Journal":
             st.caption("Signal Score Distribution")
             score_counts = {}
             for e in filtered:
-                s = e.get("signal_score", 0)
+                s = e.get("signal_score") or 0
                 score_counts[s] = score_counts.get(s, 0) + 1
             if score_counts:
                 sc_fig = go.Figure(go.Bar(
