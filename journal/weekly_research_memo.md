@@ -7,10 +7,10 @@
 ---
 
 ## Market Regime
-{'trend_or_range': 'Trending — S&P 500 hitting record highs per latest news; equity market in a broad uptrend supported by AI momentum and risk-on sentiment despite macro headwinds.', 'mean_reversion_strategy': 'ACTIVE but selective — uptrend reduces the frequency of deep mean-reversion dips; prefer fading short-term overbought conditions on high-beta names rather than full contrarian reversals. Sector data is unavailable this cycle, so rely on individual ticker signals.', 'vix_interpretation': 'VIX at 15.72 signals NORMAL / healthy market conditions. No systemic fear present in equities. This supports standard position sizing with no mandatory reduction. Volatility is low enough to consider modest size increases on high-conviction setups, but the macro backdrop (Hormuz, stagflation risk, Fed hawkish tilt) warrants keeping single-position exposure capped at 3–5% of book.', 'position_sizing_guidance': 'Standard sizing permitted. Max single equity position: 5% of equity book. No VIX-driven haircut required at this level.'}
+{'trend_or_range': 'Trending â€” S&P 500 hitting record highs per latest news; equity market in a broad uptrend supported by AI momentum and risk-on sentiment despite macro headwinds.', 'mean_reversion_strategy': 'ACTIVE but selective â€” uptrend reduces the frequency of deep mean-reversion dips; prefer fading short-term overbought conditions on high-beta names rather than full contrarian reversals. Sector data is unavailable this cycle, so rely on individual ticker signals.', 'vix_interpretation': 'VIX at 15.72 signals NORMAL / healthy market conditions. No systemic fear present in equities. This supports standard position sizing with no mandatory reduction. Volatility is low enough to consider modest size increases on high-conviction setups, but the macro backdrop (Hormuz, stagflation risk, Fed hawkish tilt) warrants keeping single-position exposure capped at 3â€“5% of book.', 'position_sizing_guidance': 'Standard sizing permitted. Max single equity position: 5% of equity book. No VIX-driven haircut required at this level.'}
 
 ## Trading Confidence Score: 5/10
-Equities present a reasonably constructive environment (VIX 15.72, S&P at record highs, AI momentum) supporting a score of 6–7 on their own, but crypto conditions (Extreme Fear at 22, BTC-led risk-off, total market cap declining) drag the blended score down significantly — combined with a real Fed rate hike risk, Hormuz stagflation headwind, and missing sector/crypto scanner data that reduces signal quality, a score of 5 reflects cautious engagement with reduced position sizes across both books.
+Equities present a reasonably constructive environment (VIX 15.72, S&P at record highs, AI momentum) supporting a score of 6â€“7 on their own, but crypto conditions (Extreme Fear at 22, BTC-led risk-off, total market cap declining) drag the blended score down significantly â€” combined with a real Fed rate hike risk, Hormuz stagflation headwind, and missing sector/crypto scanner data that reduces signal quality, a score of 5 reflects cautious engagement with reduced position sizes across both books.
 
 ---
 
@@ -200,9 +200,9 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
 ```json
 {
   "market_regime": {
-    "trend_or_range": "Trending — S&P 500 hitting record highs per latest news; equity market in a broad uptrend supported by AI momentum and risk-on sentiment despite macro headwinds.",
-    "mean_reversion_strategy": "ACTIVE but selective — uptrend reduces the frequency of deep mean-reversion dips; prefer fading short-term overbought conditions on high-beta names rather than full contrarian reversals. Sector data is unavailable this cycle, so rely on individual ticker signals.",
-    "vix_interpretation": "VIX at 15.72 signals NORMAL / healthy market conditions. No systemic fear present in equities. This supports standard position sizing with no mandatory reduction. Volatility is low enough to consider modest size increases on high-conviction setups, but the macro backdrop (Hormuz, stagflation risk, Fed hawkish tilt) warrants keeping single-position exposure capped at 3–5% of book.",
+    "trend_or_range": "Trending â€” S&P 500 hitting record highs per latest news; equity market in a broad uptrend supported by AI momentum and risk-on sentiment despite macro headwinds.",
+    "mean_reversion_strategy": "ACTIVE but selective â€” uptrend reduces the frequency of deep mean-reversion dips; prefer fading short-term overbought conditions on high-beta names rather than full contrarian reversals. Sector data is unavailable this cycle, so rely on individual ticker signals.",
+    "vix_interpretation": "VIX at 15.72 signals NORMAL / healthy market conditions. No systemic fear present in equities. This supports standard position sizing with no mandatory reduction. Volatility is low enough to consider modest size increases on high-conviction setups, but the macro backdrop (Hormuz, stagflation risk, Fed hawkish tilt) warrants keeping single-position exposure capped at 3â€“5% of book.",
     "position_sizing_guidance": "Standard sizing permitted. Max single equity position: 5% of equity book. No VIX-driven haircut required at this level."
   },
 
@@ -232,16 +232,16 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       "rationale": "Stagflation risk rising: Hormuz disruption threatens energy inflation, Fed's Musalem explicitly flagged a rate hike probability > 0 and higher neutral rate expectations. Gold is a direct beneficiary of both higher inflation expectations and fiscal/monetary uncertainty. Defensive allocation within a record-high equity environment.",
       "signal_strength": "MEDIUM",
       "catalyst": "Fed hawkish pivot risk, Hormuz/energy inflation, dollar uncertainty, bond market pricing higher neutral rate.",
-      "position_size_adjustment": "Reduce to 3–4% of equity book — acts as portfolio hedge, not primary alpha driver."
+      "position_size_adjustment": "Reduce to 3â€“4% of equity book â€” acts as portfolio hedge, not primary alpha driver."
     },
     {
       "asset_class": "CRYPTO",
       "symbol": "BTC/USDT",
       "direction": "LONG",
-      "rationale": "Extreme Fear reading of 22 is historically a contrarian buy zone. BTC dominance at 57.6% confirms BTC is the primary flow absorber — capital is rotating INTO BTC, not out of crypto entirely. Total market cap ~$2.56T despite -1.51% 24h suggests consolidation, not collapse. Risk/reward for a mean-reversion long on BTC is favorable at these fear levels.",
+      "rationale": "Extreme Fear reading of 22 is historically a contrarian buy zone. BTC dominance at 57.6% confirms BTC is the primary flow absorber â€” capital is rotating INTO BTC, not out of crypto entirely. Total market cap ~$2.56T despite -1.51% 24h suggests consolidation, not collapse. Risk/reward for a mean-reversion long on BTC is favorable at these fear levels.",
       "signal_strength": "MEDIUM-HIGH",
       "catalyst": "Extreme Fear contrarian signal; BTC dominance expanding (capital flight to quality within crypto); broader AI/crypto narrative from Trump administration policy tailwinds.",
-      "position_size_adjustment": "Reduce to 60% of normal crypto position size given Extreme Fear regime — size up only on confirmed bounce signal, not in anticipation."
+      "position_size_adjustment": "Reduce to 60% of normal crypto position size given Extreme Fear regime â€” size up only on confirmed bounce signal, not in anticipation."
     },
     {
       "asset_class": "CRYPTO",
@@ -250,7 +250,7 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       "rationale": "ETH at 9.53% dominance is near historically low levels relative to BTC, suggesting ETH is deeply oversold on a relative basis. In prior Extreme Fear recoveries, ETH tends to outperform once BTC stabilises. Mean-reversion setup: ETH is underperforming BTC (BTC-led regime) but this divergence typically closes on any sentiment recovery. Spot-only long with disciplined sizing.",
       "signal_strength": "MEDIUM",
       "catalyst": "Low relative dominance = mean-reversion candidate; ETH fundamentals (staking, L2 growth) intact; any sentiment recovery will benefit ETH disproportionately.",
-      "position_size_adjustment": "Reduce to 50% of normal crypto position size. ETH underperforms in BTC-led regimes — only enter on confirmed momentum shift or BTC stabilization."
+      "position_size_adjustment": "Reduce to 50% of normal crypto position size. ETH underperforms in BTC-led regimes â€” only enter on confirmed momentum shift or BTC stabilization."
     },
     {
       "asset_class": "CRYPTO",
@@ -259,7 +259,7 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       "rationale": "SOL has established itself as a high-beta but liquid alt with strong developer activity. In Extreme Fear environments that resolve to the upside, SOL historically delivers outsized recovery moves. Bybit liquidity on SOL/USDT is deep enough for bot execution. Wait for BTC to stabilise before entry.",
       "signal_strength": "MEDIUM-LOW",
       "catalyst": "High-beta recovery play; strong on-chain metrics; Bybit liquidity adequate. Contingent on BTC floor formation.",
-      "position_size_adjustment": "Limit to 30–40% of normal crypto position size. High-beta alt in a risk-off crypto regime — only activate if BTC mean-reversion long is triggered first."
+      "position_size_adjustment": "Limit to 30â€“40% of normal crypto position size. High-beta alt in a risk-off crypto regime â€” only activate if BTC mean-reversion long is triggered first."
     }
   ],
 
@@ -268,7 +268,7 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       "ADD": [
         {
           "symbol": "SNOW",
-          "reason": "Snowflake jumped 37% on AI earnings beat — potential mean-reversion fade or momentum continuation setup depending on post-gap behavior. Add to monitor for pullback entry."
+          "reason": "Snowflake jumped 37% on AI earnings beat â€” potential mean-reversion fade or momentum continuation setup depending on post-gap behavior. Add to monitor for pullback entry."
         }
       ],
       "REMOVE": [],
@@ -318,7 +318,7 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
     "avoid_or_underweight": [
       {
         "sector": "Energy (XLE)",
-        "rationale": "Hormuz disruption creates binary risk — energy prices could spike OR normalise suddenly. While inflation benefits XLE, geopolitical uncertainty creates unpredictable volatility. Avoid directional bets; let USO act as the hedge vehicle if needed."
+        "rationale": "Hormuz disruption creates binary risk â€” energy prices could spike OR normalise suddenly. While inflation benefits XLE, geopolitical uncertainty creates unpredictable volatility. Avoid directional bets; let USO act as the hedge vehicle if needed."
       },
       {
         "sector": "Utilities (XLU)",
@@ -326,7 +326,7 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       },
       {
         "sector": "Real Estate (XLRE)",
-        "rationale": "Same rate logic as utilities — Fed hawkish tilt (rate hike probability > 0, higher neutral rate) is structurally negative for REITs. Underweight until rate path clarifies."
+        "rationale": "Same rate logic as utilities â€” Fed hawkish tilt (rate hike probability > 0, higher neutral rate) is structurally negative for REITs. Underweight until rate path clarifies."
       }
     ]
   },
@@ -335,12 +335,12 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
     "regime": "BTC-led / Risk-off",
     "mean_reversion_active_crypto": true,
     "sentiment_read": "Fear & Greed Index at 22 (Extreme Fear) with a further -3 deterioration in 24 hours signals maximum pessimism, which historically precedes mean-reversion recoveries. The bot should treat current levels as a contrarian opportunity zone, but size conservatively and wait for confirmed stabilisation before full deployment.",
-    "dominance_read": "BTC dominance at 57.6% is elevated and rising, confirming capital is consolidating into Bitcoin as the perceived safe haven within crypto. Altcoins are underperforming and will continue to lag until BTC establishes a clear floor — ETH at 9.53% dominance suggests it is near a relative value floor vs BTC.",
+    "dominance_read": "BTC dominance at 57.6% is elevated and rising, confirming capital is consolidating into Bitcoin as the perceived safe haven within crypto. Altcoins are underperforming and will continue to lag until BTC establishes a clear floor â€” ETH at 9.53% dominance suggests it is near a relative value floor vs BTC.",
     "top_crypto_opportunities": [
       {
         "pair": "BTC/USDT",
         "direction": "LONG",
-        "rationale": "Primary mean-reversion candidate. Extreme Fear + BTC dominance absorption = highest probability recovery vehicle. Enter on stabilisation signal, target 5–8% recovery. Stop -6% below entry.",
+        "rationale": "Primary mean-reversion candidate. Extreme Fear + BTC dominance absorption = highest probability recovery vehicle. Enter on stabilisation signal, target 5â€“8% recovery. Stop -6% below entry.",
         "priority": 1
       },
       {
@@ -375,17 +375,17 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       {
         "event": "Total Crypto Market Cap Breakdown",
         "severity": "MEDIUM",
-        "detail": "Total market cap at $2.56T with -1.51% 24h change. A break below key psychological support levels ($2.4T) would signal a broader deleveraging event — pause all new crypto entries if this occurs."
+        "detail": "Total market cap at $2.56T with -1.51% 24h change. A break below key psychological support levels ($2.4T) would signal a broader deleveraging event â€” pause all new crypto entries if this occurs."
       },
       {
         "event": "Regulatory / Policy Risk (US Crypto)",
         "severity": "MEDIUM",
-        "detail": "Trump crypto policy narrative is active per news cycle. Policy reversals, SEC actions, or Congressional developments could create sudden volatility. The positive narrative could also reverse — monitor for regulatory headlines."
+        "detail": "Trump crypto policy narrative is active per news cycle. Policy reversals, SEC actions, or Congressional developments could create sudden volatility. The positive narrative could also reverse â€” monitor for regulatory headlines."
       },
       {
         "event": "Alt Liquidity Crunch",
         "severity": "MEDIUM",
-        "detail": "In BTC-led Extreme Fear regimes, altcoin liquidity dries up rapidly. SOL, LINK, NEAR, DOT, and ADA may have significantly wider spreads than normal — verify spread and depth before any alt execution."
+        "detail": "In BTC-led Extreme Fear regimes, altcoin liquidity dries up rapidly. SOL, LINK, NEAR, DOT, and ADA may have significantly wider spreads than normal â€” verify spread and depth before any alt execution."
       }
     ]
   },
@@ -393,7 +393,7 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
   "risk_warnings": {
     "macro_events": [
       {
-        "event": "Fed Communication — Rate Hike Signal",
+        "event": "Fed Communication â€” Rate Hike Signal",
         "severity": "HIGH",
         "detail": "Fed's Musalem has explicitly raised the possibility of a rate hike (> 0 probability). Any further hawkish Fed speakers or surprise economic data (CPI, PCE, jobs) this week could trigger a sharp equity re-rating and crypto sell-off. Monitor Fed calendar closely."
       },
@@ -403,9 +403,9 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
         "detail": "Hormuz disruption is described as 'silently choking the US economy.' Energy supply shock + slower growth = stagflation scenario. This is negative for growth equities (tech), positive for gold/materials, and broadly negative for crypto in the short term."
       },
       {
-        "event": "Bond Market Volatility — Higher Neutral Rate Pricing",
+        "event": "Bond Market Volatility â€” Higher Neutral Rate Pricing",
         "severity": "MEDIUM-HIGH",
-        "detail": "Bond markets pricing a higher neutral rate per Musalem. Rising long-end yields compress equity P/E multiples, particularly for high-growth tech. TLT on the watchlist is a key barometer — watch for continued TLT weakness as a warning signal for equity valuations."
+        "detail": "Bond markets pricing a higher neutral rate per Musalem. Rising long-end yields compress equity P/E multiples, particularly for high-growth tech. TLT on the watchlist is a key barometer â€” watch for continued TLT weakness as a warning signal for equity valuations."
       },
       {
         "event": "Record High Equity Complacency Risk",
@@ -419,25 +419,25 @@ Equities present a reasonably constructive environment (VIX 15.72, S&P at record
       }
     ],
     "specific_risk_flags": [
-      "TLT is a canary — if TLT breaks down further, reduce all equity longs, especially rate-sensitive sectors.",
-      "Crypto Extreme Fear (22) means crypto positions should be sized at 50–60% of normal until sentiment recovers above 30.",
-      "NVDA post-Snowflake rally may be extended — wait for a 3–5% intraday pullback before initiating, do not chase the open.",
-      "No sector performance data available this cycle — sector rotation analysis is based on macro inference only. Do not deploy sector-specific ETF strategies until data is confirmed.",
-      "Earnings list is empty — verify with Alpaca/external source before trading individual names mid-week, as unexpected earnings can cause gap risk."
+      "TLT is a canary â€” if TLT breaks down further, reduce all equity longs, especially rate-sensitive sectors.",
+      "Crypto Extreme Fear (22) means crypto positions should be sized at 50â€“60% of normal until sentiment recovers above 30.",
+      "NVDA post-Snowflake rally may be extended â€” wait for a 3â€“5% intraday pullback before initiating, do not chase the open.",
+      "No sector performance data available this cycle â€” sector rotation analysis is based on macro inference only. Do not deploy sector-specific ETF strategies until data is confirmed.",
+      "Earnings list is empty â€” verify with Alpaca/external source before trading individual names mid-week, as unexpected earnings can cause gap risk."
     ],
     "max_position_size": {
       "equity_single_name": "5% of equity book (VIX 15.72 = standard sizing)",
       "equity_etf": "6% of equity book (diversified vehicle)",
       "crypto_btc": "60% of normal crypto position size (Extreme Fear regime)",
       "crypto_eth": "50% of normal crypto position size",
-      "crypto_alts": "30–40% of normal crypto position size",
+      "crypto_alts": "30â€“40% of normal crypto position size",
       "overall_crypto_book_deployment": "Do not exceed 70% of total crypto capital until Fear & Greed recovers above 30"
     }
   },
 
   "confidence_score": 5,
 
-  "confidence_reason": "Equities present a reasonably constructive environment (VIX 15.72, S&P at record highs, AI momentum) supporting a score of 6–7 on their own, but crypto conditions (Extreme Fear at 22, BTC-led risk-off, total market cap declining) drag the blended score down significantly — combined with a real Fed rate hike risk, Hormuz stagflation headwind, and missing sector/crypto scanner data that reduces signal quality, a score of 5 reflects cautious engagement with reduced position sizes across both books.",
+  "confidence_reason": "Equities present a reasonably constructive environment (VIX 15.72, S&P at record highs, AI momentum) supporting a score of 6â€“7 on their own, but crypto conditions (Extreme Fear at 22, BTC-led risk-off, total market cap declining) drag the blended score down significantly â€” combined with a real Fed rate hike risk, Hormuz stagflation headwind, and missing sector/crypto scanner data that reduces signal quality, a score of 5 reflects cautious engagement with reduced position sizes across both books.",
 
   "generated_at": "2026-05-28T18:00:00Z",
   "valid_until": "2026-06-04T18:00:00Z"
