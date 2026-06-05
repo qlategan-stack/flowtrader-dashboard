@@ -1,49 +1,49 @@
 {
-  "account_value": 78174.84,
+  "account_value": 78582.18,
   "total_usdt": 10000.0,
   "free_usdt": 10000.0,
   "funding_usdt": 0.0,
-  "position_value": 68174.84,
+  "position_value": 68582.18,
   "open_positions": 6,
   "positions": [
     {
       "currency": "BTC",
       "amount": 1.0,
-      "price_usd": 59153.52,
-      "value_usd": 59153.52
+      "price_usd": 59517.82,
+      "value_usd": 59517.82
     },
     {
       "currency": "ETH",
       "amount": 1.0,
-      "price_usd": 1540.97,
-      "value_usd": 1540.97
+      "price_usd": 1547.28,
+      "value_usd": 1547.28
     },
     {
       "currency": "LTC",
       "amount": 10.0,
-      "price_usd": 42.14,
-      "value_usd": 421.4
+      "price_usd": 42.29,
+      "value_usd": 422.9
     },
     {
       "currency": "XRP",
       "amount": 404.0,
-      "price_usd": 1.07,
-      "value_usd": 432.64
+      "price_usd": 1.08,
+      "value_usd": 436.28
     },
     {
       "currency": "LINK",
       "amount": 58.0,
-      "price_usd": 7.17,
-      "value_usd": 415.98
+      "price_usd": 7.18,
+      "value_usd": 416.56
     },
     {
       "currency": "ADA",
       "amount": 2312.0,
       "price_usd": 0.16,
-      "value_usd": 362.29
+      "value_usd": 365.3
     }
   ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-06-05T19:18:06.521301+00:00"
+  "fetched_at": "2026-06-05T19:33:08.597644+00:00"
 }
