@@ -275,9 +275,9 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <div class="hdr">
   <div class="hdr-brand">⚡ FlowTrader</div>
   <span class="badge-paper">PAPER</span>
-  <div class="hdr-pv">$99,650.77</div>
-  <div class="hdr-pl neg">▼ $1,580.75 (-1.59%)</div>
-  <div class="hdr-ts">Built 2026-06-06 08:17 UTC · auto-refreshes every 30 min</div>
+  <div class="hdr-pv">$99,650.75</div>
+  <div class="hdr-pl pos">▲ $0.00 (+0.00%)</div>
+  <div class="hdr-ts">Built 2026-06-06 08:47 UTC · auto-refreshes every 30 min</div>
 </div>
 
 <!-- ── THEME TOGGLE ────────────────────────────────────────────────────────── -->
@@ -342,8 +342,8 @@ tr:hover td{background:rgba(255,255,255,0.03)}
     </div>
     <div class="card">
       <div class="card-label">Day P&amp;L</div>
-      <div class="card-value neg">▼ $1,580.75</div>
-      <div class="card-sub">-1.59%</div>
+      <div class="card-value pos">▲ $0.00</div>
+      <div class="card-sub">+0.00%</div>
     </div>
     <div class="card">
       <div class="card-label">Cash</div>
@@ -369,11 +369,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
       <div class="gauge-sub">14% capacity used</div>
     </div>
     <div class="gauge">
-      <div class="gauge-label">🟡 Daily Loss Limit — $1,580.75 of $1,993.02</div>
+      <div class="gauge-label">🟢 Daily Loss Limit — $0.00 of $1,993.02</div>
       <div class="gauge-track">
-        <div class="gauge-fill" style="width:79%;background:#F5C400"></div>
+        <div class="gauge-fill" style="width:0%;background:#2D8C7A"></div>
       </div>
-      <div class="gauge-sub">79% of 2% daily limit used</div>
+      <div class="gauge-sub">0% of 2% daily limit used</div>
     </div>
   </div>
 
@@ -392,13 +392,13 @@ tr:hover td{background:rgba(255,255,255,0.03)}
     </div>
     <div class="card">
       <div class="card-label">Position Value</div>
-      <div class="card-value">$70,086.70</div>
+      <div class="card-value">$70,694.64</div>
       <div class="card-sub">in holdings</div>
     </div>
     <div class="card">
       <div class="card-label">Holdings</div>
       <div class="card-value">6</div>
-      <div class="card-sub">as of 2026-06-06 08:03 UTC</div>
+      <div class="card-sub">as of 2026-06-06 08:33 UTC</div>
     </div>
   </div>
   <div class="tbl-wrap">
@@ -416,38 +416,38 @@ tr:hover td{background:rgba(255,255,255,0.03)}
       <tr>
         <td><span class="sym">BTC</span></td>
         <td>1</td>
-        <td>$60,900.0000</td>
-        <td>$60,900.00</td>
+        <td>$61,404.6700</td>
+        <td>$61,404.67</td>
       </tr>
       <tr>
         <td><span class="sym">ETH</span></td>
         <td>1</td>
-        <td>$1,570.9500</td>
-        <td>$1,570.95</td>
+        <td>$1,589.2100</td>
+        <td>$1,589.21</td>
       </tr>
       <tr>
         <td><span class="sym">XRP</span></td>
         <td>404</td>
-        <td>$1.0900</td>
-        <td>$440.64</td>
-      </tr>
-      <tr>
-        <td><span class="sym">LINK</span></td>
-        <td>58</td>
-        <td>$7.3900</td>
-        <td>$428.45</td>
+        <td>$1.1000</td>
+        <td>$445.13</td>
       </tr>
       <tr>
         <td><span class="sym">LTC</span></td>
         <td>10</td>
-        <td>$42.7600</td>
-        <td>$427.60</td>
+        <td>$43.2700</td>
+        <td>$432.70</td>
+      </tr>
+      <tr>
+        <td><span class="sym">LINK</span></td>
+        <td>58</td>
+        <td>$7.4500</td>
+        <td>$431.93</td>
       </tr>
       <tr>
         <td><span class="sym">ADA</span></td>
         <td>2312</td>
         <td>$0.1600</td>
-        <td>$362.52</td>
+        <td>$369.69</td>
       </tr>
       </tbody>
     </table>
@@ -455,7 +455,7 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 
   <div class="footer">
     <span>⚡ FlowTrader · PAPER mode · profile: medium_safety · 2026-05-15 · positions-dashboard-v1</span>
-    <span>Built 2026-06-06 08:17 UTC</span>
+    <span>Built 2026-06-06 08:47 UTC</span>
   </div>
 
 </div><!-- /page -->
@@ -470,9 +470,9 @@ function ftTheme(t, btn) {
 }
 
 // ── Equity chart ──────────────────────────────────────────────────────────────
-const chartDates  = ["2026-05-05", "2026-05-06", "2026-05-07", "2026-05-08", "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15", "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21", "2026-05-22", "2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04"];
-const chartEquity = [100000.0, 99968.24, 100152.99, 99583.55, 98293.19, 98257.96, 98414.6, 98544.68, 98619.49, 98457.8, 98283.96, 98643.89, 98683.13, 99062.18, 100080.42, 99962.64, 100703.73, 100884.14, 101242.31, 101255.7, 101634.3, 101231.52];
-const chartPL     = [0.0, -31.76, 184.75, -569.44, -1290.36, -35.23, 156.64, 130.08, 74.81, -161.69, -173.84, 359.93, 39.24, 379.05, 1018.24, -117.78, 741.09, 180.41, 358.17, 13.39, 378.6, -402.78];
+const chartDates  = ["2026-05-05", "2026-05-06", "2026-05-07", "2026-05-08", "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15", "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21", "2026-05-22", "2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04", "2026-06-05"];
+const chartEquity = [100000.0, 99968.24, 100152.99, 99583.55, 98293.19, 98257.96, 98414.6, 98544.68, 98619.49, 98457.8, 98283.96, 98643.89, 98683.13, 99062.18, 100080.42, 99962.64, 100703.73, 100884.14, 101242.31, 101255.7, 101634.3, 101231.52, 99650.75];
+const chartPL     = [0.0, -31.76, 184.75, -569.44, -1290.36, -35.23, 156.64, 130.08, 74.81, -161.69, -173.84, 359.93, 39.24, 379.05, 1018.24, -117.78, 741.09, 180.41, 358.17, 13.39, 378.6, -402.78, -1580.77];
 
 if (chartDates.length > 0) {
   const ctx = document.getElementById('equityChart').getContext('2d');
