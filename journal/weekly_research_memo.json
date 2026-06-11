@@ -1,9 +1,9 @@
 {
-  "error": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_011CbvPcLQYGTD9ogfdc7QMe'}",
+  "error": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_011CbxF8t17qS39JvRPwJJk6'}",
   "failure_kind": "api_error",
   "market_regime": "UNKNOWN",
   "confidence_score": 5,
   "confidence_reason": "Memo generation failed (AuthenticationError); using neutral confidence so sizing is not penalised for a technical outage. Trade off live indicators.",
-  "generated_at": "2026-06-10T18:45:33.721990-04:00",
-  "valid_until": "2026-06-17T18:45:33.721990-04:00"
+  "generated_at": "2026-06-11T18:15:38.002797-04:00",
+  "valid_until": "2026-06-18T18:15:38.002797-04:00"
 }
