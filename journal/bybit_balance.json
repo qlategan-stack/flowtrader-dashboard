@@ -1,12 +1,19 @@
 {
-  "account_value": 86188.67,
-  "total_usdt": 81290.67,
-  "free_usdt": 81290.67,
+  "account_value": 201569.76,
+  "total_usdt": 195650.66,
+  "free_usdt": 195650.66,
   "funding_usdt": 0.0,
-  "position_value": 4898.0,
-  "open_positions": 0,
-  "positions": [],
+  "position_value": 5919.1,
+  "open_positions": 1,
+  "positions": [
+    {
+      "currency": "NEAR",
+      "amount": 175.0,
+      "price_usd": 2.34,
+      "value_usd": 409.32
+    }
+  ],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-06-16T13:33:07.996912+00:00"
+  "fetched_at": "2026-06-16T14:33:07.218066+00:00"
 }
