@@ -125,7 +125,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
     <span class="pill">Report date: 2026-05-22</span>
-    <span class="pill">Generated: 2026-06-16 22:19 UTC</span>
+    <span class="pill">Generated: 2026-06-17 09:06 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,7 +135,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-06-10 → 2026-06-16</div>
+    <div class="summary-range">2026-06-11 → 2026-06-17</div>
   </div>
   <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
@@ -169,7 +169,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong momentum setup but was blocked from executing because you still held 33 open shares of AAPL from a prior position — the system won&#x27;t layer into existing trades, so the signal never had a chance to fire. Before the session opens, audit your open positions and close or flatten any lingering AAPL shares if you want the bot to treat it as a clean re-entry opportunity.</div>
+  <div class="lesson-body">The bot correctly identified a strong momentum setup with all three triggers firing, but the trade was rejected because you still held 33 shares of AAPL from a prior position — the system won&#x27;t pyramid into existing holdings. Before the bot attempts re-entry on any symbol, check your open positions and close any lingering shares first so a clean signal doesn&#x27;t go to waste on a preventable rejection.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -186,7 +186,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal logic was actually sound — a momentum score of 4 with a trending regime (ADX=37.4) is a legitimate setup, but the trade was blocked entirely because you were already holding 33 shares of AAPL, triggering the no-add-to-position rule before execution could proceed. Before the next session, check your open positions against your watchlist so you can either close the existing AAPL position intentionally or consciously pass on the signal rather than losing the opportunity at the last moment to a preventable rejection.</div>
+  <div class="lesson-body">The bot&#x27;s reasoning was actually sound for a momentum setup, but the trade never executed because you still held 33 shares of AAPL from a prior position — a position management rule, not a signal failure. Before the bot can re-enter AAPL, you need to close that existing holding first, so make it a habit to check your open positions at the start of each session to avoid blocking otherwise valid setups.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -203,7 +203,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its no-add-to-position rule — the real mistake was entering a momentum trade on AAPL while already holding 33 shares from a prior position that hadn&#x27;t been closed. Before the bot attempts any new entry on a symbol, verify your open positions and close any existing holdings first so a valid signal doesn&#x27;t get wasted on a preventable execution error.</div>
+  <div class="lesson-body">The bot correctly identified a strong momentum signal but was blocked from acting on it because you were already holding 33 shares of AAPL — the execution failed due to a position management rule, not a flawed signal. Next time, monitor your open positions before the session so you can either close an existing holding ahead of a fresh signal or consciously decide to let the current position ride rather than losing your entry window.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -220,7 +220,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of faulty signal logic — the bot actually identified a valid momentum continuation setup — but because you already held 33 shares of AAPL, triggering the no-add-to-existing-positions rule before the order ever reached the market. Before the bot scans for new entries, make it a habit to check your open positions dashboard first, and if you want to increase exposure to a live position, close it cleanly and let the bot re-enter with a fresh signal.</div>
+  <div class="lesson-body">The bot correctly identified a momentum setup but was blocked from executing because you still held an open position of 33 shares in AAPL — the real failure here was a position management oversight, not a signal problem. Before the session opens, audit all existing holdings and close or reconcile any lingering positions in symbols your bot is actively scanning, so execution isn&#x27;t rejected when a valid signal fires.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
@@ -237,7 +237,7 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 </div>
 <div class="lesson">
   <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of faulty signal logic, but because the bot correctly enforced its single-position rule — the real mistake was entering the session with an unclosed AAPL position that blocked an otherwise valid setup. Before the session opens, verify that any existing positions in your watchlist symbols are intentionally held or fully closed, so a strong signal like this one doesn&#x27;t get wasted on a rule violation.</div>
+  <div class="lesson-body">The trade was rejected not because of a flawed signal, but because the bot correctly enforced its single-position rule — the real issue is that you still hold 33 shares of AAPL from a prior entry, blocking any new setup regardless of signal quality. Before the next session, close or confirm the status of any open AAPL position so a strong qualifying signal like this one isn&#x27;t wasted on a preventable execution block.</div>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
