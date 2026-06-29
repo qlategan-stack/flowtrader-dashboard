@@ -1,13 +1,13 @@
 {
   "report_date": "2026-05-22",
   "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
-  "generated_at": "2026-06-27T21:11:28Z",
+  "generated_at": "2026-06-29T09:02:35Z",
   "failure_count": 5,
   "loss_count": 0,
   "error_count": 5,
   "summary_7day": {
-    "start_date": "2026-06-21",
-    "end_date": "2026-06-27",
+    "start_date": "2026-06-23",
+    "end_date": "2026-06-29",
     "closed_trades": 0,
     "wins": 0,
     "losses": 0,
