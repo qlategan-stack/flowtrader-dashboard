@@ -1,284 +1,253 @@
 {
   "market_regime": {
-    "trending_or_ranging": "Trending \u2014 Dow hit record highs, Meta surging on AI-cloud narrative, Industrials and Technology leading. Broad equity market is in a risk-on trending phase with selective sector strength.",
-    "mean_reversion_active_equities": true,
-    "mean_reversion_notes": "Mean reversion IS active for equities. WMT (RSI 25.9) and DBC (RSI 27.6) are strongly oversold and qualify as high-conviction mean reversion candidates. Sector breadth is partial (only XLI and XLK have clean weekly data), but the macro tape is constructive enough to engage oversold setups with disciplined stops.",
-    "vix_interpretation": "VIX at 16.59 is firmly in the NORMAL range (below 20). This is healthy, not complacent. No elevated fear premium. Conditions support standard position sizing \u2014 no need to scale down due to volatility. Avoid leveraging up aggressively; remain disciplined.",
-    "vix_position_sizing_guidance": "Standard sizing permitted. Suggest 80-100% of normal per-trade allocation given VIX 16.59. No haircut required."
+    "equity_trend_or_range": "Trending \u2014 Dow hitting record highs, Technology sector leading (+1.4% weekly), Meta surging on AI-cloud catalysts. Broader tape is constructive with selective strength.",
+    "mean_reversion_strategy_status": "ACTIVE \u2014 VIX at 16.59 is well within normal range, confirming low systemic fear. Mean reversion setups are valid, particularly in deeply oversold names (HAL RSI 26.96, USO RSI 29.17). Sector breadth data is incomplete but Tech leadership is confirmed.",
+    "vix_interpretation": "VIX 16.59 = NORMAL/HEALTHY. This level supports full position sizing. No need to apply vol-based haircuts. Market is not pricing tail risk, so mean reversion signals carry higher reliability than they would above VIX 25.",
+    "position_sizing_guidance": "Full standard position sizes permitted. No VIX-driven reduction warranted. Apply normal per-trade risk limits (e.g. 1-2% of book per equity position)."
   },
   "top_opportunities": [
     {
       "rank": 1,
-      "asset_class": "equity",
-      "symbol": "WMT",
+      "asset_class": "EQUITY",
+      "symbol": "HAL",
       "direction": "LONG",
-      "setup_type": "Mean Reversion",
+      "setup_type": "Mean Reversion \u2014 Extreme Oversold",
       "signal_score": 2,
-      "signals_fired": [
-        "RSI=25.9 \u2014 strongly oversold"
-      ],
-      "rationale": "WMT is at RSI 25.9, one of the most extreme oversold readings in the broader scan. As a mega-cap defensive consumer staples name with consistent cash flows, sharp pullbacks have historically reverted. No earnings risk this week. VIX is benign, supporting entry. A snapback to RSI 40-50 zone is the base case target.",
-      "catalyst": "Extreme oversold technicals; defensive quality name unlikely to sustain such a deep selloff without fundamental deterioration not evidenced in current data.",
-      "position_size_adjustment": "Standard \u2014 no reduction needed given VIX 16.59. Cap single position at 5% of equity book.",
-      "stop_guidance": "Tight stop below recent lows; trail up if RSI recovers above 35."
+      "rsi": 26.96,
+      "rationale": "Halliburton is printing an RSI of 26.96 \u2014 deeply into oversold territory historically associated with snap-back rallies in Energy/Oil Services. USO (crude proxy) is also at RSI 29.17, suggesting the sector selloff may be approaching exhaustion. No earnings risk flagged this week. Energy has been under distribution but at these RSI extremes, mean reversion edge is statistically elevated.",
+      "catalysts": "Oil price stabilization, any Middle East supply headline, energy demand data. Also, Michael Burry short positions in TSLA/NVDA per news could rotate capital toward unloved cyclicals.",
+      "suggested_position_size": "Standard (1-2% of equity book). Add only on confirmation of intraday bounce \u2014 do not catch a falling knife blindly.",
+      "key_risk": "Oil could continue to trend lower; macro demand fears could suppress any bounce. Use tight stop below recent lows."
     },
     {
       "rank": 2,
-      "asset_class": "equity",
-      "symbol": "DBC",
+      "asset_class": "EQUITY",
+      "symbol": "USO",
       "direction": "LONG",
-      "setup_type": "Mean Reversion",
+      "setup_type": "Mean Reversion \u2014 Extreme Oversold",
       "signal_score": 2,
-      "signals_fired": [
-        "RSI=27.6 \u2014 strongly oversold"
-      ],
-      "rationale": "DBC (broad commodities ETF) at RSI 27.6 represents a macro-level oversold condition across the commodity complex. With the dollar and macro crosswinds creating dislocations, a mean reversion bounce is well-supported technically. Also provides portfolio diversification away from pure equity beta.",
-      "catalyst": "Commodities broadly oversold; potential for short-covering + macro stabilization bounce. BTC reclaiming $60K hints at broader risk appetite returning.",
-      "position_size_adjustment": "Slightly reduced to ~4% of equity book given commodity ETF volatility vs. single-stock mean reversion.",
-      "stop_guidance": "Stop below 52-week low or 3% drawdown from entry, whichever is tighter."
+      "rsi": 29.17,
+      "rationale": "USO is the direct crude oil ETF and mirrors HAL's signal \u2014 RSI 29.17 places it in the bottom decile of its historical distribution. A paired trade (HAL + USO) or standalone USO position provides a liquid, diversified play on energy mean reversion without single-stock idiosyncratic risk.",
+      "catalysts": "Any positive oil inventory draw, OPEC+ commentary, or USD weakness could trigger a 3-5% relief rally from these levels.",
+      "suggested_position_size": "Standard (1-2% of equity book). USO is highly liquid and suitable for the bot's execution constraints.",
+      "key_risk": "USO already on watchlist \u2014 confirm no duplicate position. Downtrend could persist if macro deteriorates."
     },
     {
       "rank": 3,
-      "asset_class": "equity",
-      "symbol": "META",
+      "asset_class": "EQUITY",
+      "symbol": "XLK",
       "direction": "LONG",
-      "setup_type": "Momentum / Trending",
+      "setup_type": "Momentum / Sector Leader",
       "signal_score": null,
-      "signals_fired": [
-        "News catalyst: Dow record, Meta soaring on AI-cloud bet"
-      ],
-      "rationale": "META is explicitly cited in today's market news as the headline mover driving the Dow to a record. AI-cloud investment thesis gaining traction. Momentum is strong. While not a mean reversion setup, the bot's watchlist includes META and current news flow provides a high-conviction momentum entry on pullbacks. Michael Burry shorting Nvidia/Tesla (per news) but NOT META reinforces relative strength.",
-      "catalyst": "AI-cloud capital expenditure announcement driving institutional re-rating. Record Dow underscores broad risk-on sentiment favoring growth names.",
-      "position_size_adjustment": "Standard 5% equity book. Momentum setups carry more gap risk \u2014 use limit orders on intraday pullbacks rather than chasing.",
-      "stop_guidance": "Stop 4-5% below entry; do not hold through any unexpected macro shock given elevated multiple."
+      "rsi": null,
+      "rationale": "Technology is the only sector with confirmed positive weekly data (+1.4%). With Dow at record highs and Meta surging on AI-cloud bets, the Tech/AI theme is driving market leadership. XLK provides broad sector exposure with strong liquidity. Momentum strategy complements the mean reversion book as a trending position.",
+      "catalysts": "AI infrastructure spending cycle, Meta AI-cloud announcement, Nvidia continued dominance narrative despite Burry shorts (which are contrarian noise).",
+      "suggested_position_size": "Reduced to 1% of equity book given this is a momentum rather than mean reversion trade \u2014 not the bot's primary edge.",
+      "key_risk": "Burry short positions in NVDA/TSLA (ETF exposure) could trigger sentiment shift. Any negative AI capex news would hurt XLK quickly."
     },
     {
       "rank": 4,
-      "asset_class": "crypto",
+      "asset_class": "CRYPTO",
       "symbol": "BTC/USDT",
       "direction": "LONG",
-      "setup_type": "Contrarian Mean Reversion / Sentiment Extreme",
+      "setup_type": "Contrarian Mean Reversion \u2014 Extreme Fear",
       "signal_score": null,
-      "signals_fired": [
-        "Fear & Greed = 11 (Extreme Fear)",
-        "Bitcoin reclaiming $60K key level per news",
-        "BTC dominance 55.71% \u2014 capital consolidating in BTC"
-      ],
-      "rationale": "Fear & Greed at 11 is historically a high-probability contrarian buy zone. BTC reclaimed $60K per today's news with analysts flagging buy signals. BTC dominance at 55.71% confirms capital is flowing into BTC as the safest crypto asset in a risk-off environment. Q2 ended -11% for BTC \u2014 oversold on longer timeframe. Live scanner shows NO_DATA (data feed issue), so treat as directional macro trade, not a technical signal trade. Size conservatively.",
-      "catalyst": "Key $60K reclaim; Extreme Fear contrarian buy zone; dominance trend favoring BTC over alts; XRP ETF inflows positive for crypto sentiment broadly.",
-      "position_size_adjustment": "REDUCED \u2014 50% of normal crypto position size due to NO_DATA from live scanner. Do not enter without confirming price action manually. Treat as speculative-grade sizing.",
-      "stop_guidance": "Hard stop on close below $58,000. No leverage \u2014 spot only."
+      "rsi": null,
+      "rationale": "Fear & Greed at 11 (Extreme Fear) is a historically reliable contrarian long signal for BTC. News confirms BTC has reclaimed $60,000 with analysts flagging buy signals. BTC ended Q2 down 11% \u2014 Q3 historically sees recovery. Dominance at 55.72% confirms BTC is absorbing flows, making it the highest-conviction crypto long in a risk-off crypto environment. XRP ETF inflows for 3 straight months despite price drop signals institutional accumulation at lows.",
+      "catalysts": "BTC reclaim of $60K psychological level, rare bottom signals per multiple analysts, XRP ETF positive flow momentum, Q3 seasonal tailwind.",
+      "suggested_position_size": "REDUCED \u2014 50% of normal crypto position size given NO_DATA from live scanner. Do not deploy full size until scanner confirms price/RSI data. Manual price verification required before execution.",
+      "key_risk": "Scanner returning NO_DATA for all crypto pairs \u2014 critical data failure. Bot MUST NOT execute crypto trades without live price confirmation. BTC could retest lows below $60K if macro deteriorates."
     },
     {
       "rank": 5,
-      "asset_class": "crypto",
-      "symbol": "ETH/USDT",
+      "asset_class": "CRYPTO",
+      "symbol": "XRP/USDT",
       "direction": "LONG",
-      "setup_type": "Contrarian / BTC-led recovery play",
+      "setup_type": "Contrarian \u2014 Positive ETF Flow Divergence",
       "signal_score": null,
-      "signals_fired": [
-        "Fear & Greed = 11 (Extreme Fear)",
-        "Analysts flagging buy signals across ETH per news",
-        "ETH dominance 9.0% \u2014 historically low, potential coiled spring if BTC stabilizes"
-      ],
-      "rationale": "ETH at 9% dominance is near historically suppressed levels. If BTC stabilizes and risk appetite returns, ETH typically outperforms in the recovery phase. News explicitly cites analysts flashing buy signals on ETH. Scanner data is unavailable \u2014 this is a macro-driven thesis, not a technical signal. Size cautiously.",
-      "catalyst": "BTC stabilization at $60K could unlock ETH catch-up trade; Extreme Fear = forced seller exhaustion; analyst buy calls on ETH in today's news.",
-      "position_size_adjustment": "REDUCED \u2014 40% of normal crypto position size. ETH is higher beta than BTC and scanner data is absent. Monitor BTC first; ETH entry only after BTC confirms hold above $60K.",
-      "stop_guidance": "Stop on daily close below recent lows. Spot only."
+      "rsi": null,
+      "rationale": "XRP ETFs recording 3rd straight month of positive inflows despite an 18% price drop signals strong institutional accumulation and a classic price-flow divergence that often precedes reversals. This is a secondary position to BTC, sized smaller given alts underperforming in BTC-led regime.",
+      "catalysts": "Sustained ETF inflows, any positive regulatory clarity, BTC recovery lifting altcoin sentiment.",
+      "suggested_position_size": "SMALL \u2014 25% of normal crypto position size. Alt-unfavorable regime limits conviction. Only enter after BTC confirms stability above $60K.",
+      "key_risk": "BTC-led regime means alts lag. 18% price drop could continue. All scanner data is null \u2014 no technical confirmation available."
     },
     {
       "rank": 6,
-      "asset_class": "crypto",
-      "symbol": "XRP/USDT",
+      "asset_class": "CRYPTO",
+      "symbol": "ETH/USDT",
       "direction": "LONG",
-      "setup_type": "Contrarian / ETF inflow support",
+      "setup_type": "Contrarian Mean Reversion \u2014 Secondary to BTC",
       "signal_score": null,
-      "signals_fired": [
-        "XRP ETFs record third consecutive positive inflow month despite 18% price drop",
-        "Fear & Greed = 11 \u2014 extreme fear zone"
-      ],
-      "rationale": "XRP ETFs logged a third straight month of positive inflows even as price dropped 18%. This institutional accumulation divergence (price down, ETF flows up) is a classic bullish divergence setup. The institutional bid is sticky. Price may have overcorrected. Speculative contrarian long with tight risk control.",
-      "catalyst": "Institutional ETF inflow divergence vs. price; Extreme Fear = retail panic selling into institutional hands; regulatory clarity improving for XRP historically.",
-      "position_size_adjustment": "MINIMUM sizing \u2014 25-30% of normal crypto position. XRP is high-volatility alt; scanner data absent; wait for confirmed BTC stabilization before entry.",
-      "stop_guidance": "Stop 8% below entry. No averaging down without new data."
+      "rsi": null,
+      "rationale": "ETH at 9.01% dominance suggests significant relative underperformance vs BTC. At Extreme Fear levels, ETH historically follows BTC recoveries with 1-3 day lag. Liquidity is deep and it remains the #2 most traded crypto. Analysts flagging buy signals across BTC/ETH/XRP/SOL per news.",
+      "catalysts": "BTC recovery spillover, any Ethereum ecosystem news, analyst buy signal confluence per Benzinga.",
+      "suggested_position_size": "SMALL \u2014 25% of normal crypto position. Wait for BTC confirmation and scanner data restoration before entry.",
+      "key_risk": "ETH dominance at multi-year lows may indicate structural rotation away from ETH. Scanner NO_DATA means no technical entry signal is confirmed."
     }
   ],
   "watchlist_changes": {
     "equity": {
-      "add": [
+      "ADD": [
         {
-          "symbol": "WMT",
-          "reason": "RSI 25.9 \u2014 extreme oversold mean reversion candidate not currently on watchlist. High conviction setup."
-        },
-        {
-          "symbol": "DBC",
-          "reason": "RSI 27.6 \u2014 broad commodity ETF oversold. Adds macro diversification and valid mean reversion setup."
+          "symbol": "HAL",
+          "reason": "RSI 26.96 \u2014 extreme oversold, strong mean reversion candidate. Not currently on watchlist."
         },
         {
           "symbol": "CAT",
-          "reason": "Industrials (XLI) is the top-performing sector this week at +1.75%. CAT is a bellwether name in that sector. Monitor for pullback entries. Note: Michael Burry is reportedly shorting CAT-exposed ETFs \u2014 flag as higher risk, add to watchlist for monitoring only."
+          "reason": "Flagged in Burry short news (ETF exposure) \u2014 monitor for volatility and potential mean reversion after any short-driven dip. Add to monitor list only, not for immediate trade."
         }
       ],
-      "remove": [],
-      "avoid_this_week": [
-        {
-          "symbol": "NVDA",
-          "reason": "Michael Burry has opened a short position via ETFs heavily exposed to NVDA. Momentum may face headwinds. Keep on watchlist but reduce position sizing and avoid fresh longs near highs."
-        },
-        {
-          "symbol": "TSLA",
-          "reason": "Burry short exposure via ETFs includes TSLA. Elevated headline risk. Avoid new long entries until clearer technicals emerge."
-        }
-      ],
-      "earnings_avoid": []
+      "REMOVE": [],
+      "AVOID_EARNINGS": [],
+      "NOTES": "USO already on watchlist \u2014 no change needed. NVDA and TSLA flagged in Burry short news; maintain on watchlist but flag elevated short-squeeze/short-pressure risk. AAPL, MSFT, META remain core watchlist \u2014 META showing momentum on AI-cloud news, watch for pullback entry."
     },
     "crypto": {
-      "add": [],
-      "remove": [],
-      "avoid_this_week": [
-        {
-          "pair": "DOT/USDT",
-          "reason": "DOT has very low liquidity relative to peers and is deeply underperforming in a BTC-dominant regime. No scanner data. Avoid."
-        },
-        {
-          "pair": "NEAR/USDT",
-          "reason": "Micro-cap alt in an alt-negative regime. BTC dominance rising means capital leaving NEAR-type assets. Avoid fresh entries."
-        },
-        {
-          "pair": "ADA/USDT",
-          "reason": "Low beta recovery in BTC-led regime. ADA historically lags BTC recoveries. Avoid until BTC dominance peaks and reverses."
-        }
-      ],
-      "notes": "All crypto scanner data returned NO_DATA this session. Do NOT execute any crypto trades based purely on this brief without first confirming live price feeds and indicator data are restored on Bybit. Manual verification required before any crypto order is submitted."
+      "ADD": [],
+      "REMOVE": [],
+      "AVOID": [],
+      "NOTES": "All 9 crypto pairs returning NO_DATA from live scanner. This is a CRITICAL DATA INTEGRITY issue. No watchlist additions are recommended until scanner is operational. Current watchlist (BTC, ETH, XRP, LTC, SOL, ADA, DOT, LINK, NEAR) is appropriate for a mean reversion crypto strategy \u2014 all are liquid, Bybit-listed pairs. Do not add stablecoins, wrapped tokens, or low-liquidity pairs. Consider adding DOGE/USDT or MATIC/USDT if scanner is restored and signals emerge, but only after data validation."
     }
   },
   "sector_focus": {
-    "best_mean_reversion_conditions": [
+    "best_mean_reversion_sectors": [
       {
-        "sector": "Consumer Staples",
-        "etf": "XLP",
-        "rationale": "WMT at RSI 25.9 is a Consumer Staples name. The sector has likely been broadly sold off with WMT leading the decline. Defensive quality names at extreme oversold levels in a benign VIX environment are textbook mean reversion candidates. Highest conviction sector for the week."
+        "sector": "Energy",
+        "etfs": [
+          "XLE",
+          "USO",
+          "HAL"
+        ],
+        "rationale": "HAL RSI 26.96 and USO RSI 29.17 are the strongest oversold signals in the dataset. Energy has sold off sharply and is statistically overdue for a relief rally. Best mean reversion opportunity of the week.",
+        "confidence": "HIGH"
       },
       {
-        "sector": "Industrials",
-        "etf": "XLI",
-        "rationale": "XLI was the top-performing sector at +1.75% this week. Rather than a mean reversion play, this is a relative strength / momentum sector. Look for intraday dips in XLI or XLI-constituent names (CAT, DE, HON) to add exposure in the direction of the trend."
+        "sector": "Technology",
+        "etfs": [
+          "XLK",
+          "NVDA",
+          "AMD"
+        ],
+        "rationale": "XLK leading with +1.4% weekly gain. While primarily a momentum trade, any intraweek pullback in NVDA or AMD (from Burry short pressure) could create mean reversion long entries within a bullish trend. Secondary opportunity.",
+        "confidence": "MEDIUM"
       },
-      {
-        "sector": "Materials / Commodities",
-        "etf": "XLB / DBC",
-        "rationale": "DBC at RSI 27.6 suggests broad commodity overselling. Materials may be bottoming alongside commodities. XLB likely oversold in sympathy. Mean reversion bounce play."
-      }
-    ],
-    "avoid_or_underweight": [
       {
         "sector": "Real Estate",
-        "etf": "XLRE",
-        "rationale": "XLRE -0.74% this week \u2014 only sector with confirmed negative weekly data. Rate-sensitive sector underperforming in a rising equity tape. Avoid."
+        "etfs": [
+          "XLRE"
+        ],
+        "rationale": "XLRE down 0.74% weekly \u2014 mild underperformance. Rate-sensitive sector that could benefit from any dovish Fed signals. Monitor but not a primary mean reversion trade this week \u2014 the decline is not yet at extreme levels.",
+        "confidence": "LOW-MEDIUM"
+      }
+    ],
+    "sectors_to_avoid_or_underweight": [
+      {
+        "sector": "Financials (XLF)",
+        "reason": "Data unavailable for weekly change. Fed political noise (Warren/Bowman dispute, Warsh adviser appointment) creates regulatory uncertainty. Avoid until data and clarity improve."
       },
       {
-        "sector": "Technology (selective caution)",
-        "etf": "XLK",
-        "rationale": "XLK +1.4% is solid but Burry short positions in Nvidia/Tesla-heavy ETFs create headline risk. Prefer META over NVDA within tech. Don't wholesale short the sector \u2014 just be selective."
+        "sector": "Consumer Discretionary (XLY)",
+        "reason": "Data unavailable. TSLA exposure flagged in Burry shorts. Avoid until clearer signal."
       }
     ]
   },
   "crypto_outlook": {
-    "regime": "Risk-off / BTC-led recovery attempt",
+    "regime": "BTC-led / Risk-off",
     "mean_reversion_active_crypto": false,
-    "sentiment_read": "Fear & Greed Index at 11 (Extreme Fear) with a -4 change in 24 hours signals peak pessimism in the crypto market \u2014 historically one of the highest-probability contrarian buy zones over a 2-4 week horizon. However, the deteriorating daily trend (-4) means the bottom may not be fully in; patience and confirmation are required before committing capital.",
-    "dominance_read": "BTC dominance at 55.71% reflects capital flight from altcoins into Bitcoin as the perceived 'safe haven' within crypto. This BTC-led regime historically persists until BTC itself stabilizes and bounces, at which point dominance peaks and alts begin outperforming. ETH at 9.0% dominance is historically low and could be a leading indicator of alt-season potential once BTC confirms a bottom.",
+    "sentiment_read": "Fear & Greed index at 11 (Extreme Fear) with a further 4-point decline in 24 hours signals maximum retail capitulation \u2014 historically a contrarian buy zone for patient long-term entries. However, the severity and momentum of fear (still declining) suggests the bottom may not be confirmed yet, and a brief additional flush before reversal is possible.",
+    "dominance_read": "BTC dominance at 55.72% confirms a classic BTC-led risk-off regime where capital consolidates into the market leader and altcoins bleed relative value. ETH at 9.01% is notably weak. Until BTC stabilizes and dominance peaks/reverses, altcoin long positions carry elevated risk of underperformance even in a recovery scenario.",
     "top_crypto_opportunities": [
       {
         "pair": "BTC/USDT",
         "direction": "LONG",
-        "rationale": "Primary opportunity: BTC reclaiming $60K key level per today's news, Extreme Fear contrarian signal, BTC dominance consolidating flows. Best risk-reward in the crypto book this week. Confirm price feed before entry.",
-        "sizing": "50% of normal \u2014 NO_DATA scanner caveat applies",
-        "key_level_to_watch": "$60,000 \u2014 must hold on daily close"
-      },
-      {
-        "pair": "ETH/USDT",
-        "direction": "LONG",
-        "rationale": "Secondary opportunity: ETH at 9% dominance is historically compressed. If BTC holds $60K, ETH is the highest-beta clean recovery play among majors. Entry only after BTC confirmation.",
-        "sizing": "40% of normal \u2014 secondary to BTC confirmation",
-        "key_level_to_watch": "BTC $60K must hold; then ETH above its own recent resistance"
+        "rationale": "Primary crypto opportunity. Extreme Fear at 11 is a historically reliable contrarian long trigger. BTC reclaimed $60K per news, analysts flagging rare bottom signals, and Q3 seasonality favors recovery after Q2's -11% drawdown. Highest liquidity and BTC-led regime makes this the only high-conviction crypto trade this week.",
+        "entry_condition": "Only enter after live scanner data is restored and price is confirmed above $60,000. Wait for RSI confirmation ideally below 35.",
+        "position_size": "50% of normal crypto allocation pending scanner restoration"
       },
       {
         "pair": "XRP/USDT",
         "direction": "LONG",
-        "rationale": "Tertiary opportunity: Institutional ETF inflow divergence (3 consecutive positive months vs. -18% price) is a strong signal. Price may be oversold relative to fundamental institutional demand.",
-        "sizing": "25-30% of normal \u2014 highest uncertainty, speculative",
-        "key_level_to_watch": "Watch for price stabilization and volume confirmation"
+        "rationale": "Three consecutive months of ETF inflows despite 18% price decline is a strong institutional accumulation signal and price-flow divergence. Asymmetric setup if BTC stabilizes. Secondary position only.",
+        "entry_condition": "Only enter after BTC confirms $60K hold and scanner data restored. XRP must show RSI below 40.",
+        "position_size": "25% of normal crypto allocation"
+      },
+      {
+        "pair": "ETH/USDT",
+        "direction": "LONG",
+        "rationale": "Follows BTC recovery with lag. Deep underperformance at 9.01% dominance creates mean reversion potential if crypto sentiment shifts. Analysts flagging multi-asset buy signals.",
+        "entry_condition": "Third priority. Enter only after BTC and XRP positions are established and confirmed. Scanner data required.",
+        "position_size": "25% of normal crypto allocation"
       }
     ],
     "crypto_risk_warnings": [
       {
-        "event": "Live Scanner Data Failure \u2014 ALL PAIRS NO_DATA",
+        "event": "CRITICAL: Live Scanner NO_DATA for All Crypto Pairs",
+        "severity": "CRITICAL",
+        "detail": "All 9 crypto pairs (BTC, ETH, XRP, LTC, SOL, ADA, DOT, LINK, NEAR) are returning NO_DATA with null prices, null RSI, null volume, and 0.0 24h change. The bot MUST NOT execute any crypto trades until this data feed is restored and validated. This likely indicates a Bybit API connection issue, rate limiting, or symbol mapping error. Immediate investigation required."
+      },
+      {
+        "event": "BTC Q2 Down 11% \u2014 Trend Not Yet Confirmed Reversed",
         "severity": "HIGH",
-        "detail": "Every crypto pair in the watchlist returned NO_DATA from the live scanner with 0.0 volume and 0.0 price change. This is a critical data feed failure. DO NOT execute any automated crypto trades until the Bybit data feed is confirmed live and indicators are recalculating correctly. Manual override required."
+        "detail": "Despite the $60K reclaim and analyst buy signals, BTC closed Q2 with an 11% loss. The three factors cited (macro headwinds, regulatory pressure, liquidity drain) have not been fully resolved. Fear & Greed still declining (-4 in 24h). A retest of lows below $60K cannot be ruled out before a sustained recovery."
       },
       {
-        "event": "Bitcoin Q2 ended -11%",
+        "event": "Altcoin Underperformance in BTC-Led Regime",
         "severity": "MEDIUM",
-        "detail": "BTC ended Q2 down 11% \u2014 three identified macro factors cited in news. Continued quarterly negative momentum could attract further institutional selling in early Q3. The $60K reclaim is encouraging but must be sustained."
-      },
-      {
-        "event": "Extreme Fear trending worse (-4 in 24h)",
-        "severity": "MEDIUM",
-        "detail": "Fear & Greed dropped 4 points in a single day to reach 11. While extreme fear is a contrarian buy signal historically, rapidly deteriorating sentiment can precede capitulation spikes. Position sizing must remain conservative until sentiment stabilizes."
+        "detail": "BTC dominance at 55.72% with ETH at 9.01% confirms capital is not rotating into alts. SOL, ADA, DOT, LINK, NEAR positions should be sized small or avoided entirely this week. LTC has limited catalysts. Only BTC, XRP (ETF flow divergence), and ETH (liquidity) warrant consideration."
       },
       {
         "event": "Michael Burry Short Positions in NVDA/TSLA ETFs",
-        "severity": "LOW",
-        "detail": "While primarily an equity risk, Burry's bearish positioning signals broad tech/risk-asset caution. If equity markets reverse, crypto correlation risk increases \u2014 monitor cross-asset correlation."
+        "severity": "LOW-MEDIUM",
+        "detail": "While primarily an equity risk, Burry shorts in major ETFs signal institutional bearish positioning in growth assets that often correlates with crypto risk appetite. If NVDA/TSLA sell off sharply, crypto risk assets may follow. Monitor equity session for correlation."
       },
       {
-        "event": "Altcoin underperformance in BTC-led regime",
-        "severity": "MEDIUM",
-        "detail": "BTC dominance at 55.71% in a rising trend means altcoins (SOL, ADA, DOT, LINK, NEAR) are likely to continue underperforming relative to BTC. Avoid overweighting alts until regime shifts."
+        "event": "Regulatory/Political Fed Uncertainty",
+        "severity": "LOW",
+        "detail": "Warren-Bowman dispute and Warsh adviser appointments signal ongoing Fed governance uncertainty. Any surprise hawkish policy signals could pressure risk assets including crypto. Alibaba $600M settlement shows regulatory enforcement environment remains active."
       }
     ]
   },
   "risk_warnings": {
-    "macro_events": [
-      {
-        "event": "Fed personnel developments \u2014 Warsh adviser appointment",
-        "severity": "LOW-MEDIUM",
-        "detail": "Kevin Warsh's adviser appointment (Samantha Schwab, senior Bessent staffer) signals potential policy direction convergence between Treasury and the Fed. Watch for any unexpected hawkish signals that could reprice rate expectations and hit rate-sensitive assets (XLRE, TLT)."
-      },
-      {
-        "event": "Warren/Fed Bowman scrutiny",
-        "severity": "LOW",
-        "detail": "Political pressure on Fed independence narrative could create short-term noise in rate markets and TLT."
-      },
-      {
-        "event": "Alibaba $600M DOJ settlement",
-        "severity": "LOW",
-        "detail": "Not directly relevant to watchlist but signals ongoing regulatory enforcement environment. Monitor if any watchlist names face similar actions."
-      },
-      {
-        "event": "Michael Burry NVDA/TSLA shorts via ETFs",
-        "severity": "MEDIUM",
-        "detail": "Burry has publicly established short positions in ETFs with heavy NVDA, TSLA, and CAT exposure. This creates headline risk for those names. Reduce or avoid new long entries in NVDA and TSLA specifically."
-      }
+    "macro_events_this_week": [
+      "Fed personnel/governance news (Warsh adviser, Warren/Bowman dispute) \u2014 watch for any policy surprise signals",
+      "Q3 opening week \u2014 portfolio rebalancing flows could create unusual intraday volatility",
+      "Oil market: HAL and USO at extreme oversold \u2014 any OPEC+ surprise could accelerate moves in either direction"
     ],
     "specific_risk_flags": [
-      "CRITICAL: Crypto scanner returning NO_DATA across all 9 pairs \u2014 halt all automated crypto order execution until feed is restored.",
-      "NVDA and TSLA face Burry short headline risk \u2014 avoid aggressive long positioning.",
-      "WMT and DBC mean reversion trades require tight stops \u2014 extreme oversold can become more oversold in a trending downmove.",
-      "Crypto market cap only +2.66% in 24h vs. Fear at 11 \u2014 recovery is tentative, not confirmed.",
-      "XRP -18% despite ETF inflows \u2014 price action is not yet confirming the institutional thesis.",
-      "Do not add to any crypto position if BTC fails to hold $60,000 on a daily closing basis."
+      {
+        "flag": "Crypto Scanner Complete Data Failure",
+        "severity": "CRITICAL",
+        "action": "HALT all crypto order execution until resolved. Do not deploy capital to Bybit without live price/RSI confirmation."
+      },
+      {
+        "flag": "Michael Burry Shorts \u2014 NVDA, TSLA, CAT ETF Exposure",
+        "severity": "MEDIUM",
+        "action": "Reduce or avoid new NVDA and TSLA long entries this week. Existing positions should have defined stops below key technical levels."
+      },
+      {
+        "flag": "Incomplete Sector Data (9 of 11 sectors missing weekly change)",
+        "severity": "MEDIUM",
+        "action": "Sector rotation strategy should be limited to confirmed data only (XLK +1.4%, XLRE -0.74%). Do not assume remaining sectors are neutral \u2014 data may be delayed or missing due to feed error."
+      },
+      {
+        "flag": "BTC Extreme Fear Still Declining",
+        "severity": "MEDIUM",
+        "action": "Fear & Greed at 11 and falling (-4 in 24h). Contrarian signal is valid but premature entry risks catching additional downside. Scale into BTC position in tranches rather than full allocation at once."
+      },
+      {
+        "flag": "Alibaba $600M Settlement \u2014 Regulatory Risk Precedent",
+        "severity": "LOW",
+        "action": "Monitor for spillover sentiment into tech/e-commerce sector. Not a direct portfolio risk but signals active regulatory enforcement environment."
+      }
     ],
-    "max_position_size_recommendation": {
-      "equities": "5% of equity book per position \u2014 standard sizing, VIX 16.59 does not require reduction.",
-      "crypto": "2-3% of total portfolio per crypto position maximum given scanner outage + Extreme Fear + NO confirmed technical signals. Treat entire crypto book as speculative-grade this session.",
-      "aggregate_crypto_book_cap": "Do not exceed 15% of total portfolio in crypto until scanner data feed is restored and BTC $60K hold is confirmed on daily close."
+    "recommended_max_position_size": {
+      "equity_per_trade": "1-2% of equity book (VIX 16.59 = full sizing permitted)",
+      "crypto_per_trade": "DO NOT TRADE until scanner restored. When restored: 0.5-1% of crypto book per position given Extreme Fear regime uncertainty",
+      "overall_portfolio_risk": "Normal equity risk budget. Crypto budget at 50% until data feed confirmed operational."
     }
   },
-  "confidence_score": 5,
-  "confidence_reason": "Equity conditions are actually constructive (VIX 16.59, Dow record, strong mean reversion candidates in WMT and DBC, sector leadership from Industrials and Tech), which would score 7-8 in isolation \u2014 however, the critical crypto scanner data failure returning NO_DATA across all 9 pairs eliminates automated signal reliability for the entire crypto book, dragging the composite score to 5. Until Bybit data feeds are confirmed live and crypto indicators are recalculating, the bot should trade equities normally but suspend all automated crypto execution.",
-  "generated_at": "2026-07-01T19:01:45.827012-04:00",
-  "valid_until": "2026-07-08T19:01:45.827012-04:00",
-  "raw_analysis": "```json\n{\n  \"market_regime\": {\n    \"trending_or_ranging\": \"Trending \u2014 Dow hit record highs, Meta surging on AI-cloud narrative, Industrials and Technology leading. Broad equity market is in a risk-on trending phase with selective sector strength.\",\n    \"mean_reversion_active_equities\": true,\n    \"mean_reversion_notes\": \"Mean reversion IS active for equities. WMT (RSI 25.9) and DBC (RSI 27.6) are strongly oversold and qualify as high-conviction mean reversion candidates. Sector breadth is partial (only XLI and XLK have clean weekly data), but the macro tape is constructive enough to engage oversold setups with disciplined stops.\",\n    \"vix_interpretation\": \"VIX at 16.59 is firmly in the NORMAL range (below 20). This is healthy, not complacent. No elevated fear premium. Conditions support standard position sizing \u2014 no need to scale down due to volatility. Avoid leveraging up aggressively; remain disciplined.\",\n    \"vix_position_sizing_guidance\": \"Standard sizing permitted. Suggest 80-100% of normal per-trade allocation given VIX 16.59. No haircut required.\"\n  },\n  \"top_opportunities\": [\n    {\n      \"rank\": 1,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"WMT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Mean Reversion\",\n      \"signal_score\": 2,\n      \"signals_fired\": [\"RSI=25.9 \u2014 strongly oversold\"],\n      \"rationale\": \"WMT is at RSI 25.9, one of the most extreme oversold readings in the broader scan. As a mega-cap defensive consumer staples name with consistent cash flows, sharp pullbacks have historically reverted. No earnings risk this week. VIX is benign, supporting entry. A snapback to RSI 40-50 zone is the base case target.\",\n      \"catalyst\": \"Extreme oversold technicals; defensive quality name unlikely to sustain such a deep selloff without fundamental deterioration not evidenced in current data.\",\n      \"position_size_adjustment\": \"Standard \u2014 no reduction needed given VIX 16.59. Cap single position at 5% of equity book.\",\n      \"stop_guidance\": \"Tight stop below recent lows; trail up if RSI recovers above 35.\"\n    },\n    {\n      \"rank\": 2,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"DBC\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Mean Reversion\",\n      \"signal_score\": 2,\n      \"signals_fired\": [\"RSI=27.6 \u2014 strongly oversold\"],\n      \"rationale\": \"DBC (broad commodities ETF) at RSI 27.6 represents a macro-level oversold condition across the commodity complex. With the dollar and macro crosswinds creating dislocations, a mean reversion bounce is well-supported technically. Also provides portfolio diversification away from pure equity beta.\",\n      \"catalyst\": \"Commodities broadly oversold; potential for short-covering + macro stabilization bounce. BTC reclaiming $60K hints at broader risk appetite returning.\",\n      \"position_size_adjustment\": \"Slightly reduced to ~4% of equity book given commodity ETF volatility vs. single-stock mean reversion.\",\n      \"stop_guidance\": \"Stop below 52-week low or 3% drawdown from entry, whichever is tighter.\"\n    },\n    {\n      \"rank\": 3,\n      \"asset_class\": \"equity\",\n      \"symbol\": \"META\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Momentum / Trending\",\n      \"signal_score\": null,\n      \"signals_fired\": [\"News catalyst: Dow record, Meta soaring on AI-cloud bet\"],\n      \"rationale\": \"META is explicitly cited in today's market news as the headline mover driving the Dow to a record. AI-cloud investment thesis gaining traction. Momentum is strong. While not a mean reversion setup, the bot's watchlist includes META and current news flow provides a high-conviction momentum entry on pullbacks. Michael Burry shorting Nvidia/Tesla (per news) but NOT META reinforces relative strength.\",\n      \"catalyst\": \"AI-cloud capital expenditure announcement driving institutional re-rating. Record Dow underscores broad risk-on sentiment favoring growth names.\",\n      \"position_size_adjustment\": \"Standard 5% equity book. Momentum setups carry more gap risk \u2014 use limit orders on intraday pullbacks rather than chasing.\",\n      \"stop_guidance\": \"Stop 4-5% below entry; do not hold through any unexpected macro shock given elevated multiple.\"\n    },\n    {\n      \"rank\": 4,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"BTC/USDT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Contrarian Mean Reversion / Sentiment Extreme\",\n      \"signal_score\": null,\n      \"signals_fired\": [\"Fear & Greed = 11 (Extreme Fear)\", \"Bitcoin reclaiming $60K key level per news\", \"BTC dominance 55.71% \u2014 capital consolidating in BTC\"],\n      \"rationale\": \"Fear & Greed at 11 is historically a high-probability contrarian buy zone. BTC reclaimed $60K per today's news with analysts flagging buy signals. BTC dominance at 55.71% confirms capital is flowing into BTC as the safest crypto asset in a risk-off environment. Q2 ended -11% for BTC \u2014 oversold on longer timeframe. Live scanner shows NO_DATA (data feed issue), so treat as directional macro trade, not a technical signal trade. Size conservatively.\",\n      \"catalyst\": \"Key $60K reclaim; Extreme Fear contrarian buy zone; dominance trend favoring BTC over alts; XRP ETF inflows positive for crypto sentiment broadly.\",\n      \"position_size_adjustment\": \"REDUCED \u2014 50% of normal crypto position size due to NO_DATA from live scanner. Do not enter without confirming price action manually. Treat as speculative-grade sizing.\",\n      \"stop_guidance\": \"Hard stop on close below $58,000. No leverage \u2014 spot only.\"\n    },\n    {\n      \"rank\": 5,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"ETH/USDT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Contrarian / BTC-led recovery play\",\n      \"signal_score\": null,\n      \"signals_fired\": [\"Fear & Greed = 11 (Extreme Fear)\", \"Analysts flagging buy signals across ETH per news\", \"ETH dominance 9.0% \u2014 historically low, potential coiled spring if BTC stabilizes\"],\n      \"rationale\": \"ETH at 9% dominance is near historically suppressed levels. If BTC stabilizes and risk appetite returns, ETH typically outperforms in the recovery phase. News explicitly cites analysts flashing buy signals on ETH. Scanner data is unavailable \u2014 this is a macro-driven thesis, not a technical signal. Size cautiously.\",\n      \"catalyst\": \"BTC stabilization at $60K could unlock ETH catch-up trade; Extreme Fear = forced seller exhaustion; analyst buy calls on ETH in today's news.\",\n      \"position_size_adjustment\": \"REDUCED \u2014 40% of normal crypto position size. ETH is higher beta than BTC and scanner data is absent. Monitor BTC first; ETH entry only after BTC confirms hold above $60K.\",\n      \"stop_guidance\": \"Stop on daily close below recent lows. Spot only.\"\n    },\n    {\n      \"rank\": 6,\n      \"asset_class\": \"crypto\",\n      \"symbol\": \"XRP/USDT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Contrarian / ETF inflow support\",\n      \"signal_score\": null,\n      \"signals_fired\": [\"XRP ETFs record third consecutive positive inflow month despite 18% price drop\", \"Fear & Greed = 11 \u2014 extreme fear zone\"],\n      \"rationale\": \"XRP ETFs logged a third straight month of positive inflows even as price dropped 18%. This institutional accumulation divergence (price down, ETF flows up) is a classic bullish divergence setup. The institutional bid is sticky. Price may have overcorrected. Speculative contrarian long with tight risk control.\",\n      \"catalyst\": \"Institutional ETF inflow divergence vs. price; Extreme Fear = retail panic selling into institutional hands; regulatory clarity improving for XRP historically.\",\n      \"position_size_adjustment\": \"MINIMUM sizing \u2014 25-30% of normal crypto position. XRP is high-volatility alt; scanner data absent; wait for confirmed BTC stabilization before entry.\",\n      \"stop_guidance\": \"Stop 8% below entry. No averaging down without new data.\"\n    }\n  ],\n  \"watchlist_changes\": {\n    \"equity\": {\n      \"add\": [\n        {\n          \"symbol\": \"WMT\",\n          \"reason\": \"RSI 25.9 \u2014 extreme oversold mean reversion candidate not currently on watchlist. High conviction setup.\"\n        },\n        {\n          \"symbol\": \"DBC\",\n          \"reason\": \"RSI 27.6 \u2014 broad commodity ETF oversold. Adds macro diversification and valid mean reversion setup.\"\n        },\n        {\n          \"symbol\": \"CAT\",\n          \"reason\": \"Industrials (XLI) is the top-performing sector this week at +1.75%. CAT is a bellwether name in that sector. Monitor for pullback entries. Note: Michael Burry is reportedly shorting CAT-exposed ETFs \u2014 flag as higher risk, add to watchlist for monitoring only.\"\n        }\n      ],\n      \"remove\": [],\n      \"avoid_this_week\": [\n        {\n          \"symbol\": \"NVDA\",\n          \"reason\": \"Michael Burry has opened a short position via ETFs heavily exposed to NVDA. Momentum may face headwinds. Keep on watchlist but reduce position sizing and avoid fresh longs near highs.\"\n        },\n        {\n          \"symbol\": \"TSLA\",\n          \"reason\": \"Burry short exposure via ETFs includes TSLA. Elevated headline risk. Avoid new long entries until clearer technicals emerge.\"\n        }\n      ],\n      \"earnings_avoid\": []\n    },\n    \"crypto\": {\n      \"add\": [],\n      \"remove\": [],\n      \"avoid_this_week\": [\n        {\n          \"pair\": \"DOT/USDT\",\n          \"reason\": \"DOT has very low liquidity relative to peers and is deeply underperforming in a BTC-dominant regime. No scanner data. Avoid.\"\n        },\n        {\n          \"pair\": \"NEAR/USDT\",\n          \"reason\": \"Micro-cap alt in an alt-negative regime. BTC dominance rising means capital leaving NEAR-type assets. Avoid fresh entries.\"\n        },\n        {\n          \"pair\": \"ADA/USDT\",\n          \"reason\": \"Low beta recovery in BTC-led regime. ADA historically lags BTC recoveries. Avoid until BTC dominance peaks and reverses.\"\n        }\n      ],\n      \"notes\": \"All crypto scanner data returned NO_DATA this session. Do NOT execute any crypto trades based purely on this brief without first confirming live price feeds and indicator data are restored on Bybit. Manual verification required before any crypto order is submitted.\"\n    }\n  },\n  \"sector_focus\": {\n    \"best_mean_reversion_conditions\": [\n      {\n        \"sector\": \"Consumer Staples\",\n        \"etf\": \"XLP\",\n        \"rationale\": \"WMT at RSI 25.9 is a Consumer Staples name. The sector has likely been broadly sold off with WMT leading the decline. Defensive quality names at extreme oversold levels in a benign VIX environment are textbook mean reversion candidates. Highest conviction sector for the week.\"\n      },\n      {\n        \"sector\": \"Industrials\",\n        \"etf\": \"XLI\",\n        \"rationale\": \"XLI was the top-performing sector at +1.75% this week. Rather than a mean reversion play, this is a relative strength / momentum sector. Look for intraday dips in XLI or XLI-constituent names (CAT, DE, HON) to add exposure in the direction of the trend.\"\n      },\n      {\n        \"sector\": \"Materials / Commodities\",\n        \"etf\": \"XLB / DBC\",\n        \"rationale\": \"DBC at RSI 27.6 suggests broad commodity overselling. Materials may be bottoming alongside commodities. XLB likely oversold in sympathy. Mean reversion bounce play.\"\n      }\n    ],\n    \"avoid_or_underweight\": [\n      {\n        \"sector\": \"Real Estate\",\n        \"etf\": \"XLRE\",\n        \"rationale\": \"XLRE -0.74% this week \u2014 only sector with confirmed negative weekly data. Rate-sensitive sector underperforming in a rising equity tape. Avoid.\"\n      },\n      {\n        \"sector\": \"Technology (selective caution)\",\n        \"etf\": \"XLK\",\n        \"rationale\": \"XLK +1.4% is solid but Burry short positions in Nvidia/Tesla-heavy ETFs create headline risk. Prefer META over NVDA within tech. Don't wholesale short the sector \u2014 just be selective.\"\n      }\n    ]\n  },\n  \"crypto_outlook\": {\n    \"regime\": \"Risk-off / BTC-led recovery attempt\",\n    \"mean_reversion_active_crypto\": false,\n    \"sentiment_read\": \"Fear & Greed Index at 11 (Extreme Fear) with a -4 change in 24 hours signals peak pessimism in the crypto market \u2014 historically one of the highest-probability contrarian buy zones over a 2-4 week horizon. However, the deteriorating daily trend (-4) means the bottom may not be fully in; patience and confirmation are required before committing capital.\",\n    \"dominance_read\": \"BTC dominance at 55.71% reflects capital flight from altcoins into Bitcoin as the perceived 'safe haven' within crypto. This BTC-led regime historically persists until BTC itself stabilizes and bounces, at which point dominance peaks and alts begin outperforming. ETH at 9.0% dominance is historically low and could be a leading indicator of alt-season potential once BTC confirms a bottom.\",\n    \"top_crypto_opportunities\": [\n      {\n        \"pair\": \"BTC/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Primary opportunity: BTC reclaiming $60K key level per today's news, Extreme Fear contrarian signal, BTC dominance consolidating flows. Best risk-reward in the crypto book this week. Confirm price feed before entry.\",\n        \"sizing\": \"50% of normal \u2014 NO_DATA scanner caveat applies\",\n        \"key_level_to_watch\": \"$60,000 \u2014 must hold on daily close\"\n      },\n      {\n        \"pair\": \"ETH/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Secondary opportunity: ETH at 9% dominance is historically compressed. If BTC holds $60K, ETH is the highest-beta clean recovery play among majors. Entry only after BTC confirmation.\",\n        \"sizing\": \"40% of normal \u2014 secondary to BTC confirmation\",\n        \"key_level_to_watch\": \"BTC $60K must hold; then ETH above its own recent resistance\"\n      },\n      {\n        \"pair\": \"XRP/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Tertiary opportunity: Institutional ETF inflow divergence (3 consecutive positive months vs. -18% price) is a strong signal. Price may be oversold relative to fundamental institutional demand.\",\n        \"sizing\": \"25-30% of normal \u2014 highest uncertainty, speculative\",\n        \"key_level_to_watch\": \"Watch for price stabilization and volume confirmation\"\n      }\n    ],\n    \"crypto_risk_warnings\": [\n      {\n        \"event\": \"Live Scanner Data Failure \u2014 ALL PAIRS NO_DATA\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Every crypto pair in the watchlist returned NO_DATA from the live scanner with 0.0 volume and 0.0 price change. This is a critical data feed failure. DO NOT execute any automated crypto trades until the Bybit data feed is confirmed live and indicators are recalculating correctly. Manual override required.\"\n      },\n      {\n        \"event\": \"Bitcoin Q2 ended -11%\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"BTC ended Q2 down 11% \u2014 three identified macro factors cited in news. Continued quarterly negative momentum could attract further institutional selling in early Q3. The $60K reclaim is encouraging but must be sustained.\"\n      },\n      {\n        \"event\": \"Extreme Fear trending worse (-4 in 24h)\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"Fear & Greed dropped 4 points in a single day to reach 11. While extreme fear is a contrarian buy signal historically, rapidly deteriorating sentiment can precede capitulation spikes. Position sizing must remain conservative until sentiment stabilizes.\"\n      },\n      {\n        \"event\": \"Michael Burry Short Positions in NVDA/TSLA ETFs\",\n        \"severity\": \"LOW\",\n        \"detail\": \"While primarily an equity risk, Burry's bearish positioning signals broad tech/risk-asset caution. If equity markets reverse, crypto correlation risk increases \u2014 monitor cross-asset correlation.\"\n      },\n      {\n        \"event\": \"Altcoin underperformance in BTC-led regime\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"BTC dominance at 55.71% in a rising trend means altcoins (SOL, ADA, DOT, LINK, NEAR) are likely to continue underperforming relative to BTC. Avoid overweighting alts until regime shifts.\"\n      }\n    ]\n  },\n  \"risk_warnings\": {\n    \"macro_events\": [\n      {\n        \"event\": \"Fed personnel developments \u2014 Warsh adviser appointment\",\n        \"severity\": \"LOW-MEDIUM\",\n        \"detail\": \"Kevin Warsh's adviser appointment (Samantha Schwab, senior Bessent staffer) signals potential policy direction convergence between Treasury and the Fed. Watch for any unexpected hawkish signals that could reprice rate expectations and hit rate-sensitive assets (XLRE, TLT).\"\n      },\n      {\n        \"event\": \"Warren/Fed Bowman scrutiny\",\n        \"severity\": \"LOW\",\n        \"detail\": \"Political pressure on Fed independence narrative could create short-term noise in rate markets and TLT.\"\n      },\n      {\n        \"event\": \"Alibaba $600M DOJ settlement\",\n        \"severity\": \"LOW\",\n        \"detail\": \"Not directly relevant to watchlist but signals ongoing regulatory enforcement environment. Monitor if any watchlist names face similar actions.\"\n      },\n      {\n        \"event\": \"Michael Burry NVDA/TSLA shorts via ETFs\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"Burry has publicly established short positions in ETFs with heavy NVDA, TSLA, and CAT exposure. This creates headline risk for those names. Reduce or avoid new long entries in NVDA and TSLA specifically.\"\n      }\n    ],\n    \"specific_risk_flags\": [\n      \"CRITICAL: Crypto scanner returning NO_DATA across all 9 pairs \u2014 halt all automated crypto order execution until feed is restored.\",\n      \"NVDA and TSLA face Burry short headline risk \u2014 avoid aggressive long positioning.\",\n      \"WMT and DBC mean reversion trades require tight stops \u2014 extreme oversold can become more oversold in a trending downmove.\",\n      \"Crypto market cap only +2.66% in 24h vs. Fear at 11 \u2014 recovery is tentative, not confirmed.\",\n      \"XRP -18% despite ETF inflows \u2014 price action is not yet confirming the institutional thesis.\",\n      \"Do not add to any crypto position if BTC fails to hold $60,000 on a daily closing basis.\"\n    ],\n    \"max_position_size_recommendation\": {\n      \"equities\": \"5% of equity book per position \u2014 standard sizing, VIX 16.59 does not require reduction.\",\n      \"crypto\": \"2-3% of total portfolio per crypto position maximum given scanner outage + Extreme Fear + NO confirmed technical signals. Treat entire crypto book as speculative-grade this session.\",\n      \"aggregate_crypto_book_cap\": \"Do not exceed 15% of total portfolio in crypto until scanner data feed is restored and BTC $60K hold is confirmed on daily close.\"\n    }\n  },\n  \"confidence_score\": 5,\n  \"confidence_reason\": \"Equity conditions are actually constructive (VIX 16.59, Dow record, strong mean reversion candidates in WMT and DBC, sector leadership from Industrials and Tech), which would score 7-8 in isolation \u2014 however, the critical crypto scanner data failure returning NO_DATA across all 9 pairs eliminates automated signal reliability for the entire crypto book, dragging the composite score to 5. Until Bybit data feeds are confirmed live and crypto indicators are recalculating, the bot should trade equities normally but suspend all automated crypto execution.\",\n  \"generated_at\": \"2026-07-01T20:00:00Z\",\n  \"valid_until\": \"2026-07-08T16:00:00Z\"\n}\n```"
+  "confidence_score": 4,
+  "confidence_reason": "Equity conditions are solid (VIX 16.59, Tech leading, clear mean reversion setups in HAL/USO) warranting a score of 6-7 in isolation, but the complete crypto scanner data failure across all 9 pairs creates a critical operational risk that halves overall confidence \u2014 the bot cannot safely execute the crypto portion of its book, and crypto markets are in Extreme Fear with declining sentiment, requiring the weighted score to reflect this dual impairment.",
+  "generated_at": "2026-07-01T18:48:40.194066-04:00",
+  "valid_until": "2026-07-08T18:48:40.194066-04:00",
+  "raw_analysis": "```json\n{\n  \"market_regime\": {\n    \"equity_trend_or_range\": \"Trending \u2014 Dow hitting record highs, Technology sector leading (+1.4% weekly), Meta surging on AI-cloud catalysts. Broader tape is constructive with selective strength.\",\n    \"mean_reversion_strategy_status\": \"ACTIVE \u2014 VIX at 16.59 is well within normal range, confirming low systemic fear. Mean reversion setups are valid, particularly in deeply oversold names (HAL RSI 26.96, USO RSI 29.17). Sector breadth data is incomplete but Tech leadership is confirmed.\",\n    \"vix_interpretation\": \"VIX 16.59 = NORMAL/HEALTHY. This level supports full position sizing. No need to apply vol-based haircuts. Market is not pricing tail risk, so mean reversion signals carry higher reliability than they would above VIX 25.\",\n    \"position_sizing_guidance\": \"Full standard position sizes permitted. No VIX-driven reduction warranted. Apply normal per-trade risk limits (e.g. 1-2% of book per equity position).\"\n  },\n\n  \"top_opportunities\": [\n    {\n      \"rank\": 1,\n      \"asset_class\": \"EQUITY\",\n      \"symbol\": \"HAL\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Mean Reversion \u2014 Extreme Oversold\",\n      \"signal_score\": 2,\n      \"rsi\": 26.96,\n      \"rationale\": \"Halliburton is printing an RSI of 26.96 \u2014 deeply into oversold territory historically associated with snap-back rallies in Energy/Oil Services. USO (crude proxy) is also at RSI 29.17, suggesting the sector selloff may be approaching exhaustion. No earnings risk flagged this week. Energy has been under distribution but at these RSI extremes, mean reversion edge is statistically elevated.\",\n      \"catalysts\": \"Oil price stabilization, any Middle East supply headline, energy demand data. Also, Michael Burry short positions in TSLA/NVDA per news could rotate capital toward unloved cyclicals.\",\n      \"suggested_position_size\": \"Standard (1-2% of equity book). Add only on confirmation of intraday bounce \u2014 do not catch a falling knife blindly.\",\n      \"key_risk\": \"Oil could continue to trend lower; macro demand fears could suppress any bounce. Use tight stop below recent lows.\"\n    },\n    {\n      \"rank\": 2,\n      \"asset_class\": \"EQUITY\",\n      \"symbol\": \"USO\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Mean Reversion \u2014 Extreme Oversold\",\n      \"signal_score\": 2,\n      \"rsi\": 29.17,\n      \"rationale\": \"USO is the direct crude oil ETF and mirrors HAL's signal \u2014 RSI 29.17 places it in the bottom decile of its historical distribution. A paired trade (HAL + USO) or standalone USO position provides a liquid, diversified play on energy mean reversion without single-stock idiosyncratic risk.\",\n      \"catalysts\": \"Any positive oil inventory draw, OPEC+ commentary, or USD weakness could trigger a 3-5% relief rally from these levels.\",\n      \"suggested_position_size\": \"Standard (1-2% of equity book). USO is highly liquid and suitable for the bot's execution constraints.\",\n      \"key_risk\": \"USO already on watchlist \u2014 confirm no duplicate position. Downtrend could persist if macro deteriorates.\"\n    },\n    {\n      \"rank\": 3,\n      \"asset_class\": \"EQUITY\",\n      \"symbol\": \"XLK\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Momentum / Sector Leader\",\n      \"signal_score\": null,\n      \"rsi\": null,\n      \"rationale\": \"Technology is the only sector with confirmed positive weekly data (+1.4%). With Dow at record highs and Meta surging on AI-cloud bets, the Tech/AI theme is driving market leadership. XLK provides broad sector exposure with strong liquidity. Momentum strategy complements the mean reversion book as a trending position.\",\n      \"catalysts\": \"AI infrastructure spending cycle, Meta AI-cloud announcement, Nvidia continued dominance narrative despite Burry shorts (which are contrarian noise).\",\n      \"suggested_position_size\": \"Reduced to 1% of equity book given this is a momentum rather than mean reversion trade \u2014 not the bot's primary edge.\",\n      \"key_risk\": \"Burry short positions in NVDA/TSLA (ETF exposure) could trigger sentiment shift. Any negative AI capex news would hurt XLK quickly.\"\n    },\n    {\n      \"rank\": 4,\n      \"asset_class\": \"CRYPTO\",\n      \"symbol\": \"BTC/USDT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Contrarian Mean Reversion \u2014 Extreme Fear\",\n      \"signal_score\": null,\n      \"rsi\": null,\n      \"rationale\": \"Fear & Greed at 11 (Extreme Fear) is a historically reliable contrarian long signal for BTC. News confirms BTC has reclaimed $60,000 with analysts flagging buy signals. BTC ended Q2 down 11% \u2014 Q3 historically sees recovery. Dominance at 55.72% confirms BTC is absorbing flows, making it the highest-conviction crypto long in a risk-off crypto environment. XRP ETF inflows for 3 straight months despite price drop signals institutional accumulation at lows.\",\n      \"catalysts\": \"BTC reclaim of $60K psychological level, rare bottom signals per multiple analysts, XRP ETF positive flow momentum, Q3 seasonal tailwind.\",\n      \"suggested_position_size\": \"REDUCED \u2014 50% of normal crypto position size given NO_DATA from live scanner. Do not deploy full size until scanner confirms price/RSI data. Manual price verification required before execution.\",\n      \"key_risk\": \"Scanner returning NO_DATA for all crypto pairs \u2014 critical data failure. Bot MUST NOT execute crypto trades without live price confirmation. BTC could retest lows below $60K if macro deteriorates.\"\n    },\n    {\n      \"rank\": 5,\n      \"asset_class\": \"CRYPTO\",\n      \"symbol\": \"XRP/USDT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Contrarian \u2014 Positive ETF Flow Divergence\",\n      \"signal_score\": null,\n      \"rsi\": null,\n      \"rationale\": \"XRP ETFs recording 3rd straight month of positive inflows despite an 18% price drop signals strong institutional accumulation and a classic price-flow divergence that often precedes reversals. This is a secondary position to BTC, sized smaller given alts underperforming in BTC-led regime.\",\n      \"catalysts\": \"Sustained ETF inflows, any positive regulatory clarity, BTC recovery lifting altcoin sentiment.\",\n      \"suggested_position_size\": \"SMALL \u2014 25% of normal crypto position size. Alt-unfavorable regime limits conviction. Only enter after BTC confirms stability above $60K.\",\n      \"key_risk\": \"BTC-led regime means alts lag. 18% price drop could continue. All scanner data is null \u2014 no technical confirmation available.\"\n    },\n    {\n      \"rank\": 6,\n      \"asset_class\": \"CRYPTO\",\n      \"symbol\": \"ETH/USDT\",\n      \"direction\": \"LONG\",\n      \"setup_type\": \"Contrarian Mean Reversion \u2014 Secondary to BTC\",\n      \"signal_score\": null,\n      \"rsi\": null,\n      \"rationale\": \"ETH at 9.01% dominance suggests significant relative underperformance vs BTC. At Extreme Fear levels, ETH historically follows BTC recoveries with 1-3 day lag. Liquidity is deep and it remains the #2 most traded crypto. Analysts flagging buy signals across BTC/ETH/XRP/SOL per news.\",\n      \"catalysts\": \"BTC recovery spillover, any Ethereum ecosystem news, analyst buy signal confluence per Benzinga.\",\n      \"suggested_position_size\": \"SMALL \u2014 25% of normal crypto position. Wait for BTC confirmation and scanner data restoration before entry.\",\n      \"key_risk\": \"ETH dominance at multi-year lows may indicate structural rotation away from ETH. Scanner NO_DATA means no technical entry signal is confirmed.\"\n    }\n  ],\n\n  \"watchlist_changes\": {\n    \"equity\": {\n      \"ADD\": [\n        {\n          \"symbol\": \"HAL\",\n          \"reason\": \"RSI 26.96 \u2014 extreme oversold, strong mean reversion candidate. Not currently on watchlist.\"\n        },\n        {\n          \"symbol\": \"CAT\",\n          \"reason\": \"Flagged in Burry short news (ETF exposure) \u2014 monitor for volatility and potential mean reversion after any short-driven dip. Add to monitor list only, not for immediate trade.\"\n        }\n      ],\n      \"REMOVE\": [],\n      \"AVOID_EARNINGS\": [],\n      \"NOTES\": \"USO already on watchlist \u2014 no change needed. NVDA and TSLA flagged in Burry short news; maintain on watchlist but flag elevated short-squeeze/short-pressure risk. AAPL, MSFT, META remain core watchlist \u2014 META showing momentum on AI-cloud news, watch for pullback entry.\"\n    },\n    \"crypto\": {\n      \"ADD\": [],\n      \"REMOVE\": [],\n      \"AVOID\": [],\n      \"NOTES\": \"All 9 crypto pairs returning NO_DATA from live scanner. This is a CRITICAL DATA INTEGRITY issue. No watchlist additions are recommended until scanner is operational. Current watchlist (BTC, ETH, XRP, LTC, SOL, ADA, DOT, LINK, NEAR) is appropriate for a mean reversion crypto strategy \u2014 all are liquid, Bybit-listed pairs. Do not add stablecoins, wrapped tokens, or low-liquidity pairs. Consider adding DOGE/USDT or MATIC/USDT if scanner is restored and signals emerge, but only after data validation.\"\n    }\n  },\n\n  \"sector_focus\": {\n    \"best_mean_reversion_sectors\": [\n      {\n        \"sector\": \"Energy\",\n        \"etfs\": [\"XLE\", \"USO\", \"HAL\"],\n        \"rationale\": \"HAL RSI 26.96 and USO RSI 29.17 are the strongest oversold signals in the dataset. Energy has sold off sharply and is statistically overdue for a relief rally. Best mean reversion opportunity of the week.\",\n        \"confidence\": \"HIGH\"\n      },\n      {\n        \"sector\": \"Technology\",\n        \"etfs\": [\"XLK\", \"NVDA\", \"AMD\"],\n        \"rationale\": \"XLK leading with +1.4% weekly gain. While primarily a momentum trade, any intraweek pullback in NVDA or AMD (from Burry short pressure) could create mean reversion long entries within a bullish trend. Secondary opportunity.\",\n        \"confidence\": \"MEDIUM\"\n      },\n      {\n        \"sector\": \"Real Estate\",\n        \"etfs\": [\"XLRE\"],\n        \"rationale\": \"XLRE down 0.74% weekly \u2014 mild underperformance. Rate-sensitive sector that could benefit from any dovish Fed signals. Monitor but not a primary mean reversion trade this week \u2014 the decline is not yet at extreme levels.\",\n        \"confidence\": \"LOW-MEDIUM\"\n      }\n    ],\n    \"sectors_to_avoid_or_underweight\": [\n      {\n        \"sector\": \"Financials (XLF)\",\n        \"reason\": \"Data unavailable for weekly change. Fed political noise (Warren/Bowman dispute, Warsh adviser appointment) creates regulatory uncertainty. Avoid until data and clarity improve.\"\n      },\n      {\n        \"sector\": \"Consumer Discretionary (XLY)\",\n        \"reason\": \"Data unavailable. TSLA exposure flagged in Burry shorts. Avoid until clearer signal.\"\n      }\n    ]\n  },\n\n  \"crypto_outlook\": {\n    \"regime\": \"BTC-led / Risk-off\",\n    \"mean_reversion_active_crypto\": false,\n    \"sentiment_read\": \"Fear & Greed index at 11 (Extreme Fear) with a further 4-point decline in 24 hours signals maximum retail capitulation \u2014 historically a contrarian buy zone for patient long-term entries. However, the severity and momentum of fear (still declining) suggests the bottom may not be confirmed yet, and a brief additional flush before reversal is possible.\",\n    \"dominance_read\": \"BTC dominance at 55.72% confirms a classic BTC-led risk-off regime where capital consolidates into the market leader and altcoins bleed relative value. ETH at 9.01% is notably weak. Until BTC stabilizes and dominance peaks/reverses, altcoin long positions carry elevated risk of underperformance even in a recovery scenario.\",\n    \"top_crypto_opportunities\": [\n      {\n        \"pair\": \"BTC/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Primary crypto opportunity. Extreme Fear at 11 is a historically reliable contrarian long trigger. BTC reclaimed $60K per news, analysts flagging rare bottom signals, and Q3 seasonality favors recovery after Q2's -11% drawdown. Highest liquidity and BTC-led regime makes this the only high-conviction crypto trade this week.\",\n        \"entry_condition\": \"Only enter after live scanner data is restored and price is confirmed above $60,000. Wait for RSI confirmation ideally below 35.\",\n        \"position_size\": \"50% of normal crypto allocation pending scanner restoration\"\n      },\n      {\n        \"pair\": \"XRP/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Three consecutive months of ETF inflows despite 18% price decline is a strong institutional accumulation signal and price-flow divergence. Asymmetric setup if BTC stabilizes. Secondary position only.\",\n        \"entry_condition\": \"Only enter after BTC confirms $60K hold and scanner data restored. XRP must show RSI below 40.\",\n        \"position_size\": \"25% of normal crypto allocation\"\n      },\n      {\n        \"pair\": \"ETH/USDT\",\n        \"direction\": \"LONG\",\n        \"rationale\": \"Follows BTC recovery with lag. Deep underperformance at 9.01% dominance creates mean reversion potential if crypto sentiment shifts. Analysts flagging multi-asset buy signals.\",\n        \"entry_condition\": \"Third priority. Enter only after BTC and XRP positions are established and confirmed. Scanner data required.\",\n        \"position_size\": \"25% of normal crypto allocation\"\n      }\n    ],\n    \"crypto_risk_warnings\": [\n      {\n        \"event\": \"CRITICAL: Live Scanner NO_DATA for All Crypto Pairs\",\n        \"severity\": \"CRITICAL\",\n        \"detail\": \"All 9 crypto pairs (BTC, ETH, XRP, LTC, SOL, ADA, DOT, LINK, NEAR) are returning NO_DATA with null prices, null RSI, null volume, and 0.0 24h change. The bot MUST NOT execute any crypto trades until this data feed is restored and validated. This likely indicates a Bybit API connection issue, rate limiting, or symbol mapping error. Immediate investigation required.\"\n      },\n      {\n        \"event\": \"BTC Q2 Down 11% \u2014 Trend Not Yet Confirmed Reversed\",\n        \"severity\": \"HIGH\",\n        \"detail\": \"Despite the $60K reclaim and analyst buy signals, BTC closed Q2 with an 11% loss. The three factors cited (macro headwinds, regulatory pressure, liquidity drain) have not been fully resolved. Fear & Greed still declining (-4 in 24h). A retest of lows below $60K cannot be ruled out before a sustained recovery.\"\n      },\n      {\n        \"event\": \"Altcoin Underperformance in BTC-Led Regime\",\n        \"severity\": \"MEDIUM\",\n        \"detail\": \"BTC dominance at 55.72% with ETH at 9.01% confirms capital is not rotating into alts. SOL, ADA, DOT, LINK, NEAR positions should be sized small or avoided entirely this week. LTC has limited catalysts. Only BTC, XRP (ETF flow divergence), and ETH (liquidity) warrant consideration.\"\n      },\n      {\n        \"event\": \"Michael Burry Short Positions in NVDA/TSLA ETFs\",\n        \"severity\": \"LOW-MEDIUM\",\n        \"detail\": \"While primarily an equity risk, Burry shorts in major ETFs signal institutional bearish positioning in growth assets that often correlates with crypto risk appetite. If NVDA/TSLA sell off sharply, crypto risk assets may follow. Monitor equity session for correlation.\"\n      },\n      {\n        \"event\": \"Regulatory/Political Fed Uncertainty\",\n        \"severity\": \"LOW\",\n        \"detail\": \"Warren-Bowman dispute and Warsh adviser appointments signal ongoing Fed governance uncertainty. Any surprise hawkish policy signals could pressure risk assets including crypto. Alibaba $600M settlement shows regulatory enforcement environment remains active.\"\n      }\n    ]\n  },\n\n  \"risk_warnings\": {\n    \"macro_events_this_week\": [\n      \"Fed personnel/governance news (Warsh adviser, Warren/Bowman dispute) \u2014 watch for any policy surprise signals\",\n      \"Q3 opening week \u2014 portfolio rebalancing flows could create unusual intraday volatility\",\n      \"Oil market: HAL and USO at extreme oversold \u2014 any OPEC+ surprise could accelerate moves in either direction\"\n    ],\n    \"specific_risk_flags\": [\n      {\n        \"flag\": \"Crypto Scanner Complete Data Failure\",\n        \"severity\": \"CRITICAL\",\n        \"action\": \"HALT all crypto order execution until resolved. Do not deploy capital to Bybit without live price/RSI confirmation.\"\n      },\n      {\n        \"flag\": \"Michael Burry Shorts \u2014 NVDA, TSLA, CAT ETF Exposure\",\n        \"severity\": \"MEDIUM\",\n        \"action\": \"Reduce or avoid new NVDA and TSLA long entries this week. Existing positions should have defined stops below key technical levels.\"\n      },\n      {\n        \"flag\": \"Incomplete Sector Data (9 of 11 sectors missing weekly change)\",\n        \"severity\": \"MEDIUM\",\n        \"action\": \"Sector rotation strategy should be limited to confirmed data only (XLK +1.4%, XLRE -0.74%). Do not assume remaining sectors are neutral \u2014 data may be delayed or missing due to feed error.\"\n      },\n      {\n        \"flag\": \"BTC Extreme Fear Still Declining\",\n        \"severity\": \"MEDIUM\",\n        \"action\": \"Fear & Greed at 11 and falling (-4 in 24h). Contrarian signal is valid but premature entry risks catching additional downside. Scale into BTC position in tranches rather than full allocation at once.\"\n      },\n      {\n        \"flag\": \"Alibaba $600M Settlement \u2014 Regulatory Risk Precedent\",\n        \"severity\": \"LOW\",\n        \"action\": \"Monitor for spillover sentiment into tech/e-commerce sector. Not a direct portfolio risk but signals active regulatory enforcement environment.\"\n      }\n    ],\n    \"recommended_max_position_size\": {\n      \"equity_per_trade\": \"1-2% of equity book (VIX 16.59 = full sizing permitted)\",\n      \"crypto_per_trade\": \"DO NOT TRADE until scanner restored. When restored: 0.5-1% of crypto book per position given Extreme Fear regime uncertainty\",\n      \"overall_portfolio_risk\": \"Normal equity risk budget. Crypto budget at 50% until data feed confirmed operational.\"\n    }\n  },\n\n  \"confidence_score\": 4,\n  \"confidence_reason\": \"Equity conditions are solid (VIX 16.59, Tech leading, clear mean reversion setups in HAL/USO) warranting a score of 6-7 in isolation, but the complete crypto scanner data failure across all 9 pairs creates a critical operational risk that halves overall confidence \u2014 the bot cannot safely execute the crypto portion of its book, and crypto markets are in Extreme Fear with declining sentiment, requiring the weighted score to reflect this dual impairment.\",\n\n  \"generated_at\": \"2026-07-01T20:00:00Z\",\n  \"valid_until\": \"2026-07-06T20:00:00Z\"\n}\n```"
 }
