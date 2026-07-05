@@ -1862,11 +1862,11 @@ elif page == "Journal":
 # ═══════════════════════════════════════════════════════════════════════════════
 elif page == "Trades":
 
-    all_t_entries = fetch_entries(90)
+    all_t_entries = fetch_entries(365)
 
     # Pull Alpaca order history to get actual fill + exit data
     try:
-        alpaca_orders = fetch_alpaca_order_history(90)
+        alpaca_orders = fetch_alpaca_order_history(365)
     except Exception:
         alpaca_orders = {}
 
@@ -1921,8 +1921,12 @@ elif page == "Trades":
                 status = "REJECTED"
             elif alp:
                 status = alp.get("status", "OPEN")
+            elif order_id:
+                # Has an order_id but Alpaca didn't return it — older than fetch window, treat as closed
+                status = "CLOSED"
             else:
-                status = "OPEN"
+                # No order_id — never a real Alpaca order (crypto sim, old data)
+                status = "CLOSED"
 
             gross_pl = None
             if act_entry and exit_price and status == "CLOSED":
