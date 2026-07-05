@@ -1,12 +1,12 @@
 {
-  "account_value": 327432.3,
+  "account_value": 327422.3,
   "total_usdt": 327376.37,
   "free_usdt": 327376.37,
   "funding_usdt": 0.0,
-  "position_value": 55.93,
+  "position_value": 45.93,
   "open_positions": 0,
   "positions": [],
   "exchange": "binance",
   "testnet": true,
-  "fetched_at": "2026-06-16T14:48:14.906316+00:00"
+  "fetched_at": "2026-06-24T21:03:12.938973+00:00"
 }
