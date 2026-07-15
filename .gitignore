@@ -21,6 +21,12 @@ env/
 journal/bot.log
 journal/bot.log.*
 
+# OneDrive conflict copies — this repo lives inside a synced OneDrive folder,
+# which appends "-<COMPUTERNAME>" to files when it detects a cross-machine
+# conflict (e.g. positions-DESKTOP-I0292P0.html). Never commit these.
+# Root fix: keep .git/ out of OneDrive sync (see repo README / ops notes).
+*-DESKTOP-*
+
 # OS
 .DS_Store
 Thumbs.db
