@@ -1,51 +1,33 @@
 {
-  "report_date": "2026-05-22",
+  "report_date": "2026-07-02",
   "report_url": "https://qlategan-stack.github.io/flowtrader-dashboard/trade-analysis/",
-  "generated_at": "2026-06-29T09:02:35Z",
-  "failure_count": 5,
-  "loss_count": 0,
-  "error_count": 5,
+  "generated_at": "2026-07-07T14:49:30Z",
+  "failure_count": 2,
+  "loss_count": 2,
+  "error_count": 0,
   "summary_7day": {
-    "start_date": "2026-06-23",
-    "end_date": "2026-06-29",
-    "closed_trades": 0,
+    "start_date": "2026-07-01",
+    "end_date": "2026-07-07",
+    "closed_trades": 1,
     "wins": 0,
-    "losses": 0,
-    "win_rate_pct": null,
+    "losses": 1,
+    "win_rate_pct": 0.0,
     "exec_errors": 0,
-    "total_realized": 0,
-    "total_loss": 0
+    "total_realized": -25.6400000000001,
+    "total_loss": -25.6400000000001
   },
   "top_failures": [
     {
-      "symbol": "AAPL",
-      "time_est": "12:03:32",
-      "kind": "exec_error",
-      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
+      "symbol": "MSFT",
+      "time_est": "10:27:59",
+      "kind": "loss",
+      "headline": "$-16 on 3.0"
     },
     {
-      "symbol": "AAPL",
-      "time_est": "12:29:45",
-      "kind": "exec_error",
-      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
-    },
-    {
-      "symbol": "AAPL",
-      "time_est": "12:45:19",
-      "kind": "exec_error",
-      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
-    },
-    {
-      "symbol": "AAPL",
-      "time_est": "13:11:12",
-      "kind": "exec_error",
-      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
-    },
-    {
-      "symbol": "AAPL",
-      "time_est": "13:26:05",
-      "kind": "exec_error",
-      "headline": "Already hold 33 shares of AAPL; bot does not add to existing positions. Close be"
+      "symbol": "IWM",
+      "time_est": "13:12:23",
+      "kind": "loss",
+      "headline": "$-26 on 4.0"
     }
   ]
 }

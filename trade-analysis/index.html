@@ -124,8 +124,8 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <header class="hdr">
   <div class="hdr-title">FlowTrader <span class="accent">·</span> Trade Analysis</div>
   <div class="hdr-meta">
-    <span class="pill">Report date: 2026-05-22</span>
-    <span class="pill">Generated: 2026-06-29 09:02 UTC</span>
+    <span class="pill">Report date: 2026-07-02</span>
+    <span class="pill">Generated: 2026-07-07 14:49 UTC</span>
     <span class="pill">Failures-only view</span>
   </div>
 </header>
@@ -135,113 +135,73 @@ footer{padding:20px 32px;font-size:11px;color:var(--color-text-tertiary);text-al
 <section class="summary">
   <div class="summary-head">
     <div class="summary-title">7-day window</div>
-    <div class="summary-range">2026-06-23 → 2026-06-29</div>
+    <div class="summary-range">2026-07-01 → 2026-07-07</div>
   </div>
-  <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">0</div></div>
+  <div class="kpi-grid"><div class="kpi neutral"><div class="kpi-lbl">CLOSED TRADES</div><div class="kpi-val">1</div></div>
 <div class="kpi success"><div class="kpi-lbl">WINS</div><div class="kpi-val">0</div></div>
-<div class="kpi neutral"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">0</div></div>
-<div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">—</div></div>
+<div class="kpi danger"><div class="kpi-lbl">LOSSES</div><div class="kpi-val">1</div></div>
+<div class="kpi neutral"><div class="kpi-lbl">WIN RATE</div><div class="kpi-val">0%</div></div>
 <div class="kpi neutral"><div class="kpi-lbl">EXEC ERRORS</div><div class="kpi-val">0</div></div>
-<div class="kpi success"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$+0.00</div></div></div>
+<div class="kpi danger"><div class="kpi-lbl">REALISED P&amp;L</div><div class="kpi-val">$-25.64</div></div></div>
 </section>
 
 <section class="failures">
   <div class="failures-head">
-    <h2>Failures — 2026-05-22</h2>
-    <div class="failures-count">5 total</div>
+    <h2>Failures — 2026-07-02</h2>
+    <div class="failures-count">2 total</div>
   </div>
   <div class="tabs-wrap">
     <nav class="tabs-list" role="tablist">
-<button class="tab active" data-target="f-0" data-kind="exec_error">AAPL · 12:03 · ERR</button>
-<button class="tab" data-target="f-1" data-kind="exec_error">AAPL · 12:29 · ERR</button>
-<button class="tab" data-target="f-2" data-kind="exec_error">AAPL · 12:45 · ERR</button>
-<button class="tab" data-target="f-3" data-kind="exec_error">AAPL · 13:11 · ERR</button>
-<button class="tab" data-target="f-4" data-kind="exec_error">AAPL · 13:26 · ERR</button>
+<button class="tab active" data-target="f-0" data-kind="loss">MSFT · 10:27 · -16</button>
+<button class="tab" data-target="f-1" data-kind="loss">IWM · 13:12 · -26</button>
     </nav>
     <div class="tab-panels">
 <article class="panel active" id="f-0">
 <div class="panel-head">
-  <div class="panel-symbol">AAPL</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 12:03:32 EST</div>
+  <div class="panel-symbol">MSFT</div>
+  <div class="panel-meta"><span class="badge badge-loss">LOSS</span> · 2026-07-02 · 10:27:59 EST</div>
 </div>
-<div class="error-block">
-  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
+<div class="data-grid">
+  <div class="data-item"><div class="lbl">Entry</div><div class="val">$394.82</div><div class="sub">2026-06-16 10:02:52</div></div>
+  <div class="data-item"><div class="lbl">Exit</div><div class="val">$389.37</div><div class="sub">2026-07-02 10:27:59</div></div>
+  <div class="data-item"><div class="lbl">Qty</div><div class="val">3.0</div></div>
+  <div class="data-item data-pl danger"><div class="lbl">P&amp;L</div><div class="val">$-16.35 (-1.38%)</div></div>
 </div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot correctly identified a strong momentum setup but was blocked from executing because you still held 33 open shares of AAPL, triggering the no-add-to-position rule — the signal never had a chance to play out. Before the session opens, audit your existing positions and close or clear any AAPL holdings if you want the bot to act freely on new signals in that name.</div>
+<div class="signals-row">
+  <span class="chip chip-score">SCORE 3/6</span>
+  <span class="chip">RSI&lt;45 (mild oversold)</span>
+  <span class="chip">BelowMA20&gt;1%</span>
+  <span class="chip">ADX&lt;25 (ranging market)</span>
+  <span class="chip">Hurst=0.60(trending-1)</span>
+  <span class="chip">LevyJump:CALM(+1)</span>
+  <span class="chip chip-confidence">CONF MEDIUM</span>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>AAPL is the best available setup this session under the MOMENTUM strategy path. Momentum score is 4/4 with RSI at 80.54 (strong momentum), price 7.08% above MA20, and ADX at 37.4 confirming a trending regime — all three momentum triggers firing cleanly. The R:R check passes: (321.72 - 309.88) / (309.88 - 303.96) = 11.84 / 5.92 = 2.0, which clears the 1.5:1 minimum. Position sizing: risking 1.5% of $99,162 = ~$1,487 max risk. Per-share risk = 309.88 - 303.96 = $5.92. Max shares by risk = 1,487 / 5.92 ≈ 251 — well above 3 shares. Position size by 10% account cap: 10% of $99,162 = $9,916 / $309.8</pre>
+  <pre>MSFT is the only setup that clears all hard gates under the current high_safety risk profile. Walking through each check: (1) Strategy mode = MEAN_REVERSION, regime = RANGING (ADX 16.64, well below 25 veto). (2) Signal score: RSI&lt;45 (+1), BelowMA20&gt;1% at -5.36% (+1), ADX&lt;25 (+1) = 3 classical points before math adjustments. Hurst=0.60 removes 1 (TRENDING_MEAN_REVERSION_RISKY), Levy CALM adds 1, net reported score = 3. Equity threshold under high_safety/M-1 experiment is ≥2 — MSFT clears at 3. (3) Classical oversold check (Rule 10): RSI&lt;45 and BelowMA20&gt;1% both qualify — at least one oversold/d</pre>
 </details>
 </article>
 <article class="panel" id="f-1" hidden>
 <div class="panel-head">
-  <div class="panel-symbol">AAPL</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 12:29:45 EST</div>
+  <div class="panel-symbol">IWM</div>
+  <div class="panel-meta"><span class="badge badge-loss">LOSS</span> · 2026-07-02 · 13:12:23 EST</div>
 </div>
-<div class="error-block">
-  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
+<div class="data-grid">
+  <div class="data-item"><div class="lbl">Entry</div><div class="val">$302.18</div><div class="sub">2026-07-01 11:21:22</div></div>
+  <div class="data-item"><div class="lbl">Exit</div><div class="val">$295.76</div><div class="sub">2026-07-02 13:12:23</div></div>
+  <div class="data-item"><div class="lbl">Qty</div><div class="val">4.0</div></div>
+  <div class="data-item data-pl danger"><div class="lbl">P&amp;L</div><div class="val">$-25.64 (-2.12%)</div></div>
 </div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s signal logic was actually sound — a momentum score of 4 with ADX confirmation is a legitimate setup — but the trade never executed because you still held 33 shares of AAPL from a prior position, triggering the single-position rule. Before the session opens, audit your existing holdings and close any lingering positions in symbols your bot is likely to target, so valid signals don&#x27;t get wasted on a technicality.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>AAPL is the best available setup this session under the MOMENTUM strategy path. Momentum score of 4 clears the minimum threshold of 2. RSI at 80.56 is strong but in a confirmed trending regime (ADX=37.4), which under the MOMENTUM path is a positive signal, not a veto. Price is 7.09% above MA20, confirming sustained trend strength. Momentum stop at $303.99 (1x ATR / 5-day low), momentum target at $321.75 (2x ATR), implying an R:R of approximately 1.97:1 — clears the 1.5:1 minimum gate. News sentiment is neutral but the AI/tech sector tailwind is broad and multi-catalyst today (Dow record highs,</pre>
-</details>
-</article>
-<article class="panel" id="f-2" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">AAPL</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 12:45:19 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because of a bad signal, but because the bot correctly enforced its no-add-to-position rule — the real mistake was entering this session without first closing or accounting for the existing 33-share AAPL position. Before the bot generates any new signals, check your open positions and close any holdings in symbols you want to re-enter so the bot isn&#x27;t blocked from acting on valid setups.</div>
+<div class="signals-row">
+  <span class="chip chip-score">SCORE 3/6</span>
+  <span class="chip">RSI&gt;55 (mild momentum)</span>
+  <span class="chip">AboveMA20&gt;1%</span>
+  <span class="chip">20DayHighBreakout</span>
+  <span class="chip chip-confidence">CONF MEDIUM</span>
 </div>
 <details class="reasoning">
   <summary>Bot reasoning at the time</summary>
-  <pre>AAPL is the top pick this session under MOMENTUM strategy mode. Momentum score = 4, clearing the minimum threshold of 2. RSI at 80.34 confirms strong buying pressure, price is 6.95% above MA20, and ADX at 37.4 confirms a genuine trending regime. Momentum stop is 303.54 (1x ATR / 5-day low) and momentum take profit is 321.30 (2x ATR), giving an R:R of approximately 1.97:1 — above the 1.5:1 minimum gate. AAPL is an A_GRADE setup, the highest quality available. News flow is AI/tech-macro tailwind (AI hardware broadening), and the new Fed Chair (Warsh) swearing in today with Trump boasting about r</pre>
-</details>
-</article>
-<article class="panel" id="f-3" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">AAPL</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 13:11:12 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The bot&#x27;s logic wasn&#x27;t the problem here — the trade was rejected simply because you already held 33 shares of AAPL, and the position management rule correctly blocked a duplicate entry before you had a chance to close or reset it. Before the bot can act on any new signal for a symbol you&#x27;re already holding, you need to manually close the existing position first, so build a habit of checking your open positions at the start of each session to avoid blocking valid setups like this one.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>AAPL is the top MOMENTUM setup this session with a momentum_score of 4 and A_GRADE quality. RSI at 80.25 is strong but overbought — however under the MOMENTUM path this is a continuation signal, not a reversal warning. Price is 6.88% above MA20, confirming trend extension. ADX at 37.4 is a POSITIVE signal under the momentum framework (trend strength confirmed). Stop at 303.35 (momentum_stop_loss, ~1x ATR below entry), target 321.11 (momentum_take_profit, 2x ATR). R:R = (321.11 - 309.27) / (309.27 - 303.35) = 11.84 / 5.92 = 2.0 — comfortably clears the 1.5:1 minimum gate. Position sizing: 1.5% </pre>
-</details>
-</article>
-<article class="panel" id="f-4" hidden>
-<div class="panel-head">
-  <div class="panel-symbol">AAPL</div>
-  <div class="panel-meta"><span class="badge badge-error">EXEC ERROR</span> · 2026-05-22 · 13:26:05 EST</div>
-</div>
-<div class="error-block">
-  <div class="error-reason">Already hold 33 shares of AAPL; bot does not add to existing positions. Close before re-entering.</div>
-</div>
-<div class="lesson">
-  <div class="lesson-label">Lesson</div>
-  <div class="lesson-body">The trade was rejected not because the signal was flawed, but because the bot correctly enforced its single-position rule — the real failure was that an existing 33-share AAPL position was left open while the bot identified a new entry, creating a conflict the system was designed to prevent. Before the bot scouts new setups, make it a habit to audit your open positions at the start of each session so you can either close stale holdings intentionally or consciously carry them forward without accidentally blocking fresh signals.</div>
-</div>
-<details class="reasoning">
-  <summary>Bot reasoning at the time</summary>
-  <pre>AAPL is the best qualifying setup this session under the MOMENTUM strategy path. Momentum score of 4 clears the minimum threshold of 2. RSI at 80.37 confirms strong directional momentum, price is 6.96% above MA20, and ADX at 37.4 confirms a trending regime — all three are positive signals under the MOMENTUM ruleset. The regime router correctly tagged this MOMENTUM, meaning the ADX&gt;25 veto does not apply here; it is instead a confirming signal. R:R check: (321.36 - 309.52) / (309.52 - 303.60) = 11.84 / 5.92 = 2.0, which exceeds the 1.5:1 minimum. Stop distance is tightest among the three top se</pre>
+  <pre>IWM is the only A/B-grade setup in the watchlist. Strategy mode is MOMENTUM, so I use the momentum bracket and momentum score (3/6). The momentum path requires at least one directional uptrend trigger — we have all three: RSI&gt;55, AboveMA20&gt;1% (3.19%), and a 20-day high breakout. ADX is 6.86 (very low), which is a mild negative for momentum conviction, but the MOMENTUM path does not veto on low ADX — it only requires the directional triggers. The regime router already classified this as MOMENTUM-eligible. R:R check: (312.655 - 302.175) / (302.175 - 296.935) = 10.48 / 5.24 = 2.00:1 — passes the </pre>
 </details>
 </article>
     </div>
